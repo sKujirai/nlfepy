@@ -1,20 +1,26 @@
-import matplotlib.pyplot as plt
+from .viewer2d import Viewer2d
+from .viewer3d import Viewer3d
 
 
 class Viewer:
     """
-    Base class of viewer classes
+    Viewer interface
     """
 
-    def __init__(self) -> None:
+    def __init__(self, *, mesh, params: dict = {}) -> None:
+        self.mesh = mesh
+        self.params = params
 
-        self.fig = plt.figure()
+        if self.mesh.n_dof == 2:
+            self.viewer = Viewer2d()
+        else:
+            self.viewer = Viewer3d()
+
+    def set(self, *, value=None) -> None:
+        self.viewer.set(mesh=self.mesh, value=value, params=self.params)
 
     def show(self, *, show_cbar=True):
-        if show_cbar:
-            plt.colorbar(self.pcm, ax=self.ax)
-        plt.show()
+        self.viewer.show(show_cbar=show_cbar)
 
     def save(self, file_name):
-
-        self.fig.savefig(file_name, transparent=True, dpi=300)
+        self.viewer.save(file_name)

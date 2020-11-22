@@ -1,8 +1,9 @@
+from abc import ABCMeta
 import numpy as np
 from typing import Tuple
 
 
-class ShapeFunction():
+class ShapeFunction(metaclass=ABCMeta):
     """
     Base class of shape function
 
@@ -45,9 +46,9 @@ class ShapeFunction():
         self.Bmatrix_nat = None
         self.idx_face = None
 
-    def get_bmatrix(self, cod: np.ndarray, iint: int) -> Tuple[np.ndarray, float]:
+    def get_Bmatrix(self, cod: np.ndarray, iint: int) -> Tuple[np.ndarray, float]:
         """
-        Get 1st derivative of shape function in global coordinates
+        Get 1st derivative of shape function (B-matrix) in global coordinates
 
         Parameters
         ----------
@@ -59,7 +60,7 @@ class ShapeFunction():
         Returns
         -------
         shapef : tuple
-            Bmatrix and weigh * determinant of Jacobi matrix
+            B-matrix and weigh * determinant of Jacobi matrix
         """
 
         JacobT = np.dot(self.Bmatrix_nat[:, :, iint], cod.T)
@@ -68,6 +69,25 @@ class ShapeFunction():
         Bmatrix_phys = np.dot(Jinv, self.Bmatrix_nat[:, :, iint])
         wdetJ = self.weight[iint]*detJ
         return Bmatrix_phys, wdetJ
+
+    def get_Nmatrix(self, cod: np.ndarray, iint: int) -> Tuple[np.ndarray, float]:
+        """
+        Get shape function (N-matrix) and w*detJ
+
+        Parameters
+        ----------
+        cod : ndarray
+            Coordinates of node in each element
+        iint : int
+            Index of integral point
+
+        Returns
+        -------
+        shapef : tuple
+            N-matrix and weigh * determinant of Jacobi matrix
+        """
+
+        return self.Shpfnc, self.get_wdetJ(cod, iint)
 
     def get_wdetJ(self, cod: np.ndarray, iint: int) -> float:
         """

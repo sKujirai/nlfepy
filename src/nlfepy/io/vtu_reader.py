@@ -44,14 +44,15 @@ class VtuReader:
         piece = unstructured_grid.find(r'{VTK}Piece')
 
         # Mesh info.
-        self.n_element = int(piece.attrib[r'NumberOfCells'])
-        self.n_point = int(piece.attrib[r'NumberOfPoints'])
-        self.coords = self.read_coordinates(piece=piece)
-        self.connectivity = self.read_connectivity(piece=piece)
-        if np.max(np.abs(self.coords[2])) > 1.e-30:
-            self.n_dof = 3
+        self.mesh = {}
+        self.mesh['n_element'] = int(piece.attrib[r'NumberOfCells'])
+        self.mesh['n_point'] = int(piece.attrib[r'NumberOfPoints'])
+        self.mesh['coords'] = self.read_coordinates(piece=piece)
+        self.mesh['connectivity'], self.mesh['n_node'], self.mesh['m_node'] = self.read_connectivity(piece=piece)
+        if np.max(np.abs(self.mesh['coords'][2])) > 1.e-30:
+            self.mesh['n_dof'] = 3
         else:
-            self.n_dof = 2
+            self.mesh['n_dof'] = 2
 
         # Point data
         point_data = piece.find(r'{VTK}PointData')
@@ -72,9 +73,9 @@ class VtuReader:
         self.set_multi_point_constraint()
 
         # Sub-structure
-        self.grain_numbers = self.get_value(cell_array, r'Cryst')[:, 0].astype(np.int)
-        self.material_numbers = self.get_value(cell_array, r'Mater')[:, 0].astype(np.int)
-        self.crystal_orientation = self.get_value(cell_array, r'Crystal Orientation').astype(np.float)
+        self.mesh['grain_numbers'] = self.get_value(cell_array, r'Cryst')[:, 0].astype(np.int)
+        self.mesh['material_numbers'] = self.get_value(cell_array, r'Mater')[:, 0].astype(np.int)
+        self.mesh['crystal_orientation'] = self.get_value(cell_array, r'Crystal Orientation').astype(np.float)
 
     def read_coordinates(self, *, piece):
         """
@@ -107,6 +108,8 @@ class VtuReader:
         cells = piece.find(r'{VTK}Cells')
         darray = cells.findall(r'{VTK}DataArray')
         lnodes = []
+        n_node = []
+        m_node = 0
         for d in darray:
             if d.attrib[r'Name'] == 'connectivity':
                 lnodes_list = d.text.split('\n')
@@ -119,10 +122,10 @@ class VtuReader:
                         if nod != '':
                             nod_lst.append(int(nod))
                     lnodes.append(nod_lst)
+                    n_node.append(len(nod_lst))
+                    m_node = max(m_node, n_node[-1])
 
-        lnodes = np.array(lnodes)
-
-        return lnodes
+        return lnodes, n_node, m_node
 
     def get_value(self, darray, tag):
 
@@ -156,8 +159,8 @@ class VtuReader:
 
         ipnt, idof = np.where(self.bc_table == FIX)
         jpnt, jdof = np.where(self.bc_table == DISPLACEMENT)
-        idx_i = self.n_dof*ipnt + idof
-        idx_j = self.n_dof*jpnt + jdof
+        idx_i = self.mesh['n_dof']*ipnt + idof
+        idx_j = self.mesh['n_dof']*jpnt + jdof
         self.bc['idx_fix'] = np.concatenate([idx_i, idx_j])
 
         n_displacement = np.count_nonzero(self.bc_table == DISPLACEMENT)
@@ -167,7 +170,7 @@ class VtuReader:
             self.bc['type'] = 'displacement'
             self.bc['n_disp'] = n_displacement
             idx_pnt, self.bc['direction'] = np.where(self.bc_table == DISPLACEMENT)
-            self.bc['idx_disp'] = self.n_dof*idx_pnt + self.bc['direction']
+            self.bc['idx_disp'] = self.mesh['n_dof']*idx_pnt + self.bc['direction']
             self.bc['displacement'] = self.prescribed_displacement[self.bc_table == DISPLACEMENT]
             # Traction
             self.bc['traction'] = self.prescribed_displacement
@@ -178,7 +181,7 @@ class VtuReader:
             self.bc['type'] = 'load'
             # self.bc['n_disp'] = n_load
             # idx_pnt, self.bc['direction'] = np.where(self.bc_table == LOAD)
-            # self.bc['idx_disp'] = self.n_dof*idx_pnt + self.bc['direction']
+            # self.bc['idx_disp'] = self.mesh['n_dof']*idx_pnt + self.bc['direction']
             # self.bc['displacement'] = self.prescribed_displacement[self.bc_table == LOAD]
             self.bc['traction'] = self.prescribed_displacement
             self.bc['traction'][self.bc_table != LOAD] = 0.
@@ -187,7 +190,7 @@ class VtuReader:
             self.bc['direction'] = self.bc['idx_disp'] = self.bc['displacement'] = []
         elif n_displacement == 0 and n_load == 0:
             self.bc['type'] = 'mpc'
-            self.bc['traction'] = np.zeros((self.n_dof, self.n_point))
+            self.bc['traction'] = np.zeros((self.mesh['n_dof'], self.mesh['n_point']))
             self.bc['n_disp'] = 0
             self.bc['direction'] = self.bc['idx_disp'] = self.bc['displacement'] = []
         else:
@@ -209,7 +212,7 @@ class VtuReader:
             for ipnt, idof in zip(pnt, dof):
                 ratio = np.abs(self.mpc_ratio[ipnt][idof])
                 if ratio > 0.:
-                    self.mpc['slave'].append(self.n_dof * ipnt + idof)
+                    self.mpc['slave'].append(self.mesh['n_dof'] * ipnt + idof)
                     self.mpc['ratio'].append(ratio)
                 else:
-                    self.mpc['master'].append(self.n_dof * ipnt + idof)
+                    self.mpc['master'].append(self.mesh['n_dof'] * ipnt + idof)

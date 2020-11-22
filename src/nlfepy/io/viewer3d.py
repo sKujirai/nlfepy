@@ -1,13 +1,13 @@
 import numpy as np
 from mpl_toolkits.mplot3d.art3d import Poly3DCollection
-from .viewer import Viewer
+from .viewer_base import ViewerBase
 
 
-class Viewer3d(Viewer):
+class Viewer3d(ViewerBase):
 
     def __init__(self) -> None:
         """
-        Viewer class for 3D stuructures inheriting class: Viewer
+        Viewer class for 3D stuructures inheriting class: ViewerBase
         """
 
         super().__init__()
@@ -24,48 +24,43 @@ class Viewer3d(Viewer):
         self.ax.axes.yaxis.set_ticks([])
         self.ax.axes.zaxis.set_ticks([])
 
-    def set(self, coords: np.ndarray, connectivity: np.ndarray, shapef, value=None, xlim=None, ylim=None, zlim=None, cmap='jet', edgecolor='k', lw=1, alpha=0.25) -> None:
+    def set(self, *, mesh, value=None, params={}) -> None:
         """
         Set coordinates, connectivity and values to plot
 
         Parameters
         ----------
-        coords : ndarray
-            Coordinates [3, npoint] (2D array)
-        connectivity : array-like
-            Connectivity of elaments [n_element][n_node] (2D array)
-        shapef :
-            Shape function class
+        mesh :
+            Mesh class (See mesh.py)
         value : array-like
             Value to plot in each element [n_element] (1D array)
-        xlim : array-like
-            Range of x-axis
-        ylim : array-like
-            Range of y-axis
-        zlim : array-like
-            Range of z-axis
-        cmap : string
-            Color map
-        edgecolor : string
-            Edge color
-        lw : int
-            Line width
-        alpha : float
-            Transparency
+        params : dict
+            'xlim' (array-like, Range of x-axis),
+            'ylim' (array-like, Range of y-axis),
+            'zlim' (array-like, Range of z-axis),
+            'cmap' (string, Color map),
+            'edgecolor' (string, Edge color),
+            'lw' (int, Line width),
+            'alpha' (float, Transparency)
         """
 
-        if xlim is None:
-            self.ax.set_xlim(np.min(coords[0]), np.max(coords[0]))
+        if 'xlim' in params:
+            self.ax.set_xlim(params['xlim'][0], params['xlim'][1])
         else:
-            self.ax.set_xlim(xlim[0], xlim[1])
-        if ylim is None:
-            self.ax.set_ylim(np.min(coords[1]), np.max(coords[1]))
+            self.ax.set_xlim(np.min(mesh.coords[0]), np.max(mesh.coords[0]))
+        if 'ylim' in params:
+            self.ax.set_ylim(params['ylim'][0], params['ylim'][1])
         else:
-            self.ax.set_ylim(ylim[0], ylim[1])
-        if zlim is None:
-            self.ax.set_zlim(np.min(coords[2]), np.max(coords[2]))
+            self.ax.set_ylim(np.min(mesh.coords[1]), np.max(mesh.coords[1]))
+        if 'zlim' in params:
+            self.ax.set_zlim(params['zlim'][0], params['zlim'][1])
         else:
-            self.ax.set_zlim(zlim[0], zlim[1])
+            self.ax.set_zlim(np.min(mesh.coords[2]), np.max(mesh.coords[2]))
+
+        cmap = params['cmap'] if 'cmap' in params else 'jet'
+        edgecolor = params['edgecolor'] if 'edgecolor' in params else 'k'
+        lw = params['lw'] if 'lw' in params else 1
+        alpha = params['alpha'] if 'alpha' in params else 0.25
 
         self.ax.set_xlabel('x')
         self.ax.set_ylabel('y')
@@ -73,9 +68,10 @@ class Viewer3d(Viewer):
 
         verts = []
         values = []
-        for ielm in range(connectivity.shape[0]):
-            for ifce in range(shapef['vol'].n_face):
-                cod = coords[:, connectivity[ielm][shapef['vol'].idx_face[ifce]]][:3].T
+        for ielm in range(mesh.n_element):
+
+            for idx_nd in mesh.idx_face('vol', elm=ielm):
+                cod = mesh.coords[:, np.array(mesh.connectivity[ielm])[idx_nd]].T
                 verts.append(cod)
                 if value is not None:
                     values.append(value[ielm])

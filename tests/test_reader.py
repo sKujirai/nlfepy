@@ -6,11 +6,16 @@ from nlfepy.io import VtuReader
 
 def main(mesh_path):
     reader = VtuReader(mesh_path)
-    print(reader.coords.shape)
-    print(reader.coords)
-    print(reader.connectivity.shape)
-    print(reader.connectivity)
-    print(reader.bc)
+    mesh = reader.mesh
+    BC = reader.bc
+
+    for key, value in mesh.items():
+        print(key)
+        print(value)
+
+    for key, value in BC.items():
+        print(key, value)
+
     print('OK')
 
 
