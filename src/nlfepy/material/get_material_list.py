@@ -3,6 +3,29 @@ from logging import getLogger
 from .aluminium import Aluminium
 
 
+def get_material(material_name: str) -> list:
+    """
+    Get material class
+
+    Parameters
+    ----------
+    material name : str
+        Material name
+
+    Returns
+    -------
+    mater :
+        Material class
+    """
+
+    if material_name == 'Al' or material_name == 'Aluminium':
+        return Aluminium()
+    else:
+        logger = getLogger('Material')
+        logger.error('Invalid material: {}'.format(material_name))
+        sys.exit(1)
+
+
 def get_material_list(material_names: list) -> list:
     """
     Get material classes
@@ -21,11 +44,6 @@ def get_material_list(material_names: list) -> list:
     maters = []
 
     for mname in material_names:
-        if mname == 'Al' or mname == 'Aluminium':
-            maters.append(Aluminium())
-        else:
-            logger = getLogger('Material')
-            logger.error('Invalid material: {}'.format(mname))
-            sys.exit(1)
+        maters.append(get_material(mname))
 
     return maters

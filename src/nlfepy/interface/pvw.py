@@ -8,13 +8,23 @@ from .integral_equation import IntegralEquation
 class PVW(IntegralEquation):
     """
     Principle of virtual work inheriting class: IntegralEquation
+
+    Attributes
+    ----------
+    mesh :
+        Mesh class (See mesh.py)
+    mater :
+        Material class
+    val :
+        Variables (physical quantity) class
+    params : dict
+        Parameters
     """
 
-    def __init__(self, *, mesh, mater, params: dict = {}) -> None:
+    def __init__(self, *, mesh, mater, val=None, params: dict = {}) -> None:
 
-        super().__init__(params=params)
+        super().__init__(mesh=mesh, val=val, params=params)
 
-        self.mesh = mesh
         self.mater = mater
 
     def solve(self) -> None:
@@ -132,7 +142,5 @@ class PVW(IntegralEquation):
 
         # Update coordinates
         self.logger.info('Updating global coordinates')
-        self.mesh.coords[0] += Uvector[::n_dof]
-        self.mesh.coords[1] += Uvector[1::n_dof]
-        if n_dof == 3:
-            self.mesh.coords[2] += Uvector[2::n_dof]
+        for idof in range(n_dof):
+            self.mesh.coords[idof] += Uvector[idof::n_dof]

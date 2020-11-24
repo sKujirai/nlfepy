@@ -1,13 +1,12 @@
 import os
-from os import read
 import sys
 import numpy as np
 import logging
 from logging import getLogger
 sys.path.append(os.path.join(os.path.dirname(__file__), '..', 'src'))
 from nlfepy.mesh import Mesh
-from nlfepy.material import get_material_list
-from nlfepy.interface import PVW
+from nlfepy.constitutive import get_constitutive_list
+from nlfepy.interface import PVW_UL
 from nlfepy.io import Viewer
 
 
@@ -23,16 +22,28 @@ def main(mesh_path):
     mesh = Mesh()
     mesh.read(mesh_path)
 
-    # Set material
-    logger.info('Setting material...')
-    mater = get_material_list(['Al'])
+    # Physical quantities
+    # val = {}
+
+    # Set constitutive
+    logger.info('Setting constitutive equation...')
+    # cnst_params = {}
+    cnst_dict = {
+        'Al': ['isotropic'],  # , cnst_params],
+    }
+    constitutive = get_constitutive_list(cnst_dict)  # , val)
 
     # Solve the governing equation (Principle of virtual work)
     logger.info('Solving the governing equation...')
     pvw_params = {
         'logging': True,
     }
-    pvw = PVW(mesh=mesh, mater=mater, params=pvw_params)
+    pvw = PVW_UL(
+        mesh=mesh,
+        cnst=constitutive,
+        # val=val,
+        params=pvw_params
+    )
     pvw.solve()
 
     # Plot result

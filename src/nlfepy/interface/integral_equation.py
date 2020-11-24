@@ -8,7 +8,10 @@ class IntegralEquation(metaclass=ABCMeta):
     Base class to solve integral equation
     """
 
-    def __init__(self, params: dict = {}) -> None:
+    def __init__(self, *, mesh, val=None, params: dict = {}) -> None:
+
+        self.mesh = mesh
+        self.val = val
 
         self.config = {}
         self.config['penalty_coefficient'] = 1.e8
