@@ -18,6 +18,14 @@ class PVW_UL(IntegralEquation):
         Variables (physical quantity) class
     params : dict
         Parameters
+    deltaU : ndarray
+        Incremental displacement
+    Fint : ndarray
+        Internal force
+    Fext : ndarray
+        External force
+    Frsd : ndarray
+        Residual force
     """
 
     def __init__(self, *, mesh, cnst, val=None, params: dict = {}) -> None:
@@ -28,9 +36,12 @@ class PVW_UL(IntegralEquation):
 
         n_dof = self.mesh.n_dof
         n_point = self.mesh.n_point
+
         self.deltaU = np.zeros((n_dof, n_point))
-        self.Traction = np.zeros((n_dof, n_point))
-        self.BodyForce = np.zeros((n_dof, n_point))
+
+        self.Fint = np.zeros((n_dof * n_point))
+        self.Fext = np.zeros((n_dof * n_point))
+        self.Frsd = np.zeros((n_dof * n_point))
 
     def solve(self) -> None:
         """
@@ -44,17 +55,14 @@ class PVW_UL(IntegralEquation):
         connectivity = self.mesh.connectivity
 
         BC = self.mesh.bc
-        TractionRate = None
-        BodyForceRate = None
-        if 'traction' in BC:
-            TractionRate = BC['traction']
-            self.Traction += TractionRate
-        if 'body_force' in BC:
-            BodyForceRate = BC['body_force']
-            self.BodyForce += BodyForceRate
+        TractionRate = BC['traction'][:n_dof] if 'traction' in BC else None        
+        BodyForceRate = BC['body_force'][:n_dof] if 'body_force' in BC else None
 
         Kmatrix = np.zeros((n_dof * n_point, n_dof * n_point))
         Fvector = np.zeros(n_dof * n_point)
+        dFext = np.zeros(n_dof * n_point)
+        dFapp = np.zeros(n_dof * n_point)
+        tFint = np.zeros(n_dof * n_point)
 
         # Make global stiffness matrix & global force vector
         self.logger.info('Making stiffness matrix')
@@ -73,10 +81,8 @@ class PVW_UL(IntegralEquation):
 
             # Make element stiffness matrix
             ke = np.zeros((n_dof * n_node_v, n_dof * n_node_v))
-            fe = np.zeros(n_dof * n_node_v)
             fe_int = np.zeros(n_dof * n_node_v)
-            fe_ext = np.zeros(n_dof * n_node_v)
-            dfe_int = np.zeros(n_dof * n_node_v)
+            dfe_app = np.zeros(n_dof * n_node_v)
             dfe_ext = np.zeros(n_dof * n_node_v)
 
             for itg in range(n_intgp_v):
@@ -185,14 +191,13 @@ class PVW_UL(IntegralEquation):
 
                 # [ke] += [Bd]^T[D][Bd]*wdetJ
                 ke += np.dot(Bd.T, np.dot(Cmatrix, Bd)) * wdetJv
-                # {dfint}
-                dfe_int += np.dot(Bd.T, Rvector) * wdetJv
+                # {dfapp}
+                dfe_app += np.dot(Bd.T, Rvector) * wdetJv
                 # {Fint}
                 fe_int += np.dot(Bd.T, Tvector) * wdetJv
                 # Body force
                 if BodyForceRate is not None:
                     bfr = BodyForceRate[:, np.array(connectivity[ielm])][:n_dof].T.flatten()
-                    bf = self.BodyForce[:, np.array(connectivity[ielm])][:n_dof].T.flatten()
                     Nb = np.zeros((n_dof, n_dof * n_node_v))
                     if n_dof == 2:
                         Nb[0, ::n_dof] = Nbmatrix[:, itg]
@@ -203,14 +208,11 @@ class PVW_UL(IntegralEquation):
                         Nb[2, 2::n_dof] = Nbmatrix[:, itg]
                     # {dfext_b}
                     dfe_ext += np.dot(Nb.T, np.dot(Nb, bfr)) * wdetJv
-                    # {fext_b}
-                    fe_ext += np.dot(Nb.T, np.dot(Nb, bf)) * wdetJv
 
             # Apply traction
             if TractionRate is not None:
                 for idx_nd in self.mesh.idx_face('vol', elm=ielm):
                     trcr = TractionRate[:, np.array(connectivity[ielm])[idx_nd]][:n_dof].T.flatten()
-                    trc = self.Traction[:, np.array(connectivity[ielm])[idx_nd]][:n_dof].T.flatten()
                     n_node_a = self.mesh.n_node('area', elm=ielm)
                     n_intgp_a = self.mesh.n_intgp('area', elm=ielm)
                     for jtg in range(n_intgp_a):
@@ -224,12 +226,8 @@ class PVW_UL(IntegralEquation):
                             Na[1, 1::n_dof] = Namatrix[:, jtg]
                             Na[2, 2::n_dof] = Namatrix[:, jtg]
                         dfe_t = np.dot(Na.T, np.dot(Na, trcr)) * wdetJa
-                        fe_t = np.dot(Na.T, np.dot(Na, trc)) * wdetJa
                         for i, inod in enumerate(idx_nd):
                             dfe_ext[n_dof*inod:n_dof*(inod + 1)] += dfe_t[n_dof*i:n_dof*(i + 1)]
-                            fe_ext[n_dof*inod:n_dof*(inod + 1)] += fe_t[n_dof*i:n_dof*(i + 1)]
-
-            fe = dfe_ext - dfe_int + fe_ext - fe_int
 
             # Assemble
             for inod in range(n_node_v):
@@ -240,7 +238,15 @@ class PVW_UL(IntegralEquation):
                             jpnt = connectivity[ielm][jnod]
                             Kmatrix[n_dof * ipnt + idof, n_dof * jpnt + jdof] += ke[n_dof * inod + idof, n_dof * jnod + jdof]
                 for idof in range(n_dof):
-                    Fvector[n_dof * connectivity[ielm][inod] + idof] += fe[n_dof * inod + idof]
+                    dFext[n_dof * connectivity[ielm][inod] + idof] += dfe_ext[n_dof * inod + idof]
+                    dFapp[n_dof * connectivity[ielm][inod] + idof] += dfe_app[n_dof * inod + idof]
+                    tFint[n_dof * connectivity[ielm][inod] + idof] += fe_int[n_dof * inod + idof]
+
+        # Set global force
+        Fvector = dFext + dFapp + self.Frsd
+        self.Fext += dFext
+        self.Fint = tFint
+        self.Frsd = self.Fext - self.Fint
 
         # Handle boundary condition
         self.logger.info('Handling B.C.')

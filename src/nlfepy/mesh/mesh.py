@@ -16,10 +16,8 @@ class Mesh:
         Number of nodes
     n_element : int
         Number of finite elements
-    # n_node : array-like
-    #     Number of nodes of each element [n_element]
-    # m_node : int
-    #     Max number of n_node
+    n_tintgp : int
+        Number of total integral points
     coords : ndarray
         Coordinates [n_dof, n_point]
     connectivity : list
@@ -43,6 +41,7 @@ class Mesh:
         self.n_point = None
         self.n_element = None
         self.n_dfdof = None
+        self.n_tintgp = None
         # self.n_node = None
         # self.m_node = None
         self.coords = None
@@ -136,6 +135,10 @@ class Mesh:
 
         for elm_name in set(self.element_name):
             self.shapef[elm_name] = get_shape_function(elm_name)
+
+        self.n_tintgp = 0
+        for ielm in range(self.n_element):
+            self.n_tintgp += self.shapef[self.element_name[ielm]]['vol'].n_intgp
 
     def set_boundary_condition(self, bc: dict) -> None:
         self.bc = bc

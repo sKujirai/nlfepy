@@ -8,15 +8,9 @@ class Isotropic(Constitutive):
     Constitutive eq. class for isotropic elastic body inheriting class: Constitutive
     """
 
-    def __init__(self, metal, val: dict = {}, params: dict = {}) -> None:
-        super().__init__(metal, val)
-
-        self.params = params
+    def __init__(self, *, metal, nitg: int, val: dict = {}, params: dict = {}) -> None:
+        super().__init__(metal=metal, nitg=nitg, val=val, params=params)
 
     def constitutive_equation(self, *, du: np.ndarray = None, bm: np.ndarray = None, itg: int = None) -> Tuple[np.ndarray, np.ndarray, np.ndarray]:
 
-        Cmatrix = self.metal.Cmatrix
-        Rmatrix = np.zeros((3, 3))
-        Tmatrix = np.zeros((3, 3))
-
-        return Cmatrix, Rmatrix, Tmatrix
+        return self.val['cmatrix'][itg], self.val['rtensor'][itg], self.val['stress'][itg]

@@ -12,6 +12,9 @@ from nlfepy.io import Viewer
 
 def main(mesh_path):
 
+    # Number of steps
+    n_steps = 10
+
     # Set logger
     logging.basicConfig(level=logging.INFO)
     logger = getLogger('pvw')
@@ -29,14 +32,16 @@ def main(mesh_path):
     logger.info('Setting constitutive equation...')
     # cnst_params = {}
     cnst_dict = {
-        'Al': ['isotropic'],  # , cnst_params],
+        'Al': ['isotropic'],
+        # 'Al': ['j2flow'],  # , cnst_params],
+        # 'Al': ['crystal_plasticity'],  # , cnst_params],
     }
-    constitutive = get_constitutive_list(cnst_dict)  # , val)
+    constitutive = get_constitutive_list(cnst_dict, mesh.n_tintgp)  # , val)
 
     # Solve the governing equation (Principle of virtual work)
     logger.info('Solving the governing equation...')
     pvw_params = {
-        'logging': True,
+        'logging': False,
     }
     pvw = PVW_UL(
         mesh=mesh,
@@ -44,7 +49,11 @@ def main(mesh_path):
         # val=val,
         params=pvw_params
     )
-    pvw.solve()
+
+    # Main Loop
+    for istep in range(n_steps):
+        logger.info('Step No. {} / {}'.format(istep + 1, n_steps))
+        pvw.solve()
 
     # Plot result
     logger.info('Drawing mesh...')
