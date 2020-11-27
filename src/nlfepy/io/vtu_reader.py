@@ -12,7 +12,7 @@ class VtuReader:
     Read mesh info and set boundary conditions.
     """
 
-    def __init__(self, mesh_path=None):
+    def __init__(self, mesh_path=None) -> None:
 
         self.logger = getLogger('LogReader')
 
@@ -25,7 +25,7 @@ class VtuReader:
 
         Parameters
         ----------
-        mesh_path : string
+        mesh_path : str
             Mesh file path. Mesh file must be written in VTK XML format (.vtu).
         """
 
@@ -65,6 +65,8 @@ class VtuReader:
         # Boundary condition
         self.bc_table = self.get_value(pdata_array, r'Boundary Condition').astype(np.int)
         self.prescribed_displacement = self.get_value(pdata_array, r'Prescribed Displacement').astype(np.float)
+        self.prescribed_traction = self.get_value(pdata_array, r'Prescribed Traction').astype(np.float)
+        self.applied_force = self.get_value(pdata_array, r'Applied Force').astype(np.float)
         self.set_boundary_condition()
 
         # Multi point constraint
@@ -152,7 +154,7 @@ class VtuReader:
         Set boundary conditions (Fix point, prescribed displacement, ...)
         """
 
-        FREE, FIX, DISPLACEMENT, LOAD = 0, 1, -1, -2
+        FIX, DISPLACEMENT, LOAD, FORCE = 1, -1, -2, -3
 
         self.bc = {}
         self.bc['n_fix'] = np.count_nonzero(self.bc_table == FIX) + np.count_nonzero(self.bc_table == DISPLACEMENT)
@@ -165,37 +167,23 @@ class VtuReader:
 
         n_displacement = np.count_nonzero(self.bc_table == DISPLACEMENT)
         n_load = np.count_nonzero(self.bc_table == LOAD)
-        if n_displacement > 0:
-            # Displacement control
-            self.bc['type'] = 'displacement'
-            self.bc['n_disp'] = n_displacement
+        n_force = np.count_nonzero(self.bc_table == FORCE)
+
+        if n_displacement == 0 and n_load == 0 and n_force == 0:
+            self.bc['type'] = 'MPC'
+        else:
+            self.bc['type'] = 'BC'
+
+        self.bc['n_disp'] = n_displacement
+        if self.bc['n_disp'] > 0:
             idx_pnt, self.bc['direction'] = np.where(self.bc_table == DISPLACEMENT)
             self.bc['idx_disp'] = self.mesh['n_dof']*idx_pnt + self.bc['direction']
             self.bc['displacement'] = self.prescribed_displacement[self.bc_table == DISPLACEMENT]
-            # Traction
-            self.bc['traction'] = self.prescribed_displacement
-            self.bc['traction'][self.bc_table != LOAD] = 0.
-            self.bc['traction'] = self.bc['traction'].T
-        elif n_displacement == 0 and n_load > 0:
-            # Load control
-            self.bc['type'] = 'load'
-            # self.bc['n_disp'] = n_load
-            # idx_pnt, self.bc['direction'] = np.where(self.bc_table == LOAD)
-            # self.bc['idx_disp'] = self.mesh['n_dof']*idx_pnt + self.bc['direction']
-            # self.bc['displacement'] = self.prescribed_displacement[self.bc_table == LOAD]
-            self.bc['traction'] = self.prescribed_displacement
-            self.bc['traction'][self.bc_table != LOAD] = 0.
-            self.bc['traction'] = self.bc['traction'].T
-            self.bc['n_disp'] = 0
-            self.bc['direction'] = self.bc['idx_disp'] = self.bc['displacement'] = []
-        elif n_displacement == 0 and n_load == 0:
-            self.bc['type'] = 'mpc'
-            self.bc['traction'] = np.zeros((self.mesh['n_dof'], self.mesh['n_point']))
-            self.bc['n_disp'] = 0
-            self.bc['direction'] = self.bc['idx_disp'] = self.bc['displacement'] = []
         else:
-            self.logger.error('Invalid boundary condition')
-            sys.exit(1)
+            self.bc['direction'] = self.bc['idx_disp'] = self.bc['displacement'] = []
+
+        self.bc['traction'] = self.prescribed_traction
+        self.bc['applied_force'] = self.applied_force
 
     def set_multi_point_constraint(self):
         """

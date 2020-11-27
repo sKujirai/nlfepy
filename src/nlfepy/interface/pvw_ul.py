@@ -55,8 +55,8 @@ class PVW_UL(IntegralEquation):
         connectivity = self.mesh.connectivity
 
         BC = self.mesh.bc
-        TractionRate = BC['traction'][:n_dof] if 'traction' in BC else None        
-        BodyForceRate = BC['body_force'][:n_dof] if 'body_force' in BC else None
+        TractionRate = BC['traction'] if 'traction' in BC else None        
+        BodyForceRate = BC['body_force'] if 'body_force' in BC else None
 
         Kmatrix = np.zeros((n_dof * n_point, n_dof * n_point))
         Fvector = np.zeros(n_dof * n_point)
@@ -197,7 +197,7 @@ class PVW_UL(IntegralEquation):
                 fe_int += np.dot(Bd.T, Tvector) * wdetJv
                 # Body force
                 if BodyForceRate is not None:
-                    bfr = BodyForceRate[:, np.array(connectivity[ielm])][:n_dof].T.flatten()
+                    bfr = BodyForceRate[np.array(connectivity[ielm])][:, :n_dof].flatten()
                     Nb = np.zeros((n_dof, n_dof * n_node_v))
                     if n_dof == 2:
                         Nb[0, ::n_dof] = Nbmatrix[:, itg]
@@ -212,7 +212,7 @@ class PVW_UL(IntegralEquation):
             # Apply traction
             if TractionRate is not None:
                 for idx_nd in self.mesh.idx_face('vol', elm=ielm):
-                    trcr = TractionRate[:, np.array(connectivity[ielm])[idx_nd]][:n_dof].T.flatten()
+                    trcr = TractionRate[np.array(connectivity[ielm])[idx_nd]][:, :n_dof].flatten()
                     n_node_a = self.mesh.n_node('area', elm=ielm)
                     n_intgp_a = self.mesh.n_intgp('area', elm=ielm)
                     for jtg in range(n_intgp_a):
@@ -257,7 +257,7 @@ class PVW_UL(IntegralEquation):
             for i, idx in enumerate(BC['idx_disp']):
                 Fvector[idx] += penalty * BC['displacement'][i]
         if 'applied_force' in BC:
-            Fvector += BC['applied_force'].flatten()
+            Fvector += BC['applied_force'][:, :n_dof].flatten()
 
         # Solve KU=F
         self.logger.info('Solving KU=F')

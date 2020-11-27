@@ -1,3 +1,4 @@
+from os import read
 import sys
 import numpy as np
 from logging import getLogger
@@ -66,7 +67,7 @@ class Mesh:
         reader = VtuReader(mesh_path)
         self.set_mesh_dict(reader.mesh)
         self.set_mesh_info()
-        self.set_bc_dict(reader.bc)
+        self.set_bc_dict(bc=reader.bc, mpc=reader.mpc)
 
     def set_shape(self, *, coords: np.ndarray, connectivity) -> None:
         """
@@ -92,7 +93,7 @@ class Mesh:
         self.n_element = len(connectivity)
         self.material_numbers = np.zeros(self.n_element, dtype='int')
         self.grain_numbers = np.zeros(self.n_element, dtype='int')
-        self.crystal_orientation = np.zeros((3, self.n_element))
+        self.crystal_orientation = np.zeros((self.n_element, 3))
 
         self.set_mesh_info()
 
@@ -145,8 +146,9 @@ class Mesh:
         for ielm in range(self.n_element):
             self.n_tintgp += self.shapef[self.element_name[ielm]]['vol'].n_intgp
 
-    def set_bc_dict(self, bc: dict) -> None:
+    def set_bc_dict(self, *, bc: dict, mpc: dict) -> None:
         self.bc = bc
+        self.mpc = mpc
 
     def set_bc(self, *, constraint='compression', model='full', value=None) -> None:
         """
@@ -165,16 +167,17 @@ class Mesh:
         logger = getLogger('bc')
 
         self.bc = {}
-        if constraint in ['compression', 'tensile', 'shear']:
-            self.bc['type'] = 'displacement'
-        elif constraint in ['load']:
-            self.bc['type'] = 'load'
-        else:
-            logger.error('Invalid constraint type: {}'.format(constraint))
-            sys.exit(1)
+        self.bc['type'] = 'BC'
+        # if constraint in ['compression', 'tensile', 'shear']:
+        #     self.bc['type'] = 'displacement'
+        # elif constraint in ['load']:
+        #     self.bc['type'] = 'load'
+        # else:
+        #     logger.error('Invalid constraint type: {}'.format(constraint))
+        #     sys.exit(1)
 
         self.bc['displacement'] = []
-        self.bc['traction'] = np.zeros((3, self.n_point))
+        self.bc['traction'] = np.zeros((self.n_point, 3))
 
         cod_min = np.min(self.coords, axis=1)
         cod_max = np.max(self.coords, axis=1)
@@ -211,13 +214,18 @@ class Mesh:
                 signv = 1. if constraint == 'tensile' else -1.
                 self.bc['displacement'] = np.full(self.bc['n_disp'], signv * abs(value))
             elif constraint in ['load']:
-                self.bc['traction'][1, idx_top] = value
+                self.bc['traction'][idx_top, 3] = value
             else:
                 logger.error('Invalid constraint type: {}'.format(constraint))
                 sys.exit(1)
         else:
             logger.error('Invalid constraint type: {}'.format(constraint))
             sys.exit(1)
+
+        # MPC
+        self.mpc = {}
+        self.mpc['nmpcpt'] = 0
+        self.mpc['slave'] = self.mpc['master'] = self.mpc['ratio'] = []
 
     def get_Shpfnc(self, etype: str, *, elm: int) -> np.ndarray:
         """

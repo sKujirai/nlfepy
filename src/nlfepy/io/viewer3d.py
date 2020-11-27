@@ -197,8 +197,8 @@ class Viewer3d(ViewerBase):
                 self.mesh.coords[1, disp_pts[idx_disp_z]],
                 self.mesh.coords[2, disp_pts[idx_disp_z]],
                 0.,
-                np.sign(self.mesh.bc['displacement'][idx_disp_z]),
                 0.,
+                np.sign(self.mesh.bc['displacement'][idx_disp_z]),
                 length=ll,
                 color='r',
                 label=label_disp_z,
@@ -210,9 +210,10 @@ class Viewer3d(ViewerBase):
             max_trc = np.max(np.abs(Traction))
             if max_trc > eps_min:
                 trc_crit = max_trc * eps_crit
-                dof_trc, pnt_trc = np.where(np.abs(Traction) > trc_crit)
+                pnt_trc, dof_trc = np.where(np.abs(Traction) > trc_crit)
                 idx_trc_x = np.where(dof_trc == 0)
                 idx_trc_y = np.where(dof_trc == 1)
+                idx_trc_z = np.where(dof_trc == 2)
 
                 is_plot_trc = False
 
@@ -221,14 +222,14 @@ class Viewer3d(ViewerBase):
                         self.mesh.coords[0, pnt_trc[idx_trc_x]],
                         self.mesh.coords[1, pnt_trc[idx_trc_x]],
                         self.mesh.coords[2, pnt_trc[idx_trc_x]],
-                        np.sign(Traction[0, pnt_trc[idx_trc_x]]),
+                        np.sign(Traction[pnt_trc[idx_trc_x], 0]),
                         0.,
                         0.,
                         length=ll,
                         color='g',
                         label='Tractopm',
                     )
-                    is_plot_af = True
+                    is_plot_trc = True
 
                 if len(idx_trc_y[0]) > 0:
                     label_trc_y = None if is_plot_trc else 'Traction'
@@ -237,13 +238,13 @@ class Viewer3d(ViewerBase):
                         self.mesh.coords[1, pnt_trc[idx_trc_y]],
                         self.mesh.coords[2, pnt_trc[idx_trc_y]],
                         0.,
-                        np.sign(Traction[0, pnt_trc[idx_trc_y]]),
+                        np.sign(Traction[pnt_trc[idx_trc_y], 1]),
                         0.,
                         length=ll,
                         color='g',
                         label=label_trc_y,
                     )
-                    is_plot_af = True
+                    is_plot_trc = True
 
                 if len(idx_trc_z[0]) > 0:
                     label_trc_z = None if is_plot_trc else 'Traction'
@@ -252,12 +253,13 @@ class Viewer3d(ViewerBase):
                         self.mesh.coords[1, pnt_trc[idx_trc_z]],
                         self.mesh.coords[2, pnt_trc[idx_trc_z]],
                         0.,
-                        np.sign(Traction[0, pnt_trc[idx_trc_z]]),
                         0.,
+                        np.sign(Traction[pnt_trc[idx_trc_z], 2]),
                         length=ll,
                         color='g',
                         label=label_trc_z,
                     )
+                    is_plot_trc = True
 
         # Applied force
         if 'applied_force' in self.mesh.bc:
@@ -265,7 +267,7 @@ class Viewer3d(ViewerBase):
             max_af = np.max(np.abs(ApplForce))
             if max_af > eps_min:
                 af_crit = max_af * eps_crit
-                dof_af, pnt_af = np.where(np.abs(ApplForce) > af_crit)
+                pnt_af, dof_af = np.where(np.abs(ApplForce) > af_crit)
                 idx_af_x = np.where(dof_af == 0)
                 idx_af_y = np.where(dof_af == 1)
                 idx_af_z = np.where(dof_af == 2)
@@ -277,7 +279,7 @@ class Viewer3d(ViewerBase):
                         self.mesh.coords[0, pnt_af[idx_af_x]],
                         self.mesh.coords[1, pnt_af[idx_af_x]],
                         self.mesh.coords[2, pnt_af[idx_af_x]],
-                        np.sign(ApplForce[0, pnt_af[idx_af_x]]),
+                        np.sign(ApplForce[pnt_af[idx_af_x], 0]),
                         0.,
                         0.,
                         length=ll,
@@ -287,32 +289,32 @@ class Viewer3d(ViewerBase):
                     is_plot_af = True
 
                 if len(idx_af_y[0]) > 0:
-                    label_trc_y = None if is_plot_af else 'Applied force'
+                    label_af_y = None if is_plot_af else 'Applied force'
                     self.ax.quiver(
                         self.mesh.coords[0, pnt_af[idx_af_y]],
                         self.mesh.coords[1, pnt_af[idx_af_y]],
                         self.mesh.coords[2, pnt_af[idx_af_y]],
                         0.,
-                        np.sign(ApplForce[1, pnt_af[idx_af_y]]),
+                        np.sign(ApplForce[pnt_af[idx_af_y], 1]),
                         0.,
                         length=ll,
                         color='b',
-                        label=label_trc_y,
+                        label=label_af_y,
                     )
                     is_plot_af = True
 
                 if len(idx_af_z[0]) > 0:
-                    label_trc_z = None if is_plot_af else 'Applied force'
+                    label_af_z = None if is_plot_af else 'Applied force'
                     self.ax.quiver(
                         self.mesh.coords[0, pnt_af[idx_af_z]],
                         self.mesh.coords[1, pnt_af[idx_af_z]],
                         self.mesh.coords[2, pnt_af[idx_af_z]],
                         0.,
                         0.,
-                        np.sign(ApplForce[2, pnt_af[idx_af_z]]),
+                        np.sign(ApplForce[pnt_af[idx_af_z], 2]),
                         length=ll,
                         color='b',
-                        label=label_trc_z,
+                        label=label_af_z,
                     )
                     is_plot_af = True
 

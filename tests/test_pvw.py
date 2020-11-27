@@ -8,7 +8,7 @@ sys.path.append(os.path.join(os.path.dirname(__file__), '..', 'src'))
 from nlfepy.mesh import Mesh
 from nlfepy.material import get_material_list
 from nlfepy.interface import PVW
-from nlfepy.io import Viewer
+from nlfepy.io import Viewer, VtuWriter
 
 
 def main(mesh_path):
@@ -27,7 +27,7 @@ def main(mesh_path):
     # geo = dmsh.Rectangle(0., 1., 0., 1.)
     # coords, connectivity = dmsh.generate(geo, 0.1)
 
-    # # Mesh class
+    # Mesh class
     # mesh = Mesh()
     # mesh.set_shape(coords=coords.T, connectivity=connectivity)
     # mesh.set_bc(constraint='compression', value=0.001)
@@ -43,6 +43,11 @@ def main(mesh_path):
     }
     pvw = PVW(mesh=mesh, mater=mater, params=pvw_params)
     pvw.solve()
+
+    # Save results
+    logger.info('Saving results')
+    writer = VtuWriter(mesh=mesh)
+    writer.write('result.vtu')
 
     # Plot result
     logger.info('Drawing mesh...')
@@ -64,5 +69,7 @@ def main(mesh_path):
 
 if __name__ == '__main__':
     # main('tests/data/mesh.vtu')
+    # main('tests/data/mesh_mpc.vtu')
     # main('tests/data/mesh_load.vtu')
     main('tests/data/mesh_3d.vtu')
+    # main('tests/data/mesh_3d_load.vtu')

@@ -147,7 +147,7 @@ class Viewer2d(ViewerBase):
             max_trc = np.max(np.abs(Traction))
             if max_trc > eps_min:
                 trc_crit = max_trc * eps_crit
-                dof_trc, pnt_trc = np.where(np.abs(Traction) > trc_crit)
+                pnt_trc, dof_trc = np.where(np.abs(Traction) > trc_crit)
                 idx_trc_x = np.where(dof_trc == 0)
                 idx_trc_y = np.where(dof_trc == 1)
                 ratio_trc = ll / max_trc * rr
@@ -156,9 +156,9 @@ class Viewer2d(ViewerBase):
                     self.ax.quiver(
                         self.mesh.coords[0, pnt_trc[idx_trc_x]],
                         self.mesh.coords[1, pnt_trc[idx_trc_x]],
-                        Traction[0, pnt_trc[idx_trc_x]] * ratio_trc,
+                        Traction[pnt_trc[idx_trc_x], 0] * ratio_trc,
                         0.,
-                        color='b',
+                        color='g',
                         label='Traction',
                     )
 
@@ -168,8 +168,8 @@ class Viewer2d(ViewerBase):
                         self.mesh.coords[0, pnt_trc[idx_trc_y]],
                         self.mesh.coords[1, pnt_trc[idx_trc_y]],
                         0.,
-                        Traction[1, pnt_trc[idx_trc_y]] * ratio_trc,
-                        color='b',
+                        Traction[pnt_trc[idx_trc_y], 1] * ratio_trc,
+                        color='g',
                         label=label_trc_y,
                     )
 
@@ -179,7 +179,7 @@ class Viewer2d(ViewerBase):
             max_af = np.max(np.abs(ApplForce))
             if max_af > eps_min:
                 af_crit = max_af * eps_crit
-                dof_af, pnt_af = np.where(np.abs(ApplForce) > af_crit)
+                pnt_af, dof_af = np.where(np.abs(ApplForce) > af_crit)
                 idx_af_x = np.where(dof_af == 0)
                 idx_af_y = np.where(dof_af == 1)
                 ratio_af = ll / max_af * rr
@@ -188,7 +188,7 @@ class Viewer2d(ViewerBase):
                     self.ax.quiver(
                         self.mesh.coords[0, pnt_af[idx_af_x]],
                         self.mesh.coords[1, pnt_af[idx_af_x]],
-                        ApplForce[0, pnt_af[idx_af_x]]*ratio_af,
+                        ApplForce[pnt_af[idx_af_x], 0]*ratio_af,
                         0.,
                         color='b',
                         label='Applied force',
@@ -200,7 +200,7 @@ class Viewer2d(ViewerBase):
                         self.mesh.coords[0, pnt_af[idx_af_y]],
                         self.mesh.coords[1, pnt_af[idx_af_y]],
                         0.,
-                        ApplForce[1, pnt_af[idx_af_y]]*ratio_af,
+                        ApplForce[pnt_af[idx_af_y], 1]*ratio_af,
                         color='b',
                         label=label_trc_y,
                     )

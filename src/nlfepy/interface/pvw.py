@@ -82,7 +82,7 @@ class PVW(IntegralEquation):
 
                 # Body force
                 if BodyForce is not None:
-                    bf = BodyForce[:, np.array(connectivity[ielm])][:n_dof].T.flatten()
+                    bf = BodyForce[np.array(connectivity[ielm])][:, :n_dof].flatten()
                     Nbmatrix = self.mesh.get_Shpfnc('vol', elm=ielm)
                     Nb = np.zeros((n_dof, n_dof * n_node_v))
                     if n_dof == 2:
@@ -98,7 +98,7 @@ class PVW(IntegralEquation):
             # Apply traction
             if Traction is not None:
                 for idx_nd in self.mesh.idx_face('vol', elm=ielm):
-                    trc = Traction[:, np.array(connectivity[ielm])[idx_nd]][:n_dof].T.flatten()
+                    trc = Traction[np.array(connectivity[ielm])[idx_nd]][:, :n_dof].flatten()
                     n_node_a = self.mesh.n_node('area', elm=ielm)
                     n_intgp_a = self.mesh.n_intgp('area', elm=ielm)
                     for jtg in range(n_intgp_a):
@@ -135,7 +135,7 @@ class PVW(IntegralEquation):
             for i, idx in enumerate(BC['idx_disp']):
                 Fvector[idx] += penalty * BC['displacement'][i]
         if 'applied_force' in BC:
-            Fvector += BC['applied_force'].flatten()
+            Fvector += BC['applied_force'][:, :n_dof].flatten()
 
         # Solve KU=F
         self.logger.info('Solving KU=F')

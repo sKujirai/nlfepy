@@ -12,3 +12,7 @@ __pycache__/
 # due to using tox and pytest
 .tox
 .cache
+
+# results or temporary files
+result.vtu
+test.vtu
