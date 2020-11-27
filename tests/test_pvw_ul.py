@@ -6,6 +6,7 @@ from logging import getLogger
 sys.path.append(os.path.join(os.path.dirname(__file__), '..', 'src'))
 from nlfepy.mesh import Mesh
 from nlfepy.constitutive import get_constitutive_list
+from nlfepy.constitutive import Variable
 from nlfepy.interface import PVW_UL
 from nlfepy.io import Viewer
 
@@ -26,7 +27,7 @@ def main(mesh_path):
     mesh.read(mesh_path)
 
     # Physical quantities
-    val = {}
+    vals = Variable()
 
     # Set constitutive
     logger.info('Setting constitutive equation...')
@@ -36,7 +37,7 @@ def main(mesh_path):
         # 'Al': ['j2flow'],  # , cnst_params],
         # 'Al': ['crystal_plasticity'],  # , cnst_params],
     }
-    constitutive = get_constitutive_list(cnst_dict, mesh.n_tintgp)  # , val)
+    constitutive = get_constitutive_list(cnst_dict, mesh.n_tintgp, val=vals['itg'])
 
     # Solve the governing equation (Principle of virtual work)
     logger.info('Solving the governing equation...')
@@ -46,7 +47,7 @@ def main(mesh_path):
     pvw = PVW_UL(
         mesh=mesh,
         cnst=constitutive,
-        # val=val,
+        val=vals['point'],
         params=pvw_params
     )
 
@@ -62,6 +63,7 @@ def main(mesh_path):
         'lw': 1,
     }
     viewer = Viewer(mesh=mesh)
+    val = {}
     viewer.set(values=val, params=viewer_params)
     # viewer.save('result.png')
     viewer.show()

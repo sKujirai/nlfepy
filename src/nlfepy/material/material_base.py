@@ -1,7 +1,7 @@
 from abc import ABCMeta, abstractmethod
 
 
-class Material(metaclass=ABCMeta):
+class MaterialBase(metaclass=ABCMeta):
     """
     Material class (base class)
     """

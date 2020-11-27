@@ -7,6 +7,7 @@ from logging import getLogger
 sys.path.append(os.path.join(os.path.dirname(__file__), '..', 'src'))
 from nlfepy.mesh import Mesh
 from nlfepy.material import get_material_list
+from nlfepy.constitutive import Variable
 from nlfepy.interface import PVW
 from nlfepy.io import Viewer, VtuWriter
 
@@ -36,12 +37,15 @@ def main(mesh_path):
     logger.info('Setting material...')
     mater = get_material_list(['Al'])
 
+    # Physical quantities
+    vals = Variable()
+
     # Solve the governing equation (Principle of virtual work)
     logger.info('Solving the governing equation...')
     pvw_params = {
         'logging': True,
     }
-    pvw = PVW(mesh=mesh, mater=mater, params=pvw_params)
+    pvw = PVW(mesh=mesh, mater=mater, val=vals['point'], params=pvw_params)
     pvw.solve()
 
     # Save results

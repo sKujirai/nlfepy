@@ -1,10 +1,10 @@
 from abc import abstractmethod
-from .material import Material
+from .material_base import MaterialBase
 
 
-class Metal(Material):
+class Metal(MaterialBase):
     """
-    Metal class inheriting class: Material
+    Metal class inheriting class: MaterialBase
     """
 
     def __init__(self) -> None:

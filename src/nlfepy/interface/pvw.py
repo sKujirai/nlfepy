@@ -16,7 +16,7 @@ class PVW(IntegralEquation):
     mater :
         Material class
     val :
-        Variables (physical quantity) class
+        Variables (physical quantity) (See variable.py)
     params : dict
         Parameters
     """
@@ -26,6 +26,9 @@ class PVW(IntegralEquation):
         super().__init__(mesh=mesh, val=val, params=params)
 
         self.mater = mater
+
+        if 'u_disp' not in self.val:
+            self.val['u_disp'] = np.zeros((self.mesh.n_dof, self.mesh.n_point))
 
     def solve(self) -> None:
         """
@@ -145,4 +148,5 @@ class PVW(IntegralEquation):
         # Update coordinates
         self.logger.info('Updating global coordinates')
         for idof in range(n_dof):
+            self.val['u_disp'][idof] = Uvector[idof::n_dof]
             self.mesh.coords[idof] += Uvector[idof::n_dof]

@@ -1,11 +1,11 @@
 import numpy as np
 from typing import Tuple
-from .constitutive import Constitutive
+from .constitutive_base import ConstitutiveBase
 
 
-class CrystalPlasticity(Constitutive):
+class CrystalPlasticity(ConstitutiveBase):
     """
-    Constitutive eq. class for crystal plasticity theory inheriting class: Constitutive
+    Constitutive eq. class for crystal plasticity theory inheriting class: ConstitutiveBase
     """
 
     def __init__(self, *, metal, nitg: int, val: dict = {}, params: dict = {}) -> None:

@@ -3,7 +3,7 @@ from typing import Tuple
 from abc import ABCMeta, abstractmethod
 
 
-class Constitutive(metaclass=ABCMeta):
+class ConstitutiveBase(metaclass=ABCMeta):
     """
     Constitutive class (base class)
     """

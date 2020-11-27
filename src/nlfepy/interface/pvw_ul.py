@@ -15,7 +15,7 @@ class PVW_UL(IntegralEquation):
     cnst :
         Constitutive equation class
     val :
-        Variables (physical quantity) class
+        Variables (physical quantity)  (See variable.py)
     params : dict
         Parameters
     deltaU : ndarray
@@ -37,7 +37,10 @@ class PVW_UL(IntegralEquation):
         n_dof = self.mesh.n_dof
         n_point = self.mesh.n_point
 
-        self.deltaU = np.zeros((n_dof, n_point))
+        if 'deltau' not in self.val:
+            self.val['deltau'] = np.zeros((n_dof, n_point))
+        if 'u_disp' not in self.val:
+            self.val['u_disp'] = np.zeros((n_dof, n_point))
 
         self.Fint = np.zeros((n_dof * n_point))
         self.Fext = np.zeros((n_dof * n_point))
@@ -74,10 +77,7 @@ class PVW_UL(IntegralEquation):
 
             Nbmatrix = self.mesh.get_Shpfnc('vol', elm=ielm)
 
-            dUelm = self.deltaU[:, np.array(connectivity[ielm])]
-            # dUelm = np.zeros((n_dof, n_node_v))
-            # for idof in range(n_dof):
-            #     dUelm[idof] = self.deltaU[n_dof * np.array(connectivity[ielm]) + idof]
+            dUelm = self.val['deltau'][:, np.array(connectivity[ielm])]
 
             # Make element stiffness matrix
             ke = np.zeros((n_dof * n_node_v, n_dof * n_node_v))
@@ -267,5 +267,6 @@ class PVW_UL(IntegralEquation):
         # Update coordinates
         self.logger.info('Updating global coordinates')
         for idof in range(n_dof):
-            self.deltaU[idof] = Uvector[idof::n_dof]
+            self.val['deltau'][idof] = Uvector[idof::n_dof]
+            self.val['u_disp'][idof] += Uvector[idof::n_dof]
             self.mesh.coords[idof] += Uvector[idof::n_dof]
