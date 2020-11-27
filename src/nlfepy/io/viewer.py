@@ -7,17 +7,21 @@ class Viewer:
     Viewer interface
     """
 
-    def __init__(self, *, mesh, params: dict = {}) -> None:
-        self.mesh = mesh
-        self.params = params
+    def __init__(self, *, mesh, set_mesh_info=True) -> None:
 
-        if self.mesh.n_dof == 2:
-            self.viewer = Viewer2d()
+        if mesh.n_dof == 2:
+            self.viewer = Viewer2d(
+                mesh=mesh,
+                set_mesh_info=set_mesh_info
+            )
         else:
-            self.viewer = Viewer3d()
+            self.viewer = Viewer3d(
+                mesh=mesh,
+                set_mesh_info=set_mesh_info
+            )
 
-    def set(self, *, value=None) -> None:
-        self.viewer.set(mesh=self.mesh, value=value, params=self.params)
+    def set(self, *, values: dict = {}, params: dict = {}) -> None:
+        self.viewer.set(values=values, params=params)
 
     def show(self, *, show_cbar=True):
         self.viewer.show(show_cbar=show_cbar)

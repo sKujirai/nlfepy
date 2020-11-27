@@ -7,12 +7,28 @@ class ViewerBase(metaclass=ABCMeta):
     Base class of viewer classes
     """
 
-    def __init__(self) -> None:
+    def __init__(self, *, mesh) -> None:
+        """
+        Initialization
 
-        self.fig = plt.figure()
+        Parameters
+        ----------
+        mesh :
+            Mesh class (See mesh.py)
+        """
+
+        self.mesh = mesh
 
     @abstractmethod
-    def set(self):
+    def set_window(self, *, params: dict = {}) -> None:
+        pass
+
+    @abstractmethod
+    def set_bc_info(self) -> None:
+        pass
+
+    @abstractmethod
+    def set(self, *, values: dict = {}, params: dict = {}) -> None:
         pass
 
     def show(self, *, show_cbar=True):

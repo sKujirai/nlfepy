@@ -3,6 +3,7 @@ import sys
 import numpy as np
 import logging
 from logging import getLogger
+# import dmsh
 sys.path.append(os.path.join(os.path.dirname(__file__), '..', 'src'))
 from nlfepy.mesh import Mesh
 from nlfepy.material import get_material_list
@@ -22,6 +23,15 @@ def main(mesh_path):
     mesh = Mesh()
     mesh.read(mesh_path)
 
+    # Prepare mesh using dmsh
+    # geo = dmsh.Rectangle(0., 1., 0., 1.)
+    # coords, connectivity = dmsh.generate(geo, 0.1)
+
+    # # Mesh class
+    # mesh = Mesh()
+    # mesh.set_shape(coords=coords.T, connectivity=connectivity)
+    # mesh.set_bc(constraint='compression', value=0.001)
+
     # Set material
     logger.info('Setting material...')
     mater = get_material_list(['Al'])
@@ -39,11 +49,13 @@ def main(mesh_path):
     viewer_params = {
         'cmap': 'rainbow',
         'lw': 1,
+        'val': 'rand',
     }
-    viewer = Viewer(mesh=mesh, params=viewer_params)
-    val = None
-    # val = np.random.rand(mesh.n_element)
-    viewer.set(value=val)
+    viewer = Viewer(mesh=mesh)
+    viewer.show(show_cbar=False)
+    val = {}
+    val['rand'] = np.random.rand(mesh.n_element)
+    viewer.set(values=val, params=viewer_params)
     # viewer.save('result.png')
     viewer.show()
 
@@ -52,4 +64,5 @@ def main(mesh_path):
 
 if __name__ == '__main__':
     # main('tests/data/mesh.vtu')
+    # main('tests/data/mesh_load.vtu')
     main('tests/data/mesh_3d.vtu')

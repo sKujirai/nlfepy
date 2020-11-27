@@ -26,7 +26,7 @@ def main(mesh_path):
     mesh.read(mesh_path)
 
     # Physical quantities
-    # val = {}
+    val = {}
 
     # Set constitutive
     logger.info('Setting constitutive equation...')
@@ -61,10 +61,8 @@ def main(mesh_path):
         'cmap': 'rainbow',
         'lw': 1,
     }
-    viewer = Viewer(mesh=mesh, params=viewer_params)
-    val = None
-    # val = np.random.rand(mesh.n_element)
-    viewer.set(value=val)
+    viewer = Viewer(mesh=mesh)
+    viewer.set(values=val, params=viewer_params)
     # viewer.save('result.png')
     viewer.show()
 

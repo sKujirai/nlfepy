@@ -131,9 +131,11 @@ class PVW(IntegralEquation):
         penalty = self.config['penalty_coefficient'] * np.max(np.abs(Kmatrix))
         for idx in BC['idx_fix']:
             Kmatrix[idx, idx] += penalty
-        if BC['type'] == 'displacement':
+        if 'idx_disp' in BC:
             for i, idx in enumerate(BC['idx_disp']):
                 Fvector[idx] += penalty * BC['displacement'][i]
+        if 'applied_force' in BC:
+            Fvector += BC['applied_force'].flatten()
 
         # Solve KU=F
         self.logger.info('Solving KU=F')
