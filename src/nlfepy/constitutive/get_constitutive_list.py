@@ -6,7 +6,7 @@ from .crystal_plasticity import CrystalPlasticity
 from ..material import get_material
 
 
-def get_constitutive_list(cnst_dict: dict, nitg: int, val: dict = {}) -> list:
+def get_constitutive_list(cnst_dict: dict, *, nitg: int, val: dict = {}) -> list:
     """
     Get material classes
 

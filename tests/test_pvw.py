@@ -5,11 +5,9 @@ import logging
 from logging import getLogger
 # import dmsh
 sys.path.append(os.path.join(os.path.dirname(__file__), '..', 'src'))
-from nlfepy.mesh import Mesh
-from nlfepy.material import get_material_list
-from nlfepy.constitutive import Variable
+from nlfepy import Mesh, Material, Variable, Viewer
 from nlfepy.interface import PVW
-from nlfepy.io import Viewer, VtuWriter
+from nlfepy.io import VtuWriter
 
 
 def main(mesh_path):
@@ -35,7 +33,7 @@ def main(mesh_path):
 
     # Set material
     logger.info('Setting material...')
-    mater = get_material_list(['Al'])
+    mater = Material('Al')
 
     # Physical quantities
     vals = Variable()

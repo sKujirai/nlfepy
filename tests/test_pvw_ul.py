@@ -4,11 +4,8 @@ import numpy as np
 import logging
 from logging import getLogger
 sys.path.append(os.path.join(os.path.dirname(__file__), '..', 'src'))
-from nlfepy.mesh import Mesh
-from nlfepy.constitutive import get_constitutive_list
-from nlfepy.constitutive import Variable
+from nlfepy import Mesh, Variable, Constitutive, Viewer
 from nlfepy.interface import PVW_UL
-from nlfepy.io import Viewer
 
 
 def main(mesh_path):
@@ -37,7 +34,11 @@ def main(mesh_path):
         # 'Al': ['j2flow'],  # , cnst_params],
         # 'Al': ['crystal_plasticity'],  # , cnst_params],
     }
-    constitutive = get_constitutive_list(cnst_dict, mesh.n_tintgp, val=vals['itg'])
+    constitutive = Constitutive(
+        cnst_dict,
+        nitg=mesh.n_tintgp,
+        val=vals['itg']
+    )
 
     # Solve the governing equation (Principle of virtual work)
     logger.info('Solving the governing equation...')
