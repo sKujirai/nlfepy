@@ -11,7 +11,7 @@ class BCC(Metal):
 
         super().__init__()
 
-        self.n_system = 48
+        self._n_system = 48
 
         self.set_crystal()
 
@@ -20,8 +20,8 @@ class BCC(Metal):
         Set basis vector s & m
         """
 
-        self.base_s = np.zeros((3, self.n_system))
-        self.base_m = np.zeros((3, self.n_system))
+        self._base_s = np.zeros((3, self._n_system))
+        self._base_m = np.zeros((3, self._n_system))
 
     def set_shear_modulus(self) -> None:
         pass

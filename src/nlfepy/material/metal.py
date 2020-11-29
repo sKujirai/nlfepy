@@ -11,11 +11,10 @@ class Metal(MaterialBase):
 
         super().__init__()
 
-        self.n_system = None
-        self.base_s = None
-        self.base_m = None
-        self.shear_modulus = None
-        self.burgers_vec = None
+        self._n_system = None
+        self._base_s = None
+        self._base_m = None
+        self._burgers_vec = None
 
     @abstractmethod
     def set_crystal(self) -> None:

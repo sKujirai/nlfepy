@@ -22,18 +22,18 @@ class CrystalPlasticity(ConstitutiveBase):
         Wspin = 0.5*(DefGrad - DefGrad.T)
 
         # Cij -> Cijkl
-        Cijkl = self.get_ctensor(Cij=self.val['cmatrix'][itg])
+        Cijkl = self.get_ctensor(Cij=self._val['cmatrix'][itg])
 
         # Jaumann rate of Cauchy stress *dt
-        dTjaumann = np.tensordot(Cijkl, DefRate) - self.val['rtensor'][itg]
+        dTjaumann = np.tensordot(Cijkl, DefRate) - self._val['rtensor'][itg]
 
         # Update Cauchy stress
-        self.val['stress'][itg] += dTjaumann + np.dot(Wspin, self.val['stress'][itg]) - np.dot(self.val['stress'][itg], Wspin)
+        self._val['stress'][itg] += dTjaumann + np.dot(Wspin, self._val['stress'][itg]) - np.dot(self._val['stress'][itg], Wspin)
 
         # Now writing.....
         raise NotImplementedError()
 
         # Cijkl -> Cij
-        self.val['cmatrix'][itg] = self.get_cmatrix(Cijkl=Cijkl)
+        self._val['cmatrix'][itg] = self.get_cmatrix(Cijkl=Cijkl)
 
-        return self.val['cmatrix'][itg], self.val['rtensor'][itg], self.val['stress'][itg]
+        return self._val['cmatrix'][itg], self._val['rtensor'][itg], self._val['stress'][itg]

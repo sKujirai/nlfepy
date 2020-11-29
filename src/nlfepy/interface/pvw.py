@@ -25,23 +25,23 @@ class PVW(IntegralEquation):
 
         super().__init__(mesh=mesh, val=val, params=params)
 
-        self.mater = mater
+        self._mater = mater
 
-        if 'u_disp' not in self.val:
-            self.val['u_disp'] = np.zeros((self.mesh.n_dof, self.mesh.n_point))
+        if 'u_disp' not in self._val:
+            self._val['u_disp'] = np.zeros((self._mesh.n_dof, self._mesh.n_point))
 
     def solve(self) -> None:
         """
         Solve the governing equation of the deformation field.
         """
 
-        n_dof = self.mesh.n_dof
-        n_dfdof = self.mesh.n_dfdof
-        n_point = self.mesh.n_point
-        n_element = self.mesh.n_element
-        connectivity = self.mesh.connectivity
+        n_dof = self._mesh.n_dof
+        n_dfdof = self._mesh.n_dfdof
+        n_point = self._mesh.n_point
+        n_element = self._mesh.n_element
+        connectivity = self._mesh.connectivity
 
-        BC = self.mesh.bc
+        BC = self._mesh.bc
         Traction = BC['traction'] if 'traction' in BC else None
         BodyForce = BC['body_force'] if 'body_force' in BC else None
 
@@ -49,19 +49,19 @@ class PVW(IntegralEquation):
         Fvector = np.zeros(n_dof * n_point)
 
         # Make global stiffness matrix & global force vector
-        self.logger.info('Making stiffness matrix')
+        self._logger.info('Making stiffness matrix')
         for ielm in range(n_element):
 
-            mater_id = self.mesh.material_numbers[ielm]
-            n_node_v = self.mesh.n_node('vol', elm=ielm)
-            n_intgp_v = self.mesh.n_intgp('vol', elm=ielm)
+            mater_id = self._mesh.material_numbers[ielm]
+            n_node_v = self._mesh.n_node('vol', elm=ielm)
+            n_intgp_v = self._mesh.n_intgp('vol', elm=ielm)
 
             # Make element stiffness matrix
             ke = np.zeros((n_dof * n_node_v, n_dof * n_node_v))
             fe = np.zeros(n_dof * n_node_v)
 
             for itg in range(n_intgp_v):
-                Bmatrix, wdetJv = self.mesh.get_Bmatrix('vol', elm=ielm, itg=itg)
+                Bmatrix, wdetJv = self._mesh.get_Bmatrix('vol', elm=ielm, itg=itg)
                 Bd = np.zeros((n_dfdof, n_dof * n_node_v))
                 Ce = np.zeros((n_dfdof, n_dfdof))
                 if n_dof == 2:
@@ -69,7 +69,7 @@ class PVW(IntegralEquation):
                     Bd[2, ::n_dof] = Bmatrix[1]
                     Bd[1, 1::n_dof] = Bmatrix[1]
                     Bd[2, 1::n_dof] = Bmatrix[0]
-                    Ce = self.mater[mater_id].Cmatrix[[0, 1, 3], :][:, [0, 1, 3]]
+                    Ce = self._mater[mater_id].Cmatrix[[0, 1, 3], :][:, [0, 1, 3]]
                 else:
                     Bd[0, ::n_dof] = Bmatrix[0]
                     Bd[3, ::n_dof] = Bmatrix[1]
@@ -80,13 +80,13 @@ class PVW(IntegralEquation):
                     Bd[2, 2::n_dof] = Bmatrix[2]
                     Bd[4, 2::n_dof] = Bmatrix[1]
                     Bd[5, 2::n_dof] = Bmatrix[0]
-                    Ce = self.mater[mater_id].Cmatrix
+                    Ce = self._mater[mater_id].Cmatrix
                 ke += np.dot(Bd.T, np.dot(Ce, Bd)) * wdetJv
 
                 # Body force
                 if BodyForce is not None:
                     bf = BodyForce[np.array(connectivity[ielm])][:, :n_dof].flatten()
-                    Nbmatrix = self.mesh.get_Shpfnc('vol', elm=ielm)
+                    Nbmatrix = self._mesh.get_shpfnc('vol', elm=ielm)
                     Nb = np.zeros((n_dof, n_dof * n_node_v))
                     if n_dof == 2:
                         Nb[0, ::n_dof] = Nbmatrix[:, itg]
@@ -100,12 +100,12 @@ class PVW(IntegralEquation):
 
             # Apply traction
             if Traction is not None:
-                for idx_nd in self.mesh.idx_face('vol', elm=ielm):
+                for idx_nd in self._mesh.idx_face('vol', elm=ielm):
                     trc = Traction[np.array(connectivity[ielm])[idx_nd]][:, :n_dof].flatten()
-                    n_node_a = self.mesh.n_node('area', elm=ielm)
-                    n_intgp_a = self.mesh.n_intgp('area', elm=ielm)
+                    n_node_a = self._mesh.n_node('area', elm=ielm)
+                    n_intgp_a = self._mesh.n_intgp('area', elm=ielm)
                     for jtg in range(n_intgp_a):
-                        Namatrix, wdetJa = self.mesh.get_Nmatrix('area', elm=ielm, itg=jtg, nds=idx_nd)
+                        Namatrix, wdetJa = self._mesh.get_Nmatrix('area', elm=ielm, itg=jtg, nds=idx_nd)
                         Na = np.zeros((n_dof, n_dof * n_node_a))
                         if n_dof == 2:
                             Na[0, ::n_dof] = Namatrix[:, jtg]
@@ -130,8 +130,8 @@ class PVW(IntegralEquation):
                     Fvector[n_dof * connectivity[ielm][inod] + idof] += fe[n_dof * inod + idof]
 
         # Handle boundary condition
-        self.logger.info('Handling B.C.')
-        penalty = self.config['penalty_coefficient'] * np.max(np.abs(Kmatrix))
+        self._logger.info('Handling B.C.')
+        penalty = self._config['penalty_coefficient'] * np.max(np.abs(Kmatrix))
         for idx in BC['idx_fix']:
             Kmatrix[idx, idx] += penalty
         if 'idx_disp' in BC:
@@ -141,12 +141,12 @@ class PVW(IntegralEquation):
             Fvector += BC['applied_force'][:, :n_dof].flatten()
 
         # Solve KU=F
-        self.logger.info('Solving KU=F')
+        self._logger.info('Solving KU=F')
         Kmatrix = csr_matrix(Kmatrix)
         Uvector = spsolve(Kmatrix, Fvector, use_umfpack=True)
 
         # Update coordinates
-        self.logger.info('Updating global coordinates')
+        self._logger.info('Updating global coordinates')
         for idof in range(n_dof):
-            self.val['u_disp'][idof] = Uvector[idof::n_dof]
-            self.mesh.coords[idof] += Uvector[idof::n_dof]
+            self._val['u_disp'][idof] = Uvector[idof::n_dof]
+            self._mesh.coords[idof] += Uvector[idof::n_dof]

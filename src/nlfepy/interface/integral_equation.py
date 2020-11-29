@@ -10,23 +10,23 @@ class IntegralEquation(metaclass=ABCMeta):
 
     def __init__(self, *, mesh, val=None, params: dict = {}) -> None:
 
-        self.mesh = mesh
-        self.val = val
+        self._mesh = mesh
+        self._val = val
 
-        self.config = {}
-        self.config['penalty_coefficient'] = 1.e8
-        self.config['logging'] = False
+        self._config = {}
+        self._config['penalty_coefficient'] = 1.e8
+        self._config['logging'] = False
 
         for key, value in params.items():
-            self.config[key] = value
+            self._config[key] = value
 
-        self.logger = getLogger('ItgEqn')
+        self._logger = getLogger('ItgEqn')
         ch = logging.StreamHandler()
-        if self.config['logging']:
-            self.logger.setLevel(logging.DEBUG)
+        if self._config['logging']:
+            self._logger.setLevel(logging.DEBUG)
         else:
-            self.logger.setLevel(logging.WARNING)
-        self.logger.addHandler(ch)
+            self._logger.setLevel(logging.WARNING)
+        self._logger.addHandler(ch)
 
     @abstractmethod
     def solve(self) -> None:

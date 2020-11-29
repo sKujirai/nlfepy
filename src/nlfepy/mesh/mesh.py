@@ -40,19 +40,72 @@ class Mesh:
     """
 
     def __init__(self) -> None:
-        self.n_dof = None
-        self.n_point = None
-        self.n_element = None
-        self.n_dfdof = None
-        self.n_tintgp = None
-        self.coords = None
-        self.connectivity = None
-        self.element_name = None
-        self.material_numbers = None
-        self.grain_numbers = None
-        self.crystal_orientation = None
-        self.shapef = None
-        self.bc = None
+        self._n_dof = None
+        self._n_point = None
+        self._n_element = None
+        self._n_dfdof = None
+        self._n_tintgp = None
+        self._coords = None
+        self._connectivity = None
+        self._element_name = None
+        self._material_numbers = None
+        self._grain_numbers = None
+        self._crystal_orientation = None
+        self._shapef = None
+        self._bc = None
+        self._mpc = None
+
+    @property
+    def n_dof(self) -> int:
+        return self._n_dof
+
+    @property
+    def n_point(self) -> int:
+        return self._n_point
+
+    @property
+    def n_element(self) -> int:
+        return self._n_element
+
+    @property
+    def n_dfdof(self) -> int:
+        return self._n_dfdof
+
+    @property
+    def n_tintgp(self) -> int:
+        return self._n_tintgp
+
+    @property
+    def coords(self) -> np.ndarray:
+        return self._coords
+
+    @property
+    def connectivity(self) -> list:
+        return self._connectivity
+
+    @property
+    def element_name(self) -> list:
+        return self._element_name
+
+    @property
+    def material_numbers(self):
+        return self._material_numbers
+
+    @property
+    def grain_numbers(self):
+        return self._grain_numbers
+
+    @property
+    def crystal_orientation(self) -> np.ndarray:
+        return self._crystal_orientation
+
+    @property
+    def bc(self) -> dict:
+        return self._bc
+
+    @property
+    def mpc(self) -> dict:
+        return self._mpc
 
     def read(self, mesh_path: str) -> None:
         """
@@ -65,9 +118,9 @@ class Mesh:
         """
 
         reader = VtuReader(mesh_path)
-        self.set_mesh_dict(reader.mesh)
-        self.set_mesh_info()
-        self.set_bc_dict(bc=reader.bc, mpc=reader.mpc)
+        self._set_mesh_dict(reader.mesh)
+        self._set_mesh_info()
+        self._set_bc_dict(bc=reader.bc, mpc=reader.mpc)
 
     def set_shape(self, *, coords: np.ndarray, connectivity) -> None:
         """
@@ -81,23 +134,23 @@ class Mesh:
             Connectivity of elements [n_element][n_node] (2D array)
         """
 
-        self.coords = coords
-        self.n_dof, self.n_point = coords.shape
-        if self.n_dof == 3:
+        self._coords = coords
+        self._n_dof, self._n_point = coords.shape
+        if self._n_dof == 3:
             if np.max(np.abs(coords[2])) < 1.e-30:
-                self.n_dof = 2
-        self.n_dfdof = 3 if self.n_dof == 2 else 6
+                self._n_dof = 2
+        self._n_dfdof = 3 if self._n_dof == 2 else 6
         if type(connectivity) is np.ndarray:
             connectivity = connectivity.tolist()
-        self.connectivity = connectivity
-        self.n_element = len(connectivity)
-        self.material_numbers = np.zeros(self.n_element, dtype='int')
-        self.grain_numbers = np.zeros(self.n_element, dtype='int')
-        self.crystal_orientation = np.zeros((self.n_element, 3))
+        self._connectivity = connectivity
+        self._n_element = len(connectivity)
+        self._material_numbers = np.zeros(self._n_element, dtype='int')
+        self._grain_numbers = np.zeros(self._n_element, dtype='int')
+        self._crystal_orientation = np.zeros((self._n_element, 3))
 
-        self.set_mesh_info()
+        self._set_mesh_info()
 
-    def set_mesh_dict(self, data: dict) -> None:
+    def _set_mesh_dict(self, data: dict) -> None:
         """
         Set mesh info
 
@@ -107,48 +160,44 @@ class Mesh:
             Mesh info (keys: 'n_dof', 'n_point', 'n_element', 'n_node', 'coords', 'connectivity')
         """
 
-        self.n_dof = data['n_dof']
-        self.n_dfdof = 3 if self.n_dof == 2 else 6
-        self.n_point = data['n_point']
-        self.n_element = data['n_element']
-        self.coords = data['coords'][:self.n_dof]
-        self.connectivity = data['connectivity']
+        self._n_dof = data['n_dof']
+        self._n_dfdof = 3 if self._n_dof == 2 else 6
+        self._n_point = data['n_point']
+        self._n_element = data['n_element']
+        self._coords = data['coords'][:self._n_dof]
+        self._connectivity = data['connectivity']
         if 'material_numbers' in data:
-            self.material_numbers = data['material_numbers']
+            self._material_numbers = data['material_numbers']
         else:
-            self.material_numbers = np.zeros(self.n_element)
+            self._material_numbers = np.zeros(self._n_element)
         if 'grain_numbers' in data:
-            self.grain_numbers = data['grain_numbers']
+            self._grain_numbers = data['grain_numbers']
         else:
-            self.material_numbers = np.zeros(self.n_element)
+            self._material_numbers = np.zeros(self._n_element)
         if 'crystal_orientation' in data:
-            self.crystal_orientation = data['crystal_orientation']
+            self._crystal_orientation = data['crystal_orientation']
         else:
-            self.crystal_orientation = np.zeros((3, self.n_element))
+            self._crystal_orientation = np.zeros((3, self._n_element))
 
-    def set_mesh_info(self) -> None:
+    def _set_mesh_info(self) -> None:
 
-        # self.n_node = []
-        # self.m_node = 0
-        self.shapef = {}
-        self.element_name = []
+        self._shapef = {}
+        self._element_name = []
 
-        for lnod in self.connectivity:
+        for lnod in self._connectivity:
             n_nod = len(lnod)
-            # self.n_node.append(n_nod)
-            # self.m_node = max(self.m_node, n_nod)
-            self.element_name.append(get_element_name(n_dof=self.n_dof, n_node=n_nod))
+            self._element_name.append(get_element_name(n_dof=self._n_dof, n_node=n_nod))
 
-        for elm_name in set(self.element_name):
-            self.shapef[elm_name] = get_shape_function(elm_name)
+        for elm_name in set(self._element_name):
+            self._shapef[elm_name] = get_shape_function(elm_name)
 
-        self.n_tintgp = 0
-        for ielm in range(self.n_element):
-            self.n_tintgp += self.shapef[self.element_name[ielm]]['vol'].n_intgp
+        self._n_tintgp = 0
+        for ielm in range(self._n_element):
+            self._n_tintgp += self._shapef[self._element_name[ielm]]['vol'].n_intgp
 
-    def set_bc_dict(self, *, bc: dict, mpc: dict) -> None:
-        self.bc = bc
-        self.mpc = mpc
+    def _set_bc_dict(self, *, bc: dict, mpc: dict) -> None:
+        self._bc = bc
+        self._mpc = mpc
 
     def set_bc(self, *, constraint='compression', model='full', value=None) -> None:
         """
@@ -166,55 +215,55 @@ class Mesh:
 
         logger = getLogger('bc')
 
-        self.bc = {}
-        self.bc['type'] = 'BC'
+        self._bc = {}
+        self._bc['type'] = 'BC'
         # if constraint in ['compression', 'tensile', 'shear']:
-        #     self.bc['type'] = 'displacement'
+        #     self._bc['type'] = 'displacement'
         # elif constraint in ['load']:
-        #     self.bc['type'] = 'load'
+        #     self._bc['type'] = 'load'
         # else:
         #     logger.error('Invalid constraint type: {}'.format(constraint))
         #     sys.exit(1)
 
-        self.bc['displacement'] = []
-        self.bc['traction'] = np.zeros((self.n_point, 3))
+        self._bc['displacement'] = []
+        self._bc['traction'] = np.zeros((self._n_point, 3))
 
-        cod_min = np.min(self.coords, axis=1)
-        cod_max = np.max(self.coords, axis=1)
+        cod_min = np.min(self._coords, axis=1)
+        cod_max = np.max(self._coords, axis=1)
         specimen_size = cod_max - cod_min
         eps = min(specimen_size)*1.e-10
 
         # bottom
-        idx_bottom = np.where(self.coords[1] < cod_min[1] + eps)[0]
-        idx_top = np.where(self.coords[1] > cod_max[1] - eps)[0]
-        idx_left = np.where(self.coords[0] < cod_min[0] + eps)[0]
+        idx_bottom = np.where(self._coords[1] < cod_min[1] + eps)[0]
+        idx_top = np.where(self._coords[1] > cod_max[1] - eps)[0]
+        idx_left = np.where(self._coords[0] < cod_min[0] + eps)[0]
         idx_fix = np.intersect1d(idx_bottom, idx_left)
-        if self.n_dof == 3:
-            idx_front = np.where(self.coords[2] < cod_min[2] + eps)[0]
+        if self._n_dof == 3:
+            idx_front = np.where(self._coords[2] < cod_min[2] + eps)[0]
             idx_fix = np.intersect1d(idx_fix, idx_front)
 
-        idx_tdof_bottom = self.n_dof * idx_bottom + 1
-        idx_tdof_top = self.n_dof * idx_top + 1
-        idx_tdof_left = self.n_dof * idx_left
-        idx_tdof_fix = self.n_dof * idx_fix
+        idx_tdof_bottom = self._n_dof * idx_bottom + 1
+        idx_tdof_top = self._n_dof * idx_top + 1
+        idx_tdof_left = self._n_dof * idx_left
+        idx_tdof_fix = self._n_dof * idx_fix
 
         if constraint in ['compression', 'tensile', 'load']:
-            self.bc['idx_disp'] = np.sort(idx_tdof_top)
-            self.bc['idx_fix'] = np.concatenate([idx_tdof_bottom, idx_tdof_top])
+            self._bc['idx_disp'] = np.sort(idx_tdof_top)
+            self._bc['idx_fix'] = np.concatenate([idx_tdof_bottom, idx_tdof_top])
             if model == 'quarter':
-                self.bc['idx_fix'] = np.sort(np.concatenate([self.bc['idx_fix'], idx_tdof_left]))
+                self._bc['idx_fix'] = np.sort(np.concatenate([self._bc['idx_fix'], idx_tdof_left]))
             else:
-                self.bc['idx_fix'] = np.sort(np.concatenate([self.bc['idx_fix'], idx_tdof_fix]))
-            if self.n_dof == 3:
-                idx_tdof_fix_3d = self.n_dof * idx_fix + 2
-                self.bc['idx_fix'] = np.sort(np.concatenate([self.bc['idx_fix'], idx_tdof_fix_3d]))
-            self.bc['n_fix'] = self.bc['idx_fix'].shape[0]
-            self.bc['n_disp'] = self.bc['idx_disp'].shape[0]
+                self._bc['idx_fix'] = np.sort(np.concatenate([self._bc['idx_fix'], idx_tdof_fix]))
+            if self._n_dof == 3:
+                idx_tdof_fix_3d = self._n_dof * idx_fix + 2
+                self._bc['idx_fix'] = np.sort(np.concatenate([self._bc['idx_fix'], idx_tdof_fix_3d]))
+            self._bc['n_fix'] = self._bc['idx_fix'].shape[0]
+            self._bc['n_disp'] = self._bc['idx_disp'].shape[0]
             if constraint in ['compression', 'tensile']:
                 signv = 1. if constraint == 'tensile' else -1.
-                self.bc['displacement'] = np.full(self.bc['n_disp'], signv * abs(value))
+                self._bc['displacement'] = np.full(self._bc['n_disp'], signv * abs(value))
             elif constraint in ['load']:
-                self.bc['traction'][idx_top, 3] = value
+                self._bc['traction'][idx_top, 3] = value
             else:
                 logger.error('Invalid constraint type: {}'.format(constraint))
                 sys.exit(1)
@@ -223,11 +272,11 @@ class Mesh:
             sys.exit(1)
 
         # MPC
-        self.mpc = {}
-        self.mpc['nmpcpt'] = 0
-        self.mpc['slave'] = self.mpc['master'] = self.mpc['ratio'] = []
+        self._mpc = {}
+        self._mpc['nmpcpt'] = 0
+        self._mpc['slave'] = self._mpc['master'] = self._mpc['ratio'] = []
 
-    def get_Shpfnc(self, etype: str, *, elm: int) -> np.ndarray:
+    def get_shpfnc(self, etype: str, *, elm: int) -> np.ndarray:
         """
         Get shape function (N-matrix)
 
@@ -244,7 +293,7 @@ class Mesh:
             N-matrix
         """
 
-        return self.shapef[self.element_name[elm]][etype].Shpfnc
+        return self._shapef[self._element_name[elm]][etype].Shpfnc
 
     def get_Nmatrix(self, etype: str, *, elm: int, itg: int, nds: list = None) -> Tuple[np.ndarray, float]:
         """
@@ -267,11 +316,11 @@ class Mesh:
             N-matrix and weigh * determinant of Jacobi matrix
         """
         if etype == 'area':
-            cod = self.coords[:, np.array(self.connectivity[elm])[nds]][:self.n_dof]
+            cod = self._coords[:, np.array(self._connectivity[elm])[nds]][:self._n_dof]
         else:
-            cod = self.coords[:, self.connectivity[elm]][:self.n_dof]
+            cod = self._coords[:, self._connectivity[elm]][:self._n_dof]
 
-        return self.shapef[self.element_name[elm]][etype].get_Nmatrix(cod, itg)
+        return self._shapef[self._element_name[elm]][etype].get_Nmatrix(cod, itg)
 
     def get_Bmatrix(self, etype: str, *, elm: int, itg: int, nds: list = None) -> Tuple[np.ndarray, float]:
         """
@@ -294,11 +343,11 @@ class Mesh:
             B-matrix and weigh * determinant of Jacobi matrix
         """
         if etype == 'area':
-            cod = self.coords[:, np.array(self.connectivity[elm])[nds]][:self.n_dof]
+            cod = self._coords[:, np.array(self._connectivity[elm])[nds]][:self._n_dof]
         else:
-            cod = self.coords[:, self.connectivity[elm]][:self.n_dof]
+            cod = self._coords[:, self._connectivity[elm]][:self._n_dof]
 
-        return self.shapef[self.element_name[elm]][etype].get_Bmatrix(cod, itg)
+        return self._shapef[self._element_name[elm]][etype].get_Bmatrix(cod, itg)
 
     def n_intgp(self, etype: str, *, elm) -> int:
         """
@@ -317,7 +366,7 @@ class Mesh:
             Number of integral point
         """
 
-        return self.shapef[self.element_name[elm]][etype].n_intgp
+        return self._shapef[self._element_name[elm]][etype].n_intgp
 
     def n_node(self, etype: str, *, elm) -> int:
         """
@@ -336,7 +385,7 @@ class Mesh:
             Number of nodes
         """
 
-        return self.shapef[self.element_name[elm]][etype].n_node
+        return self._shapef[self._element_name[elm]][etype].n_node
 
     def idx_face(self, etype: str, *, elm) -> list:
         """
@@ -355,4 +404,4 @@ class Mesh:
             Connectivity between face and nodes [face][node]
         """
 
-        return self.shapef[self.element_name[elm]][etype].idx_face
+        return self._shapef[self._element_name[elm]][etype].idx_face

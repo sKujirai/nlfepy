@@ -34,17 +34,53 @@ class ShapeFunction(metaclass=ABCMeta):
     """
 
     def __init__(self) -> None:
-        self.shape = None
-        self.name = None
-        self.n_dof = None
-        self.n_node = None
-        self.n_intgp = None
-        self.n_face = None
-        self.n_fnode = None
-        self.weight = None
-        self.Shpfnc = None
-        self.Bmatrix_nat = None
-        self.idx_face = None
+        self._shape = None
+        self._name = None
+        self._n_dof = None
+        self._n_node = None
+        self._n_intgp = None
+        self._n_face = None
+        self._n_fnode = None
+        self._weight = None
+        self._Shpfnc = None
+        self._Bmatrix_nat = None
+        self._idx_face = None
+
+    @property
+    def shape(self) -> str:
+        return self._shape
+
+    @property
+    def name(self) -> str:
+        return self._name
+
+    @property
+    def n_dof(self) -> int:
+        return self._n_dof
+
+    @property
+    def n_node(self) -> int:
+        return self._n_node
+
+    @property
+    def n_intgp(self) -> int:
+        return self._n_intgp
+
+    @property
+    def n_face(self) -> int:
+        return self._n_face
+
+    @property
+    def n_fnode(self) -> int:
+        return self._n_fnode
+
+    @property
+    def Shpfnc(self) -> np.ndarray:
+        return self._Shpfnc
+
+    @property
+    def idx_face(self) -> np.ndarray:
+        return self._idx_face
 
     def get_Bmatrix(self, cod: np.ndarray, iint: int) -> Tuple[np.ndarray, float]:
         """
@@ -63,11 +99,11 @@ class ShapeFunction(metaclass=ABCMeta):
             B-matrix and weigh * determinant of Jacobi matrix
         """
 
-        JacobT = np.dot(self.Bmatrix_nat[:, :, iint], cod.T)
+        JacobT = np.dot(self._Bmatrix_nat[:, :, iint], cod.T)
         detJ = np.sqrt(np.linalg.det(np.dot(JacobT, JacobT.T)))
         Jinv = np.linalg.inv(JacobT)
-        Bmatrix_phys = np.dot(Jinv, self.Bmatrix_nat[:, :, iint])
-        wdetJ = self.weight[iint]*detJ
+        Bmatrix_phys = np.dot(Jinv, self._Bmatrix_nat[:, :, iint])
+        wdetJ = self._weight[iint]*detJ
         return Bmatrix_phys, wdetJ
 
     def get_Nmatrix(self, cod: np.ndarray, iint: int) -> Tuple[np.ndarray, float]:
@@ -87,7 +123,7 @@ class ShapeFunction(metaclass=ABCMeta):
             N-matrix and weigh * determinant of Jacobi matrix
         """
 
-        return self.Shpfnc, self.get_wdetJ(cod, iint)
+        return self._Shpfnc, self.get_wdetJ(cod, iint)
 
     def get_wdetJ(self, cod: np.ndarray, iint: int) -> float:
         """
@@ -106,6 +142,6 @@ class ShapeFunction(metaclass=ABCMeta):
             Weigh * determinant of Jacobi matrix
         """
 
-        Jacob = np.dot(cod, self.Bmatrix_nat[:, :, iint].T)
+        Jacob = np.dot(cod, self._Bmatrix_nat[:, :, iint].T)
         detJ = np.sqrt(np.linalg.det(np.dot(Jacob.T, Jacob)))
-        return self.weight[iint]*detJ
+        return self._weight[iint]*detJ

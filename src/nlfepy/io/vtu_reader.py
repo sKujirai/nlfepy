@@ -14,10 +14,22 @@ class VtuReader:
 
     def __init__(self, mesh_path=None) -> None:
 
-        self.logger = getLogger('LogReader')
+        self._logger = getLogger('LogReader')
 
         if mesh_path is not None:
             self.read(mesh_path)
+
+    @property
+    def mesh(self) -> dict:
+        return self._mesh
+
+    @property
+    def bc(self) -> dict:
+        return self._bc
+
+    @property
+    def mpc(self) -> dict:
+        return self._mpc
 
     def read(self, mesh_path: str) -> None:
         """
@@ -30,13 +42,13 @@ class VtuReader:
         """
 
         if not os.path.isfile(mesh_path):
-            self.logger.error('Cannot find mesh file: {}'.format(mesh_path))
+            self._logger.error('Cannot find mesh file: {}'.format(mesh_path))
             sys.exit(1)
 
         try:
             tree = ET.parse(mesh_path)
         except Exception:
-            self.logger.error('Cannot parse mesh file: {}'.format(mesh_path))
+            self._logger.error('Cannot parse mesh file: {}'.format(mesh_path))
             sys.exit(1)
 
         root = tree.getroot()
@@ -44,15 +56,15 @@ class VtuReader:
         piece = unstructured_grid.find(r'{VTK}Piece')
 
         # Mesh info.
-        self.mesh = {}
-        self.mesh['n_element'] = int(piece.attrib[r'NumberOfCells'])
-        self.mesh['n_point'] = int(piece.attrib[r'NumberOfPoints'])
-        self.mesh['coords'] = self.read_coordinates(piece=piece)
-        self.mesh['connectivity'], self.mesh['n_node'], self.mesh['m_node'] = self.read_connectivity(piece=piece)
-        if np.max(np.abs(self.mesh['coords'][2])) > 1.e-30:
-            self.mesh['n_dof'] = 3
+        self._mesh = {}
+        self._mesh['n_element'] = int(piece.attrib[r'NumberOfCells'])
+        self._mesh['n_point'] = int(piece.attrib[r'NumberOfPoints'])
+        self._mesh['coords'] = self._read_coordinates(piece=piece)
+        self._mesh['connectivity'], self._mesh['n_node'], self._mesh['m_node'] = self._read_connectivity(piece=piece)
+        if np.max(np.abs(self._mesh['coords'][2])) > 1.e-30:
+            self._mesh['n_dof'] = 3
         else:
-            self.mesh['n_dof'] = 2
+            self._mesh['n_dof'] = 2
 
         # Point data
         point_data = piece.find(r'{VTK}PointData')
@@ -63,23 +75,23 @@ class VtuReader:
         cell_array = cell_data.findall(r'{VTK}DataArray')
 
         # Boundary condition
-        self.bc_table = self.get_value(pdata_array, r'Boundary Condition').astype(np.int)
-        self.prescribed_displacement = self.get_value(pdata_array, r'Prescribed Displacement').astype(np.float)
-        self.prescribed_traction = self.get_value(pdata_array, r'Prescribed Traction').astype(np.float)
-        self.applied_force = self.get_value(pdata_array, r'Applied Force').astype(np.float)
-        self.set_boundary_condition()
+        self._bc_table = self._get_value(pdata_array, r'Boundary Condition').astype(np.int)
+        self._prescribed_displacement = self._get_value(pdata_array, r'Prescribed Displacement').astype(np.float)
+        self._prescribed_traction = self._get_value(pdata_array, r'Prescribed Traction').astype(np.float)
+        self._applied_force = self._get_value(pdata_array, r'Applied Force').astype(np.float)
+        self._set_boundary_condition()
 
         # Multi point constraint
-        self.mpc_table = self.get_value(pdata_array, r'Multi-Point Constraints').astype(np.int)
-        self.mpc_ratio = self.get_value(pdata_array, r'MPC Ratio').astype(np.float)
-        self.set_multi_point_constraint()
+        self._mpc_table = self._get_value(pdata_array, r'Multi-Point Constraints').astype(np.int)
+        self._mpc_ratio = self._get_value(pdata_array, r'MPC Ratio').astype(np.float)
+        self._set_multi_point_constraint()
 
         # Sub-structure
-        self.mesh['grain_numbers'] = self.get_value(cell_array, r'Cryst')[:, 0].astype(np.int)
-        self.mesh['material_numbers'] = self.get_value(cell_array, r'Mater')[:, 0].astype(np.int)
-        self.mesh['crystal_orientation'] = self.get_value(cell_array, r'Crystal Orientation').astype(np.float)
+        self._mesh['grain_numbers'] = self._get_value(cell_array, r'Cryst')[:, 0].astype(np.int)
+        self._mesh['material_numbers'] = self._get_value(cell_array, r'Mater')[:, 0].astype(np.int)
+        self._mesh['crystal_orientation'] = self._get_value(cell_array, r'Crystal Orientation').astype(np.float)
 
-    def read_coordinates(self, *, piece):
+    def _read_coordinates(self, *, piece):
         """
         Read coordinate of mesh file
         """
@@ -102,7 +114,7 @@ class VtuReader:
 
         return coords
 
-    def read_connectivity(self, *, piece):
+    def _read_connectivity(self, *, piece):
         """
         Read and set connectivity between element and nodes
         """
@@ -129,7 +141,7 @@ class VtuReader:
 
         return lnodes, n_node, m_node
 
-    def get_value(self, darray, tag):
+    def _get_value(self, darray, tag):
 
         vals = []
         for d in darray:
@@ -149,58 +161,58 @@ class VtuReader:
 
         return vals
 
-    def set_boundary_condition(self):
+    def _set_boundary_condition(self):
         """
         Set boundary conditions (Fix point, prescribed displacement, ...)
         """
 
         FIX, DISPLACEMENT, LOAD, FORCE = 1, -1, -2, -3
 
-        self.bc = {}
-        self.bc['n_fix'] = np.count_nonzero(self.bc_table == FIX) + np.count_nonzero(self.bc_table == DISPLACEMENT)
+        self._bc = {}
+        self._bc['n_fix'] = np.count_nonzero(self._bc_table == FIX) + np.count_nonzero(self._bc_table == DISPLACEMENT)
 
-        ipnt, idof = np.where(self.bc_table == FIX)
-        jpnt, jdof = np.where(self.bc_table == DISPLACEMENT)
-        idx_i = self.mesh['n_dof']*ipnt + idof
-        idx_j = self.mesh['n_dof']*jpnt + jdof
-        self.bc['idx_fix'] = np.concatenate([idx_i, idx_j])
+        ipnt, idof = np.where(self._bc_table == FIX)
+        jpnt, jdof = np.where(self._bc_table == DISPLACEMENT)
+        idx_i = self._mesh['n_dof']*ipnt + idof
+        idx_j = self._mesh['n_dof']*jpnt + jdof
+        self._bc['idx_fix'] = np.concatenate([idx_i, idx_j])
 
-        n_displacement = np.count_nonzero(self.bc_table == DISPLACEMENT)
-        n_load = np.count_nonzero(self.bc_table == LOAD)
-        n_force = np.count_nonzero(self.bc_table == FORCE)
+        n_displacement = np.count_nonzero(self._bc_table == DISPLACEMENT)
+        n_load = np.count_nonzero(self._bc_table == LOAD)
+        n_force = np.count_nonzero(self._bc_table == FORCE)
 
         if n_displacement == 0 and n_load == 0 and n_force == 0:
-            self.bc['type'] = 'MPC'
+            self._bc['type'] = 'MPC'
         else:
-            self.bc['type'] = 'BC'
+            self._bc['type'] = 'BC'
 
-        self.bc['n_disp'] = n_displacement
-        if self.bc['n_disp'] > 0:
-            idx_pnt, self.bc['direction'] = np.where(self.bc_table == DISPLACEMENT)
-            self.bc['idx_disp'] = self.mesh['n_dof']*idx_pnt + self.bc['direction']
-            self.bc['displacement'] = self.prescribed_displacement[self.bc_table == DISPLACEMENT]
+        self._bc['n_disp'] = n_displacement
+        if self._bc['n_disp'] > 0:
+            idx_pnt, self._bc['direction'] = np.where(self._bc_table == DISPLACEMENT)
+            self._bc['idx_disp'] = self._mesh['n_dof']*idx_pnt + self._bc['direction']
+            self._bc['displacement'] = self._prescribed_displacement[self._bc_table == DISPLACEMENT]
         else:
-            self.bc['direction'] = self.bc['idx_disp'] = self.bc['displacement'] = []
+            self._bc['direction'] = self._bc['idx_disp'] = self._bc['displacement'] = []
 
-        self.bc['traction'] = self.prescribed_traction
-        self.bc['applied_force'] = self.applied_force
+        self._bc['traction'] = self._prescribed_traction
+        self._bc['applied_force'] = self._applied_force
 
-    def set_multi_point_constraint(self):
+    def _set_multi_point_constraint(self):
         """
         Set multi-point constraint for homogenization or unit cell analysis
         """
 
-        self.mpc = {}
-        self.mpc['nmpcpt'] = np.max(self.mpc_table)
-        self.mpc['slave'] = []
-        self.mpc['master'] = []
-        self.mpc['ratio'] = []
-        for impc in range(1, self.mpc['nmpcpt'] + 1):
-            pnt, dof = np.where(self.mpc_table == impc)
+        self._mpc = {}
+        self._mpc['nmpcpt'] = np.max(self._mpc_table)
+        self._mpc['slave'] = []
+        self._mpc['master'] = []
+        self._mpc['ratio'] = []
+        for impc in range(1, self._mpc['nmpcpt'] + 1):
+            pnt, dof = np.where(self._mpc_table == impc)
             for ipnt, idof in zip(pnt, dof):
-                ratio = np.abs(self.mpc_ratio[ipnt][idof])
+                ratio = np.abs(self._mpc_ratio[ipnt][idof])
                 if ratio > 0.:
-                    self.mpc['slave'].append(self.mesh['n_dof'] * ipnt + idof)
-                    self.mpc['ratio'].append(ratio)
+                    self._mpc['slave'].append(self._mesh['n_dof'] * ipnt + idof)
+                    self._mpc['ratio'].append(ratio)
                 else:
-                    self.mpc['master'].append(self.mesh['n_dof'] * ipnt + idof)
+                    self._mpc['master'].append(self._mesh['n_dof'] * ipnt + idof)

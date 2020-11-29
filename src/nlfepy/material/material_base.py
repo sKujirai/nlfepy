@@ -1,3 +1,4 @@
+import numpy as np
 from abc import ABCMeta, abstractmethod
 
 
@@ -7,10 +8,14 @@ class MaterialBase(metaclass=ABCMeta):
     """
 
     def __init__(self) -> None:
-        self.Young = None
-        self.Poisson = None
-        self.shear_modulus = None
-        self.Cmatrix = None
+        self._Young = None
+        self._Poisson = None
+        self._shear_modulus = None
+        self._Cmatrix = None
+
+    @property
+    def Cmatrix(self) -> np.ndarray:
+        return self._Cmatrix
 
     @abstractmethod
     def set_elastic_modulus(self) -> None:

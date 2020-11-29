@@ -12,17 +12,17 @@ class Nd2(ShapeFunction):
 
         super().__init__()
 
-        self.shape = 'ND'
-        self.name = 'ND2'
-        self.n_dof = 1
-        self.n_node = 2
-        self.n_intgp = 2
-        self.weight = np.array([1., 1.])
-        self.Shpfnc = np.array([
+        self._shape = 'ND'
+        self._name = 'ND2'
+        self._n_dof = 1
+        self._n_node = 2
+        self._n_intgp = 2
+        self._weight = np.array([1., 1.])
+        self._Shpfnc = np.array([
             [0.788675134594813, 0.211324865405187],
             [0.211324865405187, 0.788675134594813],
         ])
-        self.Bmatrix_nat = np.array([
+        self._Bmatrix_nat = np.array([
             [
                 [-0.5, -0.5],
                 [0.5, 0.5]

@@ -17,25 +17,25 @@ class ViewerBase(metaclass=ABCMeta):
             Mesh class (See mesh.py)
         """
 
-        self.mesh = mesh
+        self._mesh = mesh
 
     @abstractmethod
-    def set_window(self, *, params: dict = {}) -> None:
+    def _set_window(self, *, params: dict = {}) -> None:
         pass
 
     @abstractmethod
-    def set_bc_info(self) -> None:
+    def _set_bc_info(self) -> None:
         pass
 
     @abstractmethod
     def set(self, *, values: dict = {}, params: dict = {}) -> None:
         pass
 
-    def show(self, *, show_cbar=True):
+    def show(self, *, show_cbar=True) -> None:
         if show_cbar:
-            plt.colorbar(self.pcm, ax=self.ax)
+            plt.colorbar(self._pcm, ax=self._ax)
         plt.show()
 
-    def save(self, file_name):
+    def save(self, file_name) -> None:
 
-        self.fig.savefig(file_name, transparent=True, dpi=300)
+        self._fig.savefig(file_name, transparent=True, dpi=300)

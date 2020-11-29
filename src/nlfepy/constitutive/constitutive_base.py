@@ -10,20 +10,20 @@ class ConstitutiveBase(metaclass=ABCMeta):
 
     def __init__(self, *, metal, nitg: int, val: dict = {}, params: dict = {}) -> None:
 
-        self.metal = metal
-        self.ntintgp = nitg
-        self.val = val
-        self.params = params
+        self._metal = metal
+        self._ntintgp = nitg
+        self._val = val
+        self._params = params
 
-        if 'cmatrix' not in self.val:
-            self.val['cmatrix'] = np.tile(self.metal.Cmatrix, (self.ntintgp, 1, 1))
-        if 'rtensor' not in self.val:
-            self.val['rtensor'] = np.zeros((self.ntintgp, 3, 3))
-        if 'stress' not in self.val:
-            self.val['stress'] = np.zeros((self.ntintgp, 3, 3))
+        if 'cmatrix' not in self._val:
+            self._val['cmatrix'] = np.tile(self._metal.Cmatrix, (self._ntintgp, 1, 1))
+        if 'rtensor' not in self._val:
+            self._val['rtensor'] = np.zeros((self._ntintgp, 3, 3))
+        if 'stress' not in self._val:
+            self._val['stress'] = np.zeros((self._ntintgp, 3, 3))
 
-        if 'dt' not in self.params:
-            self.params['dt'] = 0.01
+        if 'dt' not in self._params:
+            self._params['dt'] = 0.01
 
     @abstractmethod
     def constitutive_equation(self, *, du: np.ndarray = None, bm: np.ndarray = None, itg: int = None) -> Tuple[np.ndarray, np.ndarray, np.ndarray]:

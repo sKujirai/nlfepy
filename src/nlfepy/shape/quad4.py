@@ -12,21 +12,21 @@ class Quad4(ShapeFunction):
 
         super().__init__()
 
-        self.shape = 'QUAD'
-        self.name = 'QUAD4'
-        self.n_dof = 2
-        self.n_node = 4
-        self.n_intgp = 4
-        self.n_face = 4
-        self.n_fnode = 2
-        self.weight = np.array([1., 1., 1., 1.])
-        self.Shpfnc = np.array([
+        self._shape = 'QUAD'
+        self._name = 'QUAD4'
+        self._n_dof = 2
+        self._n_node = 4
+        self._n_intgp = 4
+        self._n_face = 4
+        self._n_fnode = 2
+        self._weight = np.array([1., 1., 1., 1.])
+        self._Shpfnc = np.array([
             [0.622008, 0.166667, 0.166667, 0.0446582],
             [0.166667, 0.622008, 0.0446582, 0.166667],
             [0.0446582, 0.166667, 0.166667, 0.622008],
             [0.166667, 0.0446582, 0.622008, 0.166667]
         ])
-        self.Bmatrix_nat = np.array([
+        self._Bmatrix_nat = np.array([
             [
                 [-0.394338, -0.394338, -0.105662, -0.105662],
                 [0.394338, 0.394338, 0.105662, 0.105662],
@@ -40,7 +40,7 @@ class Quad4(ShapeFunction):
                 [0.394338, 0.105662, 0.394338, 0.105662]
             ]
         ])
-        self.idx_face = np.array([
+        self._idx_face = np.array([
             [0, 1],
             [1, 2],
             [2, 3],
