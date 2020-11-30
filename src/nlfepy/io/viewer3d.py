@@ -1,3 +1,5 @@
+import sys
+from logging import getLogger
 import numpy as np
 import matplotlib.pyplot as plt
 from mpl_toolkits.mplot3d.art3d import Poly3DCollection
@@ -9,28 +11,23 @@ class Viewer3d(ViewerBase):
     Viewer class for 3D stuructures inheriting class: ViewerBase
     """
 
-    def __init__(self, *, mesh, set_mesh_info=True) -> None:
+    def __init__(self) -> None:
+        super().__init__()
 
-        super().__init__(mesh=mesh)
-
-        if set_mesh_info:
-            self.set()
-            self._set_bc_info()
-
-    def _set_window(self, *, params: dict = {}) -> None:
+    def _set_window(self, coords: np.ndarray, **kwargs) -> None:
         """
         Set window
 
         Parameters
         ----------
-        params : dict
-            'xlim' (array-like, Range of x-axis),
-            'ylim' (array-like, Range of y-axis),
-            'zlim' (array-like, Range of z-axis),
-            'cmap' (string, Color map),
-            'edgecolor' (string, Edge color),
-            'lw' (int, Line width),
-            'alpha' (float, Transparency)
+        coords : ndarray
+            Coordinates [n_dof, n_point]
+        xlim : array-like
+            Range of x-axis
+        ylim : array-like
+            Range of y-axis
+        zlim : array-like
+            Range of z-axis
         """
 
         plt.close()
@@ -52,33 +49,38 @@ class Viewer3d(ViewerBase):
         self._ax.set_ylabel('y')
         self._ax.set_zlabel('z')
 
-        if 'xlim' in params:
-            self._ax.set_xlim(params['xlim'][0], params['xlim'][1])
+        if 'xlim' in kwargs:
+            self._ax.set_xlim(kwargs['xlim'][0], kwargs['xlim'][1])
         else:
-            self._ax.set_xlim(np.min(self._mesh.coords[0]), np.max(self._mesh.coords[0]))
-        if 'ylim' in params:
-            self._ax.set_ylim(params['ylim'][0], params['ylim'][1])
+            self._ax.set_xlim(np.min(coords[0]), np.max(coords[0]))
+        if 'ylim' in kwargs:
+            self._ax.set_ylim(kwargs['ylim'][0], kwargs['ylim'][1])
         else:
-            self._ax.set_ylim(np.min(self._mesh.coords[1]), np.max(self._mesh.coords[1]))
-        if 'zlim' in params:
-            self._ax.set_zlim(params['zlim'][0], params['zlim'][1])
+            self._ax.set_ylim(np.min(coords[1]), np.max(coords[1]))
+        if 'zlim' in kwargs:
+            self._ax.set_zlim(kwargs['zlim'][0], kwargs['zlim'][1])
         else:
-            self._ax.set_zlim(np.min(self._mesh.coords[2]), np.max(self._mesh.coords[2]))
+            self._ax.set_zlim(np.min(coords[2]), np.max(coords[2]))
 
-    def _set_bc_info(self) -> None:
+    def _set_bc_info(self, mesh) -> None:
         """
         Plot boundary conditions
+
+        Parameters
+        ----------
+        mesh :
+            Mesh class (See mesh.py)
         """
 
         rr = 0.2
         eps_crit = 1.e-10
         eps_min = 1.e-30
 
-        disp_pts, disp_dof = np.divmod(self._mesh.bc['idx_disp'], self._mesh.n_dof)
+        disp_pts, disp_dof = np.divmod(mesh.bc['idx_disp'], mesh.n_dof)
         idx_disp_x = np.where(disp_dof == 0)
         idx_disp_y = np.where(disp_dof == 1)
         idx_disp_z = np.where(disp_dof == 2)
-        fix_pts, fix_dof = np.divmod(self._mesh.bc['idx_fix'], self._mesh.n_dof)
+        fix_pts, fix_dof = np.divmod(mesh.bc['idx_fix'], mesh.n_dof)
         fix_x = fix_pts[fix_dof == 0]
         fix_y = fix_pts[fix_dof == 1]
         fix_z = fix_pts[fix_dof == 2]
@@ -93,67 +95,67 @@ class Viewer3d(ViewerBase):
         fix_y = np.setdiff1d(np.setdiff1d(np.setdiff1d(fix_y, fix_yz), fix_xy), fix_xyz)
         fix_z = np.setdiff1d(np.setdiff1d(np.setdiff1d(fix_z, fix_zx), fix_yz), fix_xyz)
 
-        ll = max(np.max(self._mesh.coords[:self._mesh.n_dof], axis=1)) * rr
+        ll = max(np.max(mesh.coords, axis=1)) * rr
 
         # Fix points
         self._ax.scatter3D(
-            self._mesh.coords[0, fix_xyz],
-            self._mesh.coords[1, fix_xyz],
-            self._mesh.coords[2, fix_xyz],
+            mesh.coords[0, fix_xyz],
+            mesh.coords[1, fix_xyz],
+            mesh.coords[2, fix_xyz],
             color=r'#e41a1c',
             label='Completely fixed',
         )
 
         if len(fix_xy) > 0:
             self._ax.scatter3D(
-                self._mesh.coords[0, fix_xy],
-                self._mesh.coords[1, fix_xy],
-                self._mesh.coords[2, fix_xy],
+                mesh.coords[0, fix_xy],
+                mesh.coords[1, fix_xy],
+                mesh.coords[2, fix_xy],
                 color=r'#ff7f00',
                 label='Fix x-y',
             )
 
         if len(fix_yz) > 0:
             self._ax.scatter3D(
-                self._mesh.coords[0, fix_yz],
-                self._mesh.coords[1, fix_yz],
-                self._mesh.coords[2, fix_yz],
+                mesh.coords[0, fix_yz],
+                mesh.coords[1, fix_yz],
+                mesh.coords[2, fix_yz],
                 color=r'#a65628',
                 label='Fix y-z',
             )
 
         if len(fix_zx) > 0:
             self._ax.scatter3D(
-                self._mesh.coords[0, fix_zx],
-                self._mesh.coords[1, fix_zx],
-                self._mesh.coords[2, fix_zx],
+                mesh.coords[0, fix_zx],
+                mesh.coords[1, fix_zx],
+                mesh.coords[2, fix_zx],
                 color=r'#f781bf',
                 label='Fix z-x',
             )
 
         if len(fix_x) > 0:
             self._ax.scatter3D(
-                self._mesh.coords[0, fix_x],
-                self._mesh.coords[1, fix_x],
-                self._mesh.coords[2, fix_x],
+                mesh.coords[0, fix_x],
+                mesh.coords[1, fix_x],
+                mesh.coords[2, fix_x],
                 color=r'#377eb8',
                 label='Fix x',
             )
 
         if len(fix_y) > 0:
             self._ax.scatter3D(
-                self._mesh.coords[0, fix_y],
-                self._mesh.coords[1, fix_y],
-                self._mesh.coords[2, fix_y],
+                mesh.coords[0, fix_y],
+                mesh.coords[1, fix_y],
+                mesh.coords[2, fix_y],
                 color=r'#4daf4a',
                 label='Fix y',
             )
 
         if len(fix_z) > 0:
             self._ax.scatter3D(
-                self._mesh.coords[0, fix_z],
-                self._mesh.coords[1, fix_z],
-                self._mesh.coords[2, fix_z],
+                mesh.coords[0, fix_z],
+                mesh.coords[1, fix_z],
+                mesh.coords[2, fix_z],
                 color=r'#984ea3',
                 label='Fix z',
             )
@@ -163,10 +165,10 @@ class Viewer3d(ViewerBase):
 
         if len(idx_disp_x[0]) > 0:
             self._ax.quiver(
-                self._mesh.coords[0, disp_pts[idx_disp_x]],
-                self._mesh.coords[1, disp_pts[idx_disp_x]],
-                self._mesh.coords[2, disp_pts[idx_disp_x]],
-                np.sign(self._mesh.bc['displacement'][idx_disp_x]),
+                mesh.coords[0, disp_pts[idx_disp_x]],
+                mesh.coords[1, disp_pts[idx_disp_x]],
+                mesh.coords[2, disp_pts[idx_disp_x]],
+                np.sign(mesh.bc['displacement'][idx_disp_x]),
                 0.,
                 0.,
                 length=ll,
@@ -178,11 +180,11 @@ class Viewer3d(ViewerBase):
         if len(idx_disp_y[0]) > 0:
             label_disp_y = None if is_plot_pd else 'Prescribed displacement'
             self._ax.quiver(
-                self._mesh.coords[0, disp_pts[idx_disp_y]],
-                self._mesh.coords[1, disp_pts[idx_disp_y]],
-                self._mesh.coords[2, disp_pts[idx_disp_y]],
+                mesh.coords[0, disp_pts[idx_disp_y]],
+                mesh.coords[1, disp_pts[idx_disp_y]],
+                mesh.coords[2, disp_pts[idx_disp_y]],
                 0.,
-                np.sign(self._mesh.bc['displacement'][idx_disp_y]),
+                np.sign(mesh.bc['displacement'][idx_disp_y]),
                 0.,
                 length=ll,
                 color='r',
@@ -193,20 +195,20 @@ class Viewer3d(ViewerBase):
         if len(idx_disp_z[0]) > 0:
             label_disp_z = None if is_plot_pd else 'Prescribed displacement'
             self._ax.quiver(
-                self._mesh.coords[0, disp_pts[idx_disp_z]],
-                self._mesh.coords[1, disp_pts[idx_disp_z]],
-                self._mesh.coords[2, disp_pts[idx_disp_z]],
+                mesh.coords[0, disp_pts[idx_disp_z]],
+                mesh.coords[1, disp_pts[idx_disp_z]],
+                mesh.coords[2, disp_pts[idx_disp_z]],
                 0.,
                 0.,
-                np.sign(self._mesh.bc['displacement'][idx_disp_z]),
+                np.sign(mesh.bc['displacement'][idx_disp_z]),
                 length=ll,
                 color='r',
                 label=label_disp_z,
             )
 
         # Traction
-        if 'traction' in self._mesh.bc:
-            Traction = self._mesh.bc['traction']
+        if 'traction' in mesh.bc:
+            Traction = mesh.bc['traction']
             max_trc = np.max(np.abs(Traction))
             if max_trc > eps_min:
                 trc_crit = max_trc * eps_crit
@@ -219,9 +221,9 @@ class Viewer3d(ViewerBase):
 
                 if len(idx_trc_x[0]) > 0:
                     self._ax.quiver(
-                        self._mesh.coords[0, pnt_trc[idx_trc_x]],
-                        self._mesh.coords[1, pnt_trc[idx_trc_x]],
-                        self._mesh.coords[2, pnt_trc[idx_trc_x]],
+                        mesh.coords[0, pnt_trc[idx_trc_x]],
+                        mesh.coords[1, pnt_trc[idx_trc_x]],
+                        mesh.coords[2, pnt_trc[idx_trc_x]],
                         np.sign(Traction[pnt_trc[idx_trc_x], 0]),
                         0.,
                         0.,
@@ -234,9 +236,9 @@ class Viewer3d(ViewerBase):
                 if len(idx_trc_y[0]) > 0:
                     label_trc_y = None if is_plot_trc else 'Traction'
                     self._ax.quiver(
-                        self._mesh.coords[0, pnt_trc[idx_trc_y]],
-                        self._mesh.coords[1, pnt_trc[idx_trc_y]],
-                        self._mesh.coords[2, pnt_trc[idx_trc_y]],
+                        mesh.coords[0, pnt_trc[idx_trc_y]],
+                        mesh.coords[1, pnt_trc[idx_trc_y]],
+                        mesh.coords[2, pnt_trc[idx_trc_y]],
                         0.,
                         np.sign(Traction[pnt_trc[idx_trc_y], 1]),
                         0.,
@@ -249,9 +251,9 @@ class Viewer3d(ViewerBase):
                 if len(idx_trc_z[0]) > 0:
                     label_trc_z = None if is_plot_trc else 'Traction'
                     self._ax.quiver(
-                        self._mesh.coords[0, pnt_trc[idx_trc_z]],
-                        self._mesh.coords[1, pnt_trc[idx_trc_z]],
-                        self._mesh.coords[2, pnt_trc[idx_trc_z]],
+                        mesh.coords[0, pnt_trc[idx_trc_z]],
+                        mesh.coords[1, pnt_trc[idx_trc_z]],
+                        mesh.coords[2, pnt_trc[idx_trc_z]],
                         0.,
                         0.,
                         np.sign(Traction[pnt_trc[idx_trc_z], 2]),
@@ -262,8 +264,8 @@ class Viewer3d(ViewerBase):
                     is_plot_trc = True
 
         # Applied force
-        if 'applied_force' in self._mesh.bc:
-            ApplForce = self._mesh.bc['applied_force']
+        if 'applied_force' in mesh.bc:
+            ApplForce = mesh.bc['applied_force']
             max_af = np.max(np.abs(ApplForce))
             if max_af > eps_min:
                 af_crit = max_af * eps_crit
@@ -276,9 +278,9 @@ class Viewer3d(ViewerBase):
 
                 if len(idx_af_x[0]) > 0:
                     self._ax.quiver(
-                        self._mesh.coords[0, pnt_af[idx_af_x]],
-                        self._mesh.coords[1, pnt_af[idx_af_x]],
-                        self._mesh.coords[2, pnt_af[idx_af_x]],
+                        mesh.coords[0, pnt_af[idx_af_x]],
+                        mesh.coords[1, pnt_af[idx_af_x]],
+                        mesh.coords[2, pnt_af[idx_af_x]],
                         np.sign(ApplForce[pnt_af[idx_af_x], 0]),
                         0.,
                         0.,
@@ -291,9 +293,9 @@ class Viewer3d(ViewerBase):
                 if len(idx_af_y[0]) > 0:
                     label_af_y = None if is_plot_af else 'Applied force'
                     self._ax.quiver(
-                        self._mesh.coords[0, pnt_af[idx_af_y]],
-                        self._mesh.coords[1, pnt_af[idx_af_y]],
-                        self._mesh.coords[2, pnt_af[idx_af_y]],
+                        mesh.coords[0, pnt_af[idx_af_y]],
+                        mesh.coords[1, pnt_af[idx_af_y]],
+                        mesh.coords[2, pnt_af[idx_af_y]],
                         0.,
                         np.sign(ApplForce[pnt_af[idx_af_y], 1]),
                         0.,
@@ -306,9 +308,9 @@ class Viewer3d(ViewerBase):
                 if len(idx_af_z[0]) > 0:
                     label_af_z = None if is_plot_af else 'Applied force'
                     self._ax.quiver(
-                        self._mesh.coords[0, pnt_af[idx_af_z]],
-                        self._mesh.coords[1, pnt_af[idx_af_z]],
-                        self._mesh.coords[2, pnt_af[idx_af_z]],
+                        mesh.coords[0, pnt_af[idx_af_z]],
+                        mesh.coords[1, pnt_af[idx_af_z]],
+                        mesh.coords[2, pnt_af[idx_af_z]],
                         0.,
                         0.,
                         np.sign(ApplForce[pnt_af[idx_af_z], 2]),
@@ -320,55 +322,126 @@ class Viewer3d(ViewerBase):
 
         plt.legend()
 
-    def set(self, *, values: dict = {}, params: dict = {}) -> None:
+    def plot(self, *, mesh, val: np.ndarray = None, **kwargs) -> None:
         """
         Set coordinates, connectivity and values to plot
 
         Parameters
         ----------
-        values : dict
+        mesh :
+            Mesh class
+        val : ndarray
             Value to plot in each element [n_element] (1D array)
-        params : dict
-            'xlim' (array-like, Range of x-axis),
-            'ylim' (array-like, Range of y-axis),
-            'zlim' (array-like, Range of z-axis),
-            'cmap' (string, Color map),
-            'edgecolor' (string, Edge color),
-            'lw' (int, Line width),
-            'alpha' (float, Transparency)
+        xlim : array-like
+            Range of x-axis
+        ylim : array-like
+            Range of y-axis
+        zlim : array-like
+            Range of z-axis
+        cmap : str
+            Color map
+        edgecolor : str
+            Edge color
+        lw : int
+            Line width
+        alpha : float
+            Transparency
         """
 
-        self._set_window(params=params)
-
-        cmap = params['cmap'] if 'cmap' in params else 'jet'
-        edgecolor = params['edgecolor'] if 'edgecolor' in params else 'k'
-        lw = params['lw'] if 'lw' in params else 1
-        alpha = params['alpha'] if 'alpha' in params else 0.25
+        self._set_window(mesh.coords, **kwargs)
 
         verts = []
         vals = []
-        value = None
-        if 'val' in params:
-            if params['val'] in values:
-                value = values[params['val']]
-        for ielm in range(self._mesh.n_element):
+        if val is not None:
+            val = np.array(val)
+            if val.shape[0] != mesh.n_element:
+                logger = getLogger('viewer3d')
+                logger.error('Value arrray has invalid size. Size of values: {}, Number of elements: {}'.format(val.shape[0], mesh.n_element))
+                sys.exit(1)
 
-            for idx_nd in self._mesh.idx_face('vol', elm=ielm):
-                cod = self._mesh.coords[:, np.array(self._mesh.connectivity[ielm])[idx_nd]].T
+        for ielm in range(mesh.n_element):
+            for idx_nd in mesh.idx_face('vol', elm=ielm):
+                cod = mesh.coords[:, np.array(mesh.connectivity[ielm])[idx_nd]].T
                 verts.append(cod)
-                if value is not None:
-                    vals.append(value[ielm])
+                if val is not None:
+                    vals.append(val[ielm])
+
+        if 'edgecolor' not in kwargs:
+            kwargs['edgecolor'] = 'k'
+        if 'lw' not in kwargs:
+            kwargs['lw'] = 1
+        if 'cmap' not in kwargs:
+            kwargs['cmap'] = 'rainbow'
+        if 'facecolors' not in kwargs:
+            kwargs['facecolors'] = 'orange'
+        if 'alpha' not in kwargs:
+            kwargs['alpha'] = 0.25
 
         self._pcm = Poly3DCollection(
             verts,
-            facecolors='orange',
-            linewidths=lw,
-            edgecolors=edgecolor,
-            cmap=cmap,
-            alpha=alpha,
+            **kwargs
         )
 
         if len(vals) > 0:
             self._pcm.set_array(np.array(vals))
 
         self._ax.add_collection3d(self._pcm)
+
+        self.show_cbar = True
+
+    def plot_bc(self, mesh, **kwargs) -> None:
+        """
+        Plot boundary conditions
+
+        Parameters
+        ----------
+        mesh :
+            Mesh class
+        """
+
+        self.plot(mesh=mesh, **kwargs)
+
+        self._set_bc_info(mesh)
+
+        self.show_cbar = False
+
+        self.show_cbar = False
+
+    def contour(self, *, mesh, val: np.ndarray, **kwargs) -> None:
+        """
+        Contour plot
+
+        Parameters
+        ----------
+        mesh :
+            Mesh class
+        val : ndarray
+            Value to plot in each element [n_element] (1D array)
+        xlim : array-like
+            Range of x-axis
+        ylim : array-like
+            Range of y-axis
+        zlim : array-like
+            Range of z-axis
+        cmap : str
+            Color map
+        edgecolor : str
+            Edge color
+        lw : int
+            Line width
+        alpha : float
+            Transparency
+        """
+
+        self._set_window(mesh.coords, **kwargs)
+
+        val = np.array(val)
+        if val.shape[0] != mesh.n_point:
+            logger = getLogger('viewer3d')
+            logger.error('Value arrray has invalid size. Size of values: {}, Number of elements: {}'.format(val.shape[0], mesh.n_point))
+            sys.exit(1)
+
+        self.show_cbar = True
+
+        # Not implemented
+        raise NotImplementedError()

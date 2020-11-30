@@ -1,4 +1,5 @@
 from abc import ABCMeta, abstractmethod
+import numpy as np
 import matplotlib.pyplot as plt
 
 
@@ -7,32 +8,31 @@ class ViewerBase(metaclass=ABCMeta):
     Base class of viewer classes
     """
 
-    def __init__(self, *, mesh) -> None:
-        """
-        Initialization
-
-        Parameters
-        ----------
-        mesh :
-            Mesh class (See mesh.py)
-        """
-
-        self._mesh = mesh
+    def __init__(self):
+        self.show_cbar = False
 
     @abstractmethod
-    def _set_window(self, *, params: dict = {}) -> None:
+    def _set_window(self, coords: np.ndarray, **kwargs) -> None:
         pass
 
     @abstractmethod
-    def _set_bc_info(self) -> None:
+    def _set_bc_info(self, mesh) -> None:
         pass
 
     @abstractmethod
-    def set(self, *, values: dict = {}, params: dict = {}) -> None:
+    def plot(self, *, mesh, val: np.ndarray = None, **kwargs) -> None:
         pass
 
-    def show(self, *, show_cbar=True) -> None:
-        if show_cbar:
+    @abstractmethod
+    def plot_bc(self, mesh, **kwargs) -> None:
+        pass
+
+    @abstractmethod
+    def contour(self, *, mesh, val: np.ndarray, **kwargs) -> None:
+        pass
+
+    def show(self) -> None:
+        if self.show_cbar:
             plt.colorbar(self._pcm, ax=self._ax)
         plt.show()
 

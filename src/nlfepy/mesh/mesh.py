@@ -27,6 +27,8 @@ class Mesh:
         Connectivity of elaments [n_element][n_node] (2D array)
     element_name : list
         Name of each finite elemenet [n_element]
+    element_shape : list
+        Shape of each finite elemenet [n_element]
     material_numbers : array-like
         Material numbers [n_element]
     grain_numbers : array-like
@@ -48,6 +50,7 @@ class Mesh:
         self._coords = None
         self._connectivity = None
         self._element_name = None
+        self._element_shape = None
         self._material_numbers = None
         self._grain_numbers = None
         self._crystal_orientation = None
@@ -86,6 +89,10 @@ class Mesh:
     @property
     def element_name(self) -> list:
         return self._element_name
+
+    @property
+    def element_shape(self) -> list:
+        return self._element_shape
 
     @property
     def material_numbers(self):
@@ -192,8 +199,10 @@ class Mesh:
             self._shapef[elm_name] = get_shape_function(elm_name)
 
         self._n_tintgp = 0
+        self._element_shape = []
         for ielm in range(self._n_element):
             self._n_tintgp += self._shapef[self._element_name[ielm]]['vol'].n_intgp
+            self._element_shape.append(self._shapef[self._element_name[ielm]]['vol'].shape)
 
     def _set_bc_dict(self, *, bc: dict, mpc: dict) -> None:
         self._bc = bc

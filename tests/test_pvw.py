@@ -53,18 +53,24 @@ def main(mesh_path):
 
     # Plot result
     logger.info('Drawing mesh...')
-    viewer_params = {
-        'cmap': 'rainbow',
-        'lw': 1,
-        'val': 'rand',
-    }
-    viewer = Viewer(mesh=mesh)
-    viewer.show(show_cbar=False)
-    val = {}
-    val['rand'] = np.random.rand(mesh.n_element)
-    viewer.set(values=val, params=viewer_params)
+    projection = '3d' if mesh.n_dof == 3 else '2d'
+    viewer = Viewer(projection=projection)
+
+    # Check B.C.
+    viewer.plot_bc(mesh)
+    viewer.show()
+
+    # Plot result
+    vals['element']['rand'] = np.random.rand(mesh.n_element)
+    viewer.plot(mesh=mesh, val=vals['element']['rand'])
     # viewer.save('result.png')
     viewer.show()
+
+    # Contour plot
+    if mesh.n_dof == 2:
+        vals['point']['randp'] = np.random.rand(mesh.n_point)
+        viewer.contour(mesh=mesh, val=vals['point']['randp'])
+        viewer.show()
 
     logger.info('Program end')
 

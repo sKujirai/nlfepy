@@ -59,13 +59,10 @@ def main(mesh_path):
 
     # Plot result
     logger.info('Drawing mesh...')
-    viewer_params = {
-        'cmap': 'rainbow',
-        'lw': 1,
-    }
-    viewer = Viewer(mesh=mesh)
-    val = {}
-    viewer.set(values=val, params=viewer_params)
+    projection = '3d' if mesh.n_dof == 3 else '2d'
+    viewer = Viewer(projection=projection)
+    val = None
+    viewer.plot(mesh=mesh, val=val)
     # viewer.save('result.png')
     viewer.show()
 
