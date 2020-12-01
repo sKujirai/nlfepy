@@ -62,11 +62,6 @@ def main(mesh_path):
     # Calc. stress
     pvw.calc_stress()
 
-    # Save results
-    logger.info('Saving results')
-    writer = VtuWriter(mesh=mesh)
-    writer.write('result.vtu')
-
     # Plot result
     logger.info('Drawing mesh...')
     projection = '3d' if mesh.n_dof == 3 else '2d'
@@ -90,12 +85,17 @@ def main(mesh_path):
         viewer.contour(mesh=mesh, val=vals['point']['randp'])
         viewer.show()
 
+    # Save results
+    logger.info('Saving results')
+    writer = VtuWriter(mesh=mesh, values=vals)
+    writer.write('result.vtu')  # , output_bc=False)
+
     logger.info('Program end')
 
 
 if __name__ == '__main__':
-    # main('tests/data/mesh.vtu')
+    main('tests/data/mesh.vtu')
     # main('tests/data/mesh_mpc.vtu')
     # main('tests/data/mesh_load.vtu')
-    main('tests/data/mesh_3d.vtu')
+    # main('tests/data/mesh_3d.vtu')
     # main('tests/data/mesh_3d_load.vtu')

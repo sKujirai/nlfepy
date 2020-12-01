@@ -11,10 +11,12 @@ class VtuWriter:
     Write mesh info and physical quantities
     """
 
-    def __init__(self, *, mesh) -> None:
+    def __init__(self, *, mesh, values: dict = None) -> None:
 
         self._mesh = mesh
-        self._values = None
+        self._values = values
+
+        self._EPS_MIN = 1.e-30
 
         self._logger = getLogger('LogWriter')
 
@@ -41,20 +43,6 @@ class VtuWriter:
             return np.array(nods)[[0, 4, 1, 5, 2, 6, 3, 7]].tolist()
         else:
             return nods
-
-    def set(self, *, values: dict, vkeys: list = []) -> None:
-        """
-        Set coordinates, connectivity and values to plot
-
-        Parameters
-        ----------
-        value : dict
-            Value to plot in each element [n_element] (1D array)
-        vkeys : list
-            Value to write in .vtu file
-        """
-
-        self._values = values
 
     def _get_cell_type(self, elm_name: str) -> str:
         """
@@ -85,7 +73,148 @@ class VtuWriter:
             self._logger.error('Invalid finite element: {}'.format(elm_name))
             sys.exit(1)
 
-    def write(self, file_path: str) -> None:
+    def _write_bc(self, f) -> None:
+
+        # B.C.
+        FIX, DISPLACEMENT, LOAD, FORCE = 1, -1, -2, -3
+        bc_table = np.zeros((3, self._mesh.n_point), dtype='int8')
+        idx_cmp_fix = self._mesh.bc['idx_fix']
+        # Displacement
+        disp_pts = None
+        disp_dof = None
+        if self._mesh.bc['n_disp'] > 0:
+            disp_pts, disp_dof = np.divmod(self._mesh.bc['idx_disp'], self._mesh.n_dof)
+            bc_table[disp_dof, disp_pts] = DISPLACEMENT
+            idx_cmp_fix = np.setdiff1d(self._mesh.bc['idx_fix'], self._mesh.bc['idx_disp'])
+        # Fix point
+        fix_pts, fix_dof = np.divmod(idx_cmp_fix, self._mesh.n_dof)
+        bc_table[fix_dof, fix_pts] = FIX
+        # Traction
+        if 'traction' in self._mesh.bc:
+            traction = np.float32(self._mesh.bc['traction'])
+            if traction.shape[1] == 2:
+                traction = np.insert(traction, 2, 0., axis=1)
+            trc_pts, trc_dof = np.where(np.abs(traction) > self._EPS_MIN)
+            bc_table[trc_dof, trc_pts] = LOAD
+        else:
+            traction = np.zeros((self._mesh.n_point, 3))
+        # Applied force
+        if 'applied_force' in self._mesh.bc:
+            appl_force = np.float32(self._mesh.bc['applied_force'])
+            if appl_force.shape[1] == 2:
+                appl_force = np.insert(appl_force, 2, 0., axis=1)
+            af_pts, af_dof = np.where(np.abs(appl_force) > self._EPS_MIN)
+            bc_table[af_dof, af_pts] = FORCE
+        else:
+            appl_force = np.zeros((self._mesh.n_point, 3))
+
+        # B.C. table
+        f.write("<DataArray NumberOfComponents='3' type='Int8' Name='Boundary Condition' format='ascii'>\n")
+        for ipnt in range(self._mesh.n_point):
+            f.write('{} {} {}\n'.format(
+                bc_table[0, ipnt],
+                bc_table[1, ipnt],
+                bc_table[2, ipnt]
+            ))
+        f.write("</DataArray>\n")
+
+        # Prescribed displacement
+        prescribed_disp = np.zeros((3, self._mesh.n_point))
+        if self._mesh.bc['n_disp'] > 0:
+            prescribed_disp[disp_dof, disp_pts] = self._mesh.bc['displacement']
+        f.write("<DataArray NumberOfComponents='3' type='Float32' Name='Prescribed Displacement' format='ascii'>\n")
+        for ipnt in range(self._mesh.n_point):
+            f.write('{:e} {:e} {:e}\n'.format(
+                prescribed_disp[0, ipnt],
+                prescribed_disp[1, ipnt],
+                prescribed_disp[2, ipnt]
+            ))
+        f.write("</DataArray>\n")
+
+        # Prescribed traction
+        f.write("<DataArray NumberOfComponents='3' type='Float32' Name='Prescribed Traction' format='ascii'>\n")
+        for ipnt in range(self._mesh.n_point):
+            f.write('{:e} {:e} {:e}\n'.format(
+                traction[ipnt, 0],
+                traction[ipnt, 1],
+                traction[ipnt, 2]
+            ))
+        f.write("</DataArray>\n")
+
+        # Applied force
+        f.write("<DataArray NumberOfComponents='3' type='Float32' Name='Applied Force' format='ascii'>\n")
+        for ipnt in range(self._mesh.n_point):
+            f.write('{:e} {:e} {:e}\n'.format(
+                appl_force[ipnt, 0],
+                appl_force[ipnt, 1],
+                appl_force[ipnt, 2]
+            ))
+        f.write("</DataArray>\n")
+
+        # MPC
+        mpc_table = np.zeros((3, self._mesh.n_point), dtype='int32')
+        mpc_ratio = np.zeros((3, self._mesh.n_point))
+        if self._mesh.mpc['nmpcpt'] > 0:
+            idx_mpc = np.arange(1, self._mesh.mpc['nmpcpt'] + 1)
+            # Slave
+            slv_pts, slv_dof = np.divmod(np.array(self._mesh.mpc['slave']), self._mesh.n_dof)
+            mpc_table[slv_dof, slv_pts] = idx_mpc
+            mpc_ratio[slv_dof, slv_pts] = self._mesh.mpc['ratio']
+            # Master
+            mst_pts, mst_dof = np.divmod(np.array(self._mesh.mpc['master']), self._mesh.n_dof)
+            mpc_table[mst_dof, mst_pts] = idx_mpc
+
+        # MPC table
+        f.write("<DataArray NumberOfComponents='3' type='UInt8' Name='Multi-Point Constraints' format='ascii'>\n")
+        for ipnt in range(self._mesh.n_point):
+            f.write('{} {} {}\n'.format(
+                mpc_table[0, ipnt],
+                mpc_table[1, ipnt],
+                mpc_table[2, ipnt]
+            ))
+        f.write("</DataArray>\n")
+
+        # MPC ratio
+        f.write("<DataArray NumberOfComponents='3' type='Float32' Name='MPC Ratio' format='ascii'>\n")
+        for ipnt in range(self._mesh.n_point):
+            f.write('{:e} {:e} {:e}\n'.format(
+                mpc_ratio[0, ipnt],
+                mpc_ratio[1, ipnt],
+                mpc_ratio[2, ipnt]
+            ))
+        f.write("</DataArray>\n")
+
+    def _write_pnt_value(self, f, key: str):
+
+        val = self._values['point'][key]
+        val = val.astype('float32')
+        val[np.abs(val) < self._EPS_MIN] = 0.
+        if val.ndim == 1:
+            val = val[np.newaxis, :]
+
+        f.write("<DataArray NumberOfComponents='" + str(val.shape[0]) + "' type='Float32' Name='" + key + "' format='ascii'>\n")
+
+        for ipnt in range(self._mesh.n_point):
+            f.write(' '.join(map(str, val[:, ipnt])) + '\n')
+
+        f.write("</DataArray>\n")
+
+    def _write_elm_value(self, f, key: str):
+
+        val = self._values['element'][key]
+        val = val.astype('float32')
+        val[np.abs(val) < self._EPS_MIN] = 0.
+        if val.ndim == 1:
+            val = val[:, np.newaxis]
+
+        f.write("<DataArray NumberOfComponents='" + str(val.shape[1]) + "' type='Float32' Name='" + key + "' format='ascii'>\n")
+
+        for elm in range(self._mesh.n_element):
+            f.write(' '.join(map(str, val[elm])) + '\n')
+
+        f.write("</DataArray>\n")
+
+    def write(self, file_path: str, **kwargs) -> None:
         """
         Write .vtu file
 
@@ -93,7 +222,31 @@ class VtuWriter:
         ----------
         file_path : str
             Output file path
+        output_bc : bool
+            Output B.C. or not
+        point : list
+            Output list of node values
+        element : list
+            Output list of element values
         """
+
+        output_bc = kwargs['output_bc'] if 'output_bc' in kwargs else True
+
+        out_pnt_list = []
+        if 'point' in kwargs:
+            for key in kwargs['point']:
+                if key in self._values['point'].keys():
+                    out_pnt_list.append(key)
+        else:
+            out_pnt_list = self._values['point'].keys()
+
+        out_elm_list = []
+        if 'element' in kwargs:
+            for key in kwargs['element']:
+                if key in self._values['element'].keys():
+                    out_elm_list.append(key)
+        else:
+            out_elm_list = self._values['element'].keys()
 
         with open(file_path, mode='w', newline='\n') as f:
 
@@ -143,121 +296,22 @@ class VtuWriter:
             # End cell data
             f.write("</Cells>\n")
 
-            # Start point data
-            f.write("<PointData>\n")
+            # Write point data
+            if output_bc or len(out_pnt_list) > 0:
 
-            # B.C.
-            FIX, DISPLACEMENT, LOAD, FORCE = 1, -1, -2, -3
-            EPS_MIN = 1.e-30
-            bc_table = np.zeros((3, self._mesh.n_point), dtype='int8')
-            idx_cmp_fix = self._mesh.bc['idx_fix']
-            # Displacement
-            disp_pts = None
-            disp_dof = None
-            if self._mesh.bc['n_disp'] > 0:
-                disp_pts, disp_dof = np.divmod(self._mesh.bc['idx_disp'], self._mesh.n_dof)
-                bc_table[disp_dof, disp_pts] = DISPLACEMENT
-                idx_cmp_fix = np.setdiff1d(self._mesh.bc['idx_fix'], self._mesh.bc['idx_disp'])
-            # Fix point
-            fix_pts, fix_dof = np.divmod(idx_cmp_fix, self._mesh.n_dof)
-            bc_table[fix_dof, fix_pts] = FIX
-            # Traction
-            if 'traction' in self._mesh.bc:
-                traction = np.float32(self._mesh.bc['traction'])
-                if traction.shape[1] == 2:
-                    traction = np.insert(traction, 2, 0., axis=1)
-                trc_pts, trc_dof = np.where(np.abs(traction) > EPS_MIN)
-                bc_table[trc_dof, trc_pts] = LOAD
-            else:
-                traction = np.zeros((self._mesh.n_point, 3))
-            # Applied force
-            if 'applied_force' in self._mesh.bc:
-                appl_force = np.float32(self._mesh.bc['applied_force'])
-                if appl_force.shape[1] == 2:
-                    appl_force = np.insert(appl_force, 2, 0., axis=1)
-                af_pts, af_dof = np.where(np.abs(appl_force) > EPS_MIN)
-                bc_table[af_dof, af_pts] = FORCE
-            else:
-                appl_force = np.zeros((self._mesh.n_point, 3))
+                # Start point data
+                f.write("<PointData>\n")
 
-            # B.C. table
-            f.write("<DataArray NumberOfComponents='3' type='Int8' Name='Boundary Condition' format='ascii'>\n")
-            for ipnt in range(self._mesh.n_point):
-                f.write('{} {} {}\n'.format(
-                    bc_table[0, ipnt],
-                    bc_table[1, ipnt],
-                    bc_table[2, ipnt]
-                ))
-            f.write("</DataArray>\n")
+                # Write B.C.
+                if output_bc:
+                    self._write_bc(f)
 
-            # Prescribed displacement
-            prescribed_disp = np.zeros((3, self._mesh.n_point))
-            if self._mesh.bc['n_disp'] > 0:
-                prescribed_disp[disp_dof, disp_pts] = self._mesh.bc['displacement']
-            f.write("<DataArray NumberOfComponents='3' type='Float32' Name='Prescribed Displacement' format='ascii'>\n")
-            for ipnt in range(self._mesh.n_point):
-                f.write('{:e} {:e} {:e}\n'.format(
-                    prescribed_disp[0, ipnt],
-                    prescribed_disp[1, ipnt],
-                    prescribed_disp[2, ipnt]
-                ))
-            f.write("</DataArray>\n")
+                # Node value
+                for key in out_pnt_list:
+                    self._write_pnt_value(f, key)
 
-            # Prescribed traction
-            f.write("<DataArray NumberOfComponents='3' type='Float32' Name='Prescribed Traction' format='ascii'>\n")
-            for ipnt in range(self._mesh.n_point):
-                f.write('{:e} {:e} {:e}\n'.format(
-                    traction[ipnt, 0],
-                    traction[ipnt, 1],
-                    traction[ipnt, 2]
-                ))
-            f.write("</DataArray>\n")
-
-            # Applied force
-            f.write("<DataArray NumberOfComponents='3' type='Float32' Name='Applied Force' format='ascii'>\n")
-            for ipnt in range(self._mesh.n_point):
-                f.write('{:e} {:e} {:e}\n'.format(
-                    appl_force[ipnt, 0],
-                    appl_force[ipnt, 1],
-                    appl_force[ipnt, 2]
-                ))
-            f.write("</DataArray>\n")
-
-            # MPC
-            mpc_table = np.zeros((3, self._mesh.n_point), dtype='int32')
-            mpc_ratio = np.zeros((3, self._mesh.n_point))
-            if self._mesh.mpc['nmpcpt'] > 0:
-                idx_mpc = np.arange(1, self._mesh.mpc['nmpcpt'] + 1)
-                # Slave
-                slv_pts, slv_dof = np.divmod(np.array(self._mesh.mpc['slave']), self._mesh.n_dof)
-                mpc_table[slv_dof, slv_pts] = idx_mpc
-                mpc_ratio[slv_dof, slv_pts] = self._mesh.mpc['ratio']
-                # Master
-                mst_pts, mst_dof = np.divmod(np.array(self._mesh.mpc['master']), self._mesh.n_dof)
-                mpc_table[mst_dof, mst_pts] = idx_mpc
-
-            # MPC table
-            f.write("<DataArray NumberOfComponents='3' type='UInt8' Name='Multi-Point Constraints' format='ascii'>\n")
-            for ipnt in range(self._mesh.n_point):
-                f.write('{} {} {}\n'.format(
-                    mpc_table[0, ipnt],
-                    mpc_table[1, ipnt],
-                    mpc_table[2, ipnt]
-                ))
-            f.write("</DataArray>\n")
-
-            # MPC ratio
-            f.write("<DataArray NumberOfComponents='3' type='Float32' Name='MPC Ratio' format='ascii'>\n")
-            for ipnt in range(self._mesh.n_point):
-                f.write('{:e} {:e} {:e}\n'.format(
-                    mpc_ratio[0, ipnt],
-                    mpc_ratio[1, ipnt],
-                    mpc_ratio[2, ipnt]
-                ))
-            f.write("</DataArray>\n")
-
-            # End point data
-            f.write("</PointData>\n")
+                # End point data
+                f.write("</PointData>\n")
 
             # Start cell data
             f.write("<CellData>\n")
@@ -284,7 +338,9 @@ class VtuWriter:
                 ))
             f.write("</DataArray>\n")
 
-            # Values
+            # Element values
+            for key in out_elm_list:
+                self._write_elm_value(f, key)
 
             # End cell data
             f.write("</CellData>\n")
