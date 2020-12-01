@@ -13,22 +13,17 @@ class PVW(IntegralEquation):
     ----------
     mesh :
         Mesh class (See mesh.py)
-    mater :
-        Material class
+    cnst :
+        Constitutive equation class
     val :
         Variables (physical quantity) (See variable.py)
     params : dict
         Parameters
     """
 
-    def __init__(self, *, mesh, mater, val=None, params: dict = {}) -> None:
+    def __init__(self, *, mesh, cnst, val=None, params: dict = {}) -> None:
 
-        super().__init__(mesh=mesh, val=val, params=params)
-
-        self._mater = mater
-
-        if 'u_disp' not in self._val:
-            self._val['u_disp'] = np.zeros((self._mesh.n_dof, self._mesh.n_point))
+        super().__init__(mesh=mesh, cnst=cnst, val=val, params=params)
 
     def solve(self) -> None:
         """
@@ -69,7 +64,6 @@ class PVW(IntegralEquation):
                     Bd[2, ::n_dof] = Bmatrix[1]
                     Bd[1, 1::n_dof] = Bmatrix[1]
                     Bd[2, 1::n_dof] = Bmatrix[0]
-                    Ce = self._mater[mater_id].Cmatrix[[0, 1, 3], :][:, [0, 1, 3]]
                 else:
                     Bd[0, ::n_dof] = Bmatrix[0]
                     Bd[3, ::n_dof] = Bmatrix[1]
@@ -80,7 +74,7 @@ class PVW(IntegralEquation):
                     Bd[2, 2::n_dof] = Bmatrix[2]
                     Bd[4, 2::n_dof] = Bmatrix[1]
                     Bd[5, 2::n_dof] = Bmatrix[0]
-                    Ce = self._mater[mater_id].Cmatrix
+                Ce = self._cnst[mater_id].get_elastic_modulus(n_dof, self._config['plane_stress'])
                 ke += np.dot(Bd.T, np.dot(Ce, Bd)) * wdetJv
 
                 # Body force

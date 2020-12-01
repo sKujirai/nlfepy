@@ -1,14 +1,16 @@
 import sys
 from logging import getLogger
+from functools import singledispatch
 from .isotropic import Isotropic
 from .j2flow import J2flow
 from .crystal_plasticity import CrystalPlasticity
 from ..material import get_material
 
 
+@singledispatch
 def get_constitutive_list(cnst_dict: dict, *, nitg: int, val: dict = {}) -> list:
     """
-    Get material classes
+    Get constitutive classes
 
     Parameters
     ----------
@@ -40,5 +42,33 @@ def get_constitutive_list(cnst_dict: dict, *, nitg: int, val: dict = {}) -> list
             logger = getLogger('Constitutive')
             logger.error('Invalid constitutive type: {}'.format(cnsts))
             sys.exit(1)
+
+    return cnsts
+
+
+@get_constitutive_list.register(list)
+def _(maters: list, *, nitg: int, val: dict = {}) -> list:
+    """
+    Get constitutive classes
+
+    Parameters
+    ----------
+    maters : list
+        List of material class (See material.py)
+    ntig : int
+        Total number of integral points
+    val : dict
+        Physical quantities
+
+    Returns
+    -------
+    cnst : list
+        List of Constitutive equation class
+    """
+
+    cnsts = []
+
+    for mater in maters:
+        cnsts.append(Isotropic(metal=mater, nitg=nitg, val=val))
 
     return cnsts

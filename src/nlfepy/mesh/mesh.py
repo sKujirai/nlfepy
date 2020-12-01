@@ -21,6 +21,8 @@ class Mesh:
         Number of finite elements
     n_tintgp : int
         Number of total integral points
+    itg_idx : array-like
+        Index of total integral points
     coords : ndarray
         Coordinates [n_dof, n_point]
     connectivity : list
@@ -47,6 +49,7 @@ class Mesh:
         self._n_element = None
         self._n_dfdof = None
         self._n_tintgp = None
+        self._itg_idx = None
         self._coords = None
         self._connectivity = None
         self._element_name = None
@@ -113,6 +116,9 @@ class Mesh:
     @property
     def mpc(self) -> dict:
         return self._mpc
+
+    def itg_idx(self, *, elm, itg) -> int:
+        return self._itg_idx[elm] + itg
 
     def read(self, mesh_path: str) -> None:
         """
@@ -200,7 +206,9 @@ class Mesh:
 
         self._n_tintgp = 0
         self._element_shape = []
+        self._itg_idx = []
         for ielm in range(self._n_element):
+            self._itg_idx.append(self._n_tintgp)
             self._n_tintgp += self._shapef[self._element_name[ielm]]['vol'].n_intgp
             self._element_shape.append(self._shapef[self._element_name[ielm]]['vol'].shape)
 

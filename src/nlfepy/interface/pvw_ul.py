@@ -30,17 +30,10 @@ class PVW_UL(IntegralEquation):
 
     def __init__(self, *, mesh, cnst, val=None, params: dict = {}) -> None:
 
-        super().__init__(mesh=mesh, val=val, params=params)
-
-        self._cnst = cnst
+        super().__init__(mesh=mesh, cnst=cnst, val=val, params=params)
 
         n_dof = self._mesh.n_dof
         n_point = self._mesh.n_point
-
-        if 'deltau' not in self._val:
-            self._val['deltau'] = np.zeros((n_dof, n_point))
-        if 'u_disp' not in self._val:
-            self._val['u_disp'] = np.zeros((n_dof, n_point))
 
         self.Fint = np.zeros((n_dof * n_point))
         self.Fext = np.zeros((n_dof * n_point))
@@ -91,7 +84,13 @@ class PVW_UL(IntegralEquation):
                 Bmatrix, wdetJv = self._mesh.get_Bmatrix('vol', elm=ielm, itg=itg)
 
                 # [C], {R}, {T}
-                Cmatrix, Rmatrix, Tmatrix = self._cnst[mater_id].constitutive_equation(du=dUelm, bm=Bmatrix, itg=itg)
+                Cmatrix, Rmatrix, Tmatrix = \
+                    self._cnst[mater_id].constitutive_equation(
+                        du=dUelm,
+                        bm=Bmatrix,
+                        itg=self._mesh.itg_idx(elm=ielm, itg=itg),
+                        plane_stress_type=self._config['plane_stress']
+                    )
 
                 # [ke], {dfint}, {Fint}, {dfext_b}, {fext_b}
                 Bd = np.zeros((n_dfdof, n_dof * n_node_v))
@@ -126,10 +125,12 @@ class PVW_UL(IntegralEquation):
                     TtrL[3:, :] = Tmatrix[:2, :2].flatten()
                     # {T}
                     Tvector = Tmatrix.flatten()[[0, 4, 1]]
-                    # [R]
-                    Rvector = Rmatrix.flatten()[[0, 4, 1]]
-                    # [C]
-                    Cmatrix = Cmatrix[[0, 1, 3], :][:, [0, 1, 3]]
+                    # [C] & {R}
+                    Cmatrix, Rvector = self._cnst[mater_id].calc_correction_term_plane_stress_CR(
+                        Cmatrix,
+                        Rmatrix.flatten()[[0, 4, 8, 1, 5, 6]],
+                        self._config['plane_stress']
+                    )
                 else:
                     # [Bd]
                     Bd[0, ::n_dof] = Bmatrix[0]

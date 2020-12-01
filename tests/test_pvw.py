@@ -5,7 +5,7 @@ import logging
 from logging import getLogger
 # import dmsh
 sys.path.append(os.path.join(os.path.dirname(__file__), '..', 'src'))
-from nlfepy import Mesh, Material, Variable, Viewer
+from nlfepy import Mesh, Material, Variable, Constitutive, Viewer
 from nlfepy.interface import PVW
 from nlfepy.io import VtuWriter
 
@@ -38,13 +38,29 @@ def main(mesh_path):
     # Physical quantities
     vals = Variable()
 
+    # Set constitutive
+    logger.info('Setting constitutive equation...')
+    constitutive = Constitutive(
+        mater,
+        nitg=mesh.n_tintgp,
+        val=vals['itg']
+    )
+
     # Solve the governing equation (Principle of virtual work)
     logger.info('Solving the governing equation...')
     pvw_params = {
         'logging': True,
     }
-    pvw = PVW(mesh=mesh, mater=mater, val=vals['point'], params=pvw_params)
+    pvw = PVW(
+        mesh=mesh,
+        cnst=constitutive,
+        val=vals['point'],
+        params=pvw_params
+    )
+    # Solve KU=F
     pvw.solve()
+    # Calc. stress
+    pvw.calc_stress()
 
     # Save results
     logger.info('Saving results')
@@ -59,6 +75,8 @@ def main(mesh_path):
     # Check B.C.
     viewer.plot_bc(mesh)
     viewer.show()
+
+    # print(vals['itg']['stress'])
 
     # Plot result
     vals['element']['rand'] = np.random.rand(mesh.n_element)
