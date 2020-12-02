@@ -15,4 +15,5 @@ __pycache__/
 
 # results or temporary files
 result.vtu
+result.png
 test.vtu

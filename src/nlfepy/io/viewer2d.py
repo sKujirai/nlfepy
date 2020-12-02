@@ -29,9 +29,11 @@ class Viewer2d(ViewerBase):
             Range of y-axis
         """
 
+        title = kwargs['title'] if 'title' in kwargs else None
+
         plt.close()
         self._fig = plt.figure()
-        self._ax = self._fig.add_subplot(111)
+        self._ax = self._fig.add_subplot(111, title=title)
         # self._ax.axis('off')
         self._ax.tick_params(
             labelbottom=False,
@@ -246,6 +248,8 @@ class Viewer2d(ViewerBase):
             kwargs['lw'] = 1
         if 'cmap' not in kwargs:
             kwargs['cmap'] = 'rainbow'
+        if 'title' in kwargs:
+            del kwargs['title']
 
         if val is None:
             self._pcm = PolyCollection(
@@ -277,6 +281,9 @@ class Viewer2d(ViewerBase):
         mesh :
             Mesh class
         """
+
+        if 'title' not in kwargs:
+            kwargs['title'] = 'Boundary conditions'
 
         self.plot(mesh=mesh, **kwargs)
 

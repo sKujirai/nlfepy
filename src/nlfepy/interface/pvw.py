@@ -57,6 +57,12 @@ class PVW(IntegralEquation):
 
             for itg in range(n_intgp_v):
                 Bmatrix, wdetJv = self._mesh.get_Bmatrix('vol', elm=ielm, itg=itg)
+
+                # Plane stress condition
+                if n_dof == 2 and self._config['plane_stress'] > 0:
+                    wdetJv *= self._cnst[mater_id].get_thickness[self._mesh.itg_idx(elm=ielm, itg=itg)]
+
+                # Element stiffness
                 Bd = np.zeros((n_dfdof, n_dof * n_node_v))
                 Ce = np.zeros((n_dfdof, n_dfdof))
                 if n_dof == 2:

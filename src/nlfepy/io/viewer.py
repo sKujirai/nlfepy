@@ -27,5 +27,5 @@ class Viewer:
     def show(self) -> None:
         self._viewer.show()
 
-    def save(self, file_name) -> None:
-        self._viewer.save(file_name)
+    def save(self, file_name, **kwargs) -> None:
+        self._viewer.save(file_name, **kwargs)

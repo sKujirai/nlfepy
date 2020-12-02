@@ -366,6 +366,33 @@ class Mesh:
 
         return self._shapef[self._element_name[elm]][etype].get_Bmatrix(cod, itg)
 
+    def get_wdetJ(self, etype: str, *, elm: int, itg: int, nds: list = None) -> float:
+        """
+        Get 1st derivative of shape function (B-matrix) in global coordinates
+
+        Parameters
+        ----------
+        etype : str
+            Element type ('vol' or 'area')
+        elm : int
+            Index of element
+        ing : int
+            Index of integral point
+        nds : list
+            List of nodes index ('area')
+
+        Returns
+        -------
+        wdetJ : float
+            Weigh * determinant of Jacobi matrix
+        """
+        if etype == 'area':
+            cod = self._coords[:, np.array(self._connectivity[elm])[nds]][:self._n_dof]
+        else:
+            cod = self._coords[:, self._connectivity[elm]][:self._n_dof]
+
+        return self._shapef[self._element_name[elm]][etype].get_wdetJ(cod, itg)
+
     def n_intgp(self, etype: str, *, elm) -> int:
         """
         Get number of integral points

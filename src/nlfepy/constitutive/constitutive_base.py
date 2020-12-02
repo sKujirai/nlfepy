@@ -28,10 +28,12 @@ class ConstitutiveBase(metaclass=ABCMeta):
 
         if 'cmatrix' not in self._val:
             self._val['cmatrix'] = np.tile(self._metal.Cmatrix, (self._ntintgp, 1, 1))
-        if 'rtensor' not in self._val:
-            self._val['rtensor'] = np.zeros((self._ntintgp, 3, 3))
+        if 'rvector' not in self._val:
+            self._val['rvector'] = np.zeros((self._ntintgp, 6))
         if 'stress' not in self._val:
-            self._val['stress'] = np.zeros((self._ntintgp, 3, 3))
+            self._val['stress'] = np.zeros((self._ntintgp, 6))
+        if 'thickness' not in self._val:
+            self._val['thickness'] = np.ones(self._ntintgp)
 
         if 'dt' not in self._params:
             self._params['dt'] = 0.01
@@ -65,10 +67,10 @@ class ConstitutiveBase(metaclass=ABCMeta):
         -------
         Cmatrix : ndarray
             Elastic modulus matrix, Cij (6 x 6)
-        Rtensor : ndarray
-            R-tensor, Rij (3 x 3)
+        Rvector : ndarray
+            R-vector, Ri (6)
         Stress : ndarray
-            Stress tensor, Tij (3 x 3)
+            Stress vector, Ti (6)
         """
         pass
 
@@ -110,6 +112,35 @@ class ConstitutiveBase(metaclass=ABCMeta):
         """
 
         return Cijkl.reshape(9, 9)[[0, 4, 8, 1, 5, 6, 3, 7, 2], :][:, [0, 4, 8, 1, 5, 6, 3, 7, 2]][:6, :6]
+
+    def set_thickness(self, thickness: float) -> None:
+        """
+        Set thickness of specimen for plane stress condition
+
+        Parameters
+        ----------
+        thickness : float
+            Thickness of specimen
+        """
+
+        self._val['thickness'] = np.full(self._ntintgp, thickness)
+
+    def get_thickness(self, itg: int) -> float:
+        """
+        Get thickness of specimen for plane stress condition
+
+        Parameters
+        ----------
+        itg : int
+            Index of integral point
+
+        Returns
+        -------
+        thickness : float
+            Thickness of specimen
+        """
+
+        return self._val['thickness'][itg]
 
     def get_elastic_modulus(
         self,
@@ -176,15 +207,11 @@ class ConstitutiveBase(metaclass=ABCMeta):
         Stress = np.dot(Ce, Ee)
 
         self._val['stress'][itg] = 0.
-        self._val['stress'][itg, 0, 0] = Stress[0]
-        self._val['stress'][itg, 1, 1] = Stress[1]
+        self._val['stress'][itg, :2] = Stress[:2]
         if n_dof == 2:
-            self._val['stress'][itg, 0, 1] = self._val['stress'][itg, 1, 0] = Stress[2]
+            self._val['stress'][itg, 3] = Stress[2]
         else:
-            self._val['stress'][itg, 2, 2] = Stress[2]
-            self._val['stress'][itg, 0, 1] = self._val['stress'][itg, 1, 0] = Stress[3]
-            self._val['stress'][itg, 1, 2] = self._val['stress'][itg, 2, 1] = Stress[4]
-            self._val['stress'][itg, 2, 0] = self._val['stress'][itg, 0, 2] = Stress[5]
+            self._val['stress'][itg, 2:] = Stress[2:]
 
     def calc_correction_term_plane_stress_CR(
         self,
@@ -270,8 +297,8 @@ class ConstitutiveBase(metaclass=ABCMeta):
                     self._val['cmatrix'][itg, 2, 0] * L_corr[0, 0]
                     + self._val['cmatrix'][itg, 2, 1] * L_corr[1, 1]
                     + self._val['cmatrix'][itg, 2, 3] * L_corr[0, 1]
-                    - self._val['rtensor'][itg, 2, 2]
-                    + self._val['stress'][itg, 2, 2]
+                    - self._val['rvector'][itg, 2]
+                    + self._val['stress'][itg, 2]
                 )
         elif plane_stress_type == 2:
             C356 = self._val['cmatrix'][itg, [2, 4, 5], :][:, [2, 4, 5]]
@@ -279,9 +306,9 @@ class ConstitutiveBase(metaclass=ABCMeta):
                 C356inv = np.linalg.inv(C356)
                 C356_124 = self._val['cmatrix'][itg, [2, 4, 5], :][:, [0, 1, 3]]
                 D3 = np.array(Ltensor[0, 0], Ltensor[1, 1], 2.*Ltensor[0, 1])
-                R356 = self._val['rtensor'][itg].flatten()[8, 5, 6] - np.dot(C356_124, D3)
+                R356 = self._val['rvector'][itg, [2, 4, 5]] - np.dot(C356_124, D3)
                 W12 = 0.5*(Ltensor[0, 1] - Ltensor[1, 0])
-                T356 = self._val['stress'][itg].flatten()[8, 5, 6]
+                T356 = self._val['stress'][itg, [2, 4, 5]]
                 R356[0] -= T356[0]
                 R356[1] -= T356[1] - W12 * T356[2]
                 R356[2] -= T356[2] + W12 * T356[1]

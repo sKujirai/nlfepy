@@ -83,14 +83,19 @@ class PVW_UL(IntegralEquation):
                 # Bmatrix & wdetJ
                 Bmatrix, wdetJv = self._mesh.get_Bmatrix('vol', elm=ielm, itg=itg)
 
+                # Plane stress condition
+                if n_dof == 2 and self._config['plane_stress'] > 0:
+                    wdetJv *= self._cnst[mater_id].get_thickness[self._mesh.itg_idx(elm=ielm, itg=itg)]
+
                 # [C], {R}, {T}
-                Cmatrix, Rmatrix, Tmatrix = \
+                Cmatrix, Rvector, Tvector = \
                     self._cnst[mater_id].constitutive_equation(
                         du=dUelm,
                         bm=Bmatrix,
                         itg=self._mesh.itg_idx(elm=ielm, itg=itg),
                         plane_stress_type=self._config['plane_stress']
                     )
+                Tmatrix = Tvector[[0, 3, 5, 3, 1, 4, 5, 4, 2]].reshape(3, 3)
 
                 # [ke], {dfint}, {Fint}, {dfext_b}, {fext_b}
                 Bd = np.zeros((n_dfdof, n_dof * n_node_v))
@@ -124,11 +129,11 @@ class PVW_UL(IntegralEquation):
                     TtrL[0:, :] = Tmatrix[:2, :2].flatten()
                     TtrL[3:, :] = Tmatrix[:2, :2].flatten()
                     # {T}
-                    Tvector = Tmatrix.flatten()[[0, 4, 1]]
+                    Tvector = Tvector[[0, 1, 3]]
                     # [C] & {R}
                     Cmatrix, Rvector = self._cnst[mater_id].calc_correction_term_plane_stress_CR(
                         Cmatrix,
-                        Rmatrix.flatten()[[0, 4, 8, 1, 5, 6]],
+                        Rvector,
                         self._config['plane_stress']
                     )
                 else:
@@ -185,10 +190,6 @@ class PVW_UL(IntegralEquation):
                     TtrL[0:, :] = Tmatrix.flatten()
                     TtrL[4:, :] = Tmatrix.flatten()
                     TtrL[8:, :] = Tmatrix.flatten()
-                    # {T}
-                    Tvector = Tmatrix.flatten()[[0, 4, 8, 1, 5, 6]]
-                    # {R}
-                    Rvector = Rmatrix.flatten()[[0, 4, 8, 1, 5, 6]]
 
                 # [ke] += [Bd]^T[D][Bd]*wdetJ
                 ke += np.dot(Bd.T, np.dot(Cmatrix, Bd)) * wdetJv

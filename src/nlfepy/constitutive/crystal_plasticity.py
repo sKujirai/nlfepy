@@ -25,14 +25,24 @@ class CrystalPlasticity(ConstitutiveBase):
         DefRate = 0.5*(VelGrad + VelGrad.T)
         Wspin = 0.5*(VelGrad - VelGrad.T)
 
+        # Update thickness for 2D plane stress
+        if plane_stress_type > 0:
+            self._val['thickness'][itg] *= (1. + DefRate[2, 2])
+
         # Cij -> Cijkl
         Cijkl = self.get_ctensor(Cij=self._val['cmatrix'][itg])
 
+        # Ti -> Tij
+        Tij = self._val['stress'][itg, [0, 3, 5, 3, 1, 4, 5, 4, 2]].reshape(3, 3)
+
+        # Ri -> Rij
+        Rij = self._val['rvector'][itg, [0, 3, 5, 3, 1, 4, 5, 4, 2]].reshape(3, 3)
+
         # Jaumann rate of Cauchy stress *dt
-        dTjaumann = np.tensordot(Cijkl, DefRate) - self._val['rtensor'][itg]
+        dTjaumann = np.tensordot(Cijkl, DefRate) - Rij
 
         # Update Cauchy stress
-        self._val['stress'][itg] += dTjaumann + np.dot(Wspin, self._val['stress'][itg]) - np.dot(self._val['stress'][itg], Wspin)
+        Tij += dTjaumann + np.dot(Wspin, Tij) - np.dot(Tij, Wspin)
 
         # Now writing.....
         raise NotImplementedError()
@@ -40,4 +50,10 @@ class CrystalPlasticity(ConstitutiveBase):
         # Cijkl -> Cij
         self._val['cmatrix'][itg] = self.get_cmatrix(Cijkl=Cijkl)
 
-        return self._val['cmatrix'][itg], self._val['rtensor'][itg], self._val['stress'][itg]
+        # Tij -> Ti
+        self._val['stress'][itg] = Tij.flatten()[[0, 4, 8, 1, 5, 6]]
+
+        # Rij -> Ri
+        self._val['rvector'][itg] = Rij.flatten()[[0, 4, 8, 1, 5, 6]]
+
+        return self._val['cmatrix'][itg], self._val['rvector'][itg], self._val['stress'][itg]

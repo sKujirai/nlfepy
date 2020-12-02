@@ -34,9 +34,14 @@ class IntegralEquation(metaclass=ABCMeta):
         self._config['penalty_coefficient'] = 1.e8
         self._config['logging'] = False
         self._config['plane_stress'] = 0
+        self._config['thickness'] = 1.
 
         for key, value in params.items():
             self._config[key] = value
+
+        # Plane stress condition
+        if self._config['plane_stress'] > 0 and 'thickness' in self._config.keys():
+            self._cnst[0].set_thickness(self._config['thickness'])
 
         # Set variables
         if 'u_disp' not in self._val:

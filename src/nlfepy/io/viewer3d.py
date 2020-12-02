@@ -30,9 +30,11 @@ class Viewer3d(ViewerBase):
             Range of z-axis
         """
 
+        title = kwargs['title'] if 'title' in kwargs else None
+
         plt.close()
         self._fig = plt.figure()
-        self._ax = self._fig.add_subplot(111, projection='3d')
+        self._ax = self._fig.add_subplot(111, projection='3d', title=title)
         # self._ax.axis('off')
         self._ax.w_xaxis.set_pane_color((1.0, 1.0, 1.0, 0.0))
         self._ax.w_yaxis.set_pane_color((1.0, 1.0, 1.0, 0.0))
@@ -320,7 +322,7 @@ class Viewer3d(ViewerBase):
                     )
                     is_plot_af = True
 
-        plt.legend()
+        plt.legend(loc='lower right')
 
     def plot(self, *, mesh, val: np.ndarray = None, **kwargs) -> None:
         """
@@ -376,6 +378,8 @@ class Viewer3d(ViewerBase):
             kwargs['facecolors'] = 'orange'
         if 'alpha' not in kwargs:
             kwargs['alpha'] = 0.25
+        if 'title' in kwargs:
+            del kwargs['title']
 
         self._pcm = Poly3DCollection(
             verts,
@@ -398,6 +402,9 @@ class Viewer3d(ViewerBase):
         mesh :
             Mesh class
         """
+
+        if 'title' not in kwargs:
+            kwargs['title'] = 'Boundary conditions'
 
         self.plot(mesh=mesh, **kwargs)
 

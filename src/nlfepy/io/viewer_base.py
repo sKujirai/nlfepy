@@ -36,6 +36,6 @@ class ViewerBase(metaclass=ABCMeta):
             plt.colorbar(self._pcm, ax=self._ax)
         plt.show()
 
-    def save(self, file_name) -> None:
+    def save(self, file_name, **kwargs) -> None:
 
-        self._fig.savefig(file_name, transparent=True, dpi=300)
+        self._fig.savefig(file_name, **kwargs)

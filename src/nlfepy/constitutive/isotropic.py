@@ -13,4 +13,4 @@ class Isotropic(ConstitutiveBase):
 
     def constitutive_equation(self, *, du: np.ndarray = None, bm: np.ndarray = None, itg: int = None, plane_stress_type: int = 0) -> Tuple[np.ndarray, np.ndarray, np.ndarray]:
 
-        return self._val['cmatrix'][itg], self._val['rtensor'][itg], self._val['stress'][itg]
+        return self._val['cmatrix'][itg], self._val['rvector'][itg], self._val['stress'][itg]

@@ -8,6 +8,7 @@ sys.path.append(os.path.join(os.path.dirname(__file__), '..', 'src'))
 from nlfepy import Mesh, Material, Variable, Constitutive, Viewer
 from nlfepy.interface import PVW
 from nlfepy.io import VtuWriter
+from nlfepy.util import calc_element_value
 
 
 def main(mesh_path):
@@ -62,6 +63,9 @@ def main(mesh_path):
     # Calc. stress
     pvw.calc_stress()
 
+    # Calc. element values
+    calc_element_value(mesh=mesh, values=vals)
+
     # Plot result
     logger.info('Drawing mesh...')
     projection = '3d' if mesh.n_dof == 3 else '2d'
@@ -71,18 +75,22 @@ def main(mesh_path):
     viewer.plot_bc(mesh)
     viewer.show()
 
-    # print(vals['itg']['stress'])
-
     # Plot result
-    vals['element']['rand'] = np.random.rand(mesh.n_element)
-    viewer.plot(mesh=mesh, val=vals['element']['rand'])
-    # viewer.save('result.png')
+    viewer.plot(
+        mesh=mesh,
+        val=vals['element']['stress'][:, 1],
+        title='Stress YY',
+    )
+    viewer.save('result.png', transparent=True, dpi=300)
     viewer.show()
 
     # Contour plot
     if mesh.n_dof == 2:
-        vals['point']['randp'] = np.random.rand(mesh.n_point)
-        viewer.contour(mesh=mesh, val=vals['point']['randp'])
+        viewer.contour(
+            mesh=mesh,
+            val=vals['point']['u_disp'][1],
+            title='Displacement Y'
+        )
         viewer.show()
 
     # Save results
