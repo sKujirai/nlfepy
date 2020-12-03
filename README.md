@@ -8,7 +8,7 @@ pip install git+https://github.com/sKujirai/nlfepy
 ```
 
 ## Quick start
-For the detail procedure, refer to the [notebook](./notebook/example_pvw.ipynb)
+For the detail procedure, refer to a [sample notebook](./notebook/example_pvw.ipynb)
 
 ```python
 from nlfepy import Mesh, Material, Variable, Constitutive, Viewer
