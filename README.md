@@ -1,5 +1,5 @@
 # nlfepy
-Simple finite element Python library for nonlinear analysis
+Simple finite element Python library for nonlinear problems
 
 ## Installation
 
@@ -35,14 +35,14 @@ mater = Material('Al')
 # Physical quantities
 vals = Variable()
 
-# Set constitutive
+# Set constitutive equation class
 constitutive = Constitutive(
     mater,
     nitg=mesh.n_tintgp,
     val=vals['itg']
 )
 
-# Solve the governing equation (Principle of virtual work)
+# Solve a governing equation (Principle of virtual work)
 pvw = PVW(
     mesh=mesh,
     cnst=constitutive,
@@ -57,7 +57,7 @@ pvw.calc_stress()
 # Calc. element values (for output)
 calc_element_value(mesh=mesh, values=vals)
 
-# Plot result
+# Plot results
 viewer = Viewer()
 viewer.plot(
     mesh=mesh,
@@ -73,7 +73,7 @@ viewer.contour(
     title='Displacement Y'
 )
 
-# Save results as vtk format
+# Save results in VTK XML format
 writer = VtuWriter(mesh=mesh, values=vals)
 writer.write('result.vtu')
 ```
