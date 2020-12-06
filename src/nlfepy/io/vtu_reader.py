@@ -122,6 +122,8 @@ class VtuReader:
                 sys = [s - 1 for s in sys]
             else:
                 sys -= 1
+                if type(sys) is int:
+                    sys = [sys]
             return value[:, sys]
 
     def get_point_value(self, tag: str, *, sys: int = 1) -> np.ndarray:
@@ -133,14 +135,18 @@ class VtuReader:
             self._logger.error('Cannot find value {} in point data'.format(tag))
             sys.exit(1)
 
-        if type(sys) is list:
-            sys = [s - 1 for s in sys]
-        else:
-            sys -= 1
-
         value = self._get_value(self._pdata_array, tag)
 
-        return value[:, sys]
+        if sys is None:
+            return value
+        else:
+            if type(sys) is list:
+                sys = [s - 1 for s in sys]
+            else:
+                sys -= 1
+                if type(sys) is int:
+                    sys = [sys]
+            return value[:, sys]
 
     def _read_coordinates(self, *, piece):
         """

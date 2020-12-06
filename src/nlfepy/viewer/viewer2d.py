@@ -15,7 +15,7 @@ class Viewer2d(ViewerBase):
     def __init__(self) -> None:
         super().__init__()
 
-    def _set_window(self, coords: np.ndarray, **kwargs) -> None:
+    def _set_window(self, ax, coords: np.ndarray, **kwargs):
         """
         Set window
 
@@ -27,15 +27,15 @@ class Viewer2d(ViewerBase):
             Range of x-axis
         ylim : array-like
             Range of y-axis
+
+        Returns
+        -------
+        ax :
+            Axis
         """
 
-        title = kwargs['title'] if 'title' in kwargs else None
-
-        plt.close()
-        self._fig = plt.figure()
-        self._ax = self._fig.add_subplot(111, title=title)
-        # self._ax.axis('off')
-        self._ax.tick_params(
+        # ax.axis('off')
+        ax.tick_params(
             labelbottom=False,
             labelleft=False,
             labelright=False,
@@ -45,36 +45,39 @@ class Viewer2d(ViewerBase):
             right=False,
             top=False,
         )
-        self._ax.axes.xaxis.set_ticks([])
-        self._ax.axes.yaxis.set_ticks([])
-        self._ax.spines['left'].set_visible(False)
-        self._ax.spines['bottom'].set_visible(False)
-        self._ax.spines['right'].set_visible(False)
-        self._ax.spines['top'].set_visible(False)
-        self._ax.set_aspect('equal')
+        ax.axes.xaxis.set_ticks([])
+        ax.axes.yaxis.set_ticks([])
+        ax.spines['left'].set_visible(False)
+        ax.spines['bottom'].set_visible(False)
+        ax.spines['right'].set_visible(False)
+        ax.spines['top'].set_visible(False)
+        ax.set_aspect('equal')
 
-        self._ax.set_xlabel('x')
-        self._ax.set_ylabel('y')
+        if 'show_axis_label' in kwargs and kwargs['show_axis_label']:
+            ax.set_xlabel('x')
+            ax.set_ylabel('y')
 
         ratio_margin = 0.1
         specimen_size = np.max(coords, axis=1)
 
         if 'xlim' in kwargs:
-            self._ax.set_xlim(kwargs['xlim'][0], kwargs['xlim'][1])
+            ax.set_xlim(kwargs['xlim'][0], kwargs['xlim'][1])
         else:
-            self._ax.set_xlim(
+            ax.set_xlim(
                 np.min(coords[0]) - specimen_size[0] * ratio_margin,
                 np.max(coords[0]) + specimen_size[0] * ratio_margin
             )
         if 'ylim' in kwargs:
-            self._ax.set_ylim(kwargs['ylim'][0], kwargs['ylim'][1])
+            ax.set_ylim(kwargs['ylim'][0], kwargs['ylim'][1])
         else:
-            self._ax.set_ylim(
+            ax.set_ylim(
                 np.min(coords[1]) - specimen_size[1] * ratio_margin,
                 np.max(coords[1]) + specimen_size[1] * ratio_margin
             )
 
-    def _set_bc_info(self, mesh) -> None:
+        return ax
+
+    def _set_bc_info(self, ax, mesh):
         """
         Plot boundary conditions
 
@@ -82,6 +85,11 @@ class Viewer2d(ViewerBase):
         ----------
         mesh :
             Mesh class (See mesh.py)
+
+        Returns
+        -------
+        ax :
+            Axis
         """
 
         rr = 0.2
@@ -103,7 +111,7 @@ class Viewer2d(ViewerBase):
         ll = max(np.max(mesh.coords[:mesh.n_dof], axis=1)) * rr
 
         # Fix points
-        self._ax.scatter(
+        ax.scatter(
             mesh.coords[0, fix_xy],
             mesh.coords[1, fix_xy],
             color='r',
@@ -111,7 +119,7 @@ class Viewer2d(ViewerBase):
         )
 
         if len(fix_x) > 0:
-            self._ax.scatter(
+            ax.scatter(
                 mesh.coords[0, fix_x],
                 mesh.coords[1, fix_x],
                 color='b',
@@ -119,7 +127,7 @@ class Viewer2d(ViewerBase):
             )
 
         if len(fix_y) > 0:
-            self._ax.scatter(
+            ax.scatter(
                 mesh.coords[0, fix_y],
                 mesh.coords[1, fix_y],
                 color='g',
@@ -130,7 +138,7 @@ class Viewer2d(ViewerBase):
         ratio_disp = ll / abs(np.max(mesh.bc['displacement'])) * rr if len(mesh.bc['idx_disp']) > 0 else None
 
         if len(idx_disp_x[0]) > 0:
-            self._ax.quiver(
+            ax.quiver(
                 mesh.coords[0, disp_pts[idx_disp_x]],
                 mesh.coords[1, disp_pts[idx_disp_x]],
                 mesh.bc['displacement'][idx_disp_x]*ratio_disp,
@@ -141,7 +149,7 @@ class Viewer2d(ViewerBase):
 
         if len(idx_disp_y[0]) > 0:
             label_disp_y = None if len(idx_disp_x[0]) > 0 else 'Prescribed displacement'
-            self._ax.quiver(
+            ax.quiver(
                 mesh.coords[0, disp_pts[idx_disp_y]],
                 mesh.coords[1, disp_pts[idx_disp_y]],
                 0.,
@@ -162,7 +170,7 @@ class Viewer2d(ViewerBase):
                 ratio_trc = ll / max_trc * rr
 
                 if len(idx_trc_x[0]) > 0:
-                    self._ax.quiver(
+                    ax.quiver(
                         mesh.coords[0, pnt_trc[idx_trc_x]],
                         mesh.coords[1, pnt_trc[idx_trc_x]],
                         Traction[pnt_trc[idx_trc_x], 0] * ratio_trc,
@@ -173,7 +181,7 @@ class Viewer2d(ViewerBase):
 
                 if len(idx_trc_y[0]) > 0:
                     label_trc_y = None if len(idx_trc_x[0]) > 0 else 'Traction'
-                    self._ax.quiver(
+                    ax.quiver(
                         mesh.coords[0, pnt_trc[idx_trc_y]],
                         mesh.coords[1, pnt_trc[idx_trc_y]],
                         0.,
@@ -194,7 +202,7 @@ class Viewer2d(ViewerBase):
                 ratio_af = ll / max_af * rr
 
                 if len(idx_af_x[0]) > 0:
-                    self._ax.quiver(
+                    ax.quiver(
                         mesh.coords[0, pnt_af[idx_af_x]],
                         mesh.coords[1, pnt_af[idx_af_x]],
                         ApplForce[pnt_af[idx_af_x], 0]*ratio_af,
@@ -205,7 +213,7 @@ class Viewer2d(ViewerBase):
 
                 if len(idx_af_y[0]) > 0:
                     label_trc_y = None if len(idx_af_y[0]) > 0 else 'Applied force'
-                    self._ax.quiver(
+                    ax.quiver(
                         mesh.coords[0, pnt_af[idx_af_y]],
                         mesh.coords[1, pnt_af[idx_af_y]],
                         0.,
@@ -214,7 +222,124 @@ class Viewer2d(ViewerBase):
                         label=label_trc_y,
                     )
 
-        self._ax.legend()
+        ax.legend()
+
+        return ax
+
+    def _ax_plot(self, *, ax, mesh, val: np.ndarray = None, **kwargs):
+        """
+        Set coordinates, connectivity and values to plot
+
+        Parameters
+        ----------
+        mesh :
+            Mesh class
+        val : ndarray
+            Value to plot in each element [n_element] (1D array)
+        xlim : array-like
+            Range of x-axis
+        ylim : array-like
+            Range of y-axis
+        cmap : str
+            Color map
+        edgecolor : str
+            Edge color
+        lw : int
+            Line width
+
+        Returns
+        -------
+        ax :
+            Axis
+        pcm :
+            PolyCollection
+        """
+
+        ax = self._set_window(ax, mesh.coords, **kwargs)
+
+        vertices = mesh.coords[:2, :].T[np.asarray(mesh.connectivity)]
+
+        if 'edgecolor' not in kwargs:
+            kwargs['edgecolor'] = 'k'
+        if 'lw' not in kwargs:
+            kwargs['lw'] = 1
+        if 'cmap' not in kwargs:
+            kwargs['cmap'] = 'rainbow'
+        self._delete_plt_unnecessary_keys(kwargs)
+
+        if val is None:
+            pcm = PolyCollection(
+                vertices,
+                facecolor='None',
+                **kwargs
+            )
+        else:
+            pcm = PolyCollection(
+                vertices,
+                **kwargs
+            )
+            value = np.array(val)
+            if value.shape[0] != mesh.n_element:
+                logger = getLogger('viewer2d')
+                logger.error('Value arrray has invalid size. Size of values: {}, Number of elements: {}'.format(value.shape[0], mesh.n_element))
+                sys.exit(1)
+            pcm.set_array(value)
+        ax.add_collection(pcm)
+
+        return ax, pcm
+
+    def _ax_contour(self, *, ax, mesh, val: np.ndarray, **kwargs):
+        """
+        Contour plot
+
+        Parameters
+        ----------
+        mesh :
+            Mesh class
+        val : ndarray
+            Value to plot in each nodes [n_point] (1D array)
+        xlim : array-like
+            Range of x-axis
+        ylim : array-like
+            Range of y-axis
+        cmap : str
+            Color map
+        edgecolor : str
+            Edge color
+        lw : int
+            Line width
+
+        Returns
+        -------
+        ax :
+            Axis
+        pcm :
+            PolyCollection
+        """
+
+        ax = self._set_window(ax, mesh.coords, **kwargs)
+
+        logger = getLogger('viewer2d')
+
+        value = np.array(val)
+        if value.shape[0] != mesh.n_point:
+            logger.error('Value arrray has invalid size. Size of values: {}, Number of total nodes: {}'.format(value.shape[0], mesh.n_point))
+            sys.exit(1)
+
+        # TRI6, QUAD -> TRI3
+        connectivity_tri3 = []
+        for ielm, lnod in enumerate(mesh.connectivity):
+            element_shape = mesh.element_shape[ielm]
+            if element_shape == 'TRI':
+                connectivity_tri3.append([lnod[0], lnod[1], lnod[2]])
+            elif element_shape == 'QUAD':
+                connectivity_tri3.append([lnod[0], lnod[1], lnod[2]])
+                connectivity_tri3.append([lnod[0], lnod[2], lnod[3]])
+
+        triang = mtri.Triangulation(mesh.coords[0, :], mesh.coords[1, :], connectivity_tri3)
+        pcm = ax.tricontourf(triang, value, **kwargs)
+
+        return ax, pcm
 
     def plot(self, *, mesh, val: np.ndarray = None, **kwargs) -> None:
         """
@@ -238,58 +363,9 @@ class Viewer2d(ViewerBase):
             Line width
         """
 
-        self._set_window(mesh.coords, **kwargs)
+        kwargs['projection'] = None
 
-        vertices = mesh.coords[:2, :].T[np.asarray(mesh.connectivity)]
-
-        if 'edgecolor' not in kwargs:
-            kwargs['edgecolor'] = 'k'
-        if 'lw' not in kwargs:
-            kwargs['lw'] = 1
-        if 'cmap' not in kwargs:
-            kwargs['cmap'] = 'rainbow'
-        if 'title' in kwargs:
-            del kwargs['title']
-
-        if val is None:
-            self._pcm = PolyCollection(
-                vertices,
-                facecolor='None',
-                **kwargs
-            )
-        else:
-            self._pcm = PolyCollection(
-                vertices,
-                **kwargs
-            )
-            value = np.array(val)
-            if value.shape[0] != mesh.n_element:
-                logger = getLogger('viewer2d')
-                logger.error('Value arrray has invalid size. Size of values: {}, Number of elements: {}'.format(value.shape[0], mesh.n_element))
-                sys.exit(1)
-            self._pcm.set_array(value)
-        self._ax.add_collection(self._pcm)
-
-        self.show_cbar = True
-
-    def plot_bc(self, mesh, **kwargs) -> None:
-        """
-        Plot boundary conditions
-
-        Parameters
-        ----------
-        mesh :
-            Mesh class
-        """
-
-        if 'title' not in kwargs:
-            kwargs['title'] = 'Boundary conditions'
-
-        self.plot(mesh=mesh, **kwargs)
-
-        self._set_bc_info(mesh)
-
-        self.show_cbar = False
+        super().plot(mesh=mesh, val=val, **kwargs)
 
     def contour(self, *, mesh, val: np.ndarray, **kwargs) -> None:
         """
@@ -313,26 +389,25 @@ class Viewer2d(ViewerBase):
             Line width
         """
 
-        self._set_window(mesh.coords, **kwargs)
+        kwargs['projection'] = None
 
-        logger = getLogger('viewer2d')
+        super().contour(mesh=mesh, val=val, **kwargs)
 
-        value = np.array(val)
-        if value.shape[0] != mesh.n_point:
-            logger.error('Value arrray has invalid size. Size of values: {}, Number of total nodes: {}'.format(value.shape[0], mesh.n_point))
-            sys.exit(1)
+    def multi_plot(self, mesh, vlist, **kwargs) -> None:
+        """
+        Plot multiple figures
 
-        # TRI6, QUAD -> TRI3
-        connectivity_tri3 = []
-        for ielm, lnod in enumerate(mesh.connectivity):
-            element_shape = mesh.element_shape[ielm]
-            if element_shape == 'TRI':
-                connectivity_tri3.append([lnod[0], lnod[1], lnod[2]])
-            elif element_shape == 'QUAD':
-                connectivity_tri3.append([lnod[0], lnod[1], lnod[2]])
-                connectivity_tri3.append([lnod[0], lnod[2], lnod[3]])
+        Parameters
+        ----------
+        mesh :
+            Mesh class
+        vlist: list
+            List of configurations.
+            'val': Value to plot
+            'plot': Plot mode ('fill' or 'scatter')
+            'figname': Figure name
+        """
 
-        triang = mtri.Triangulation(mesh.coords[0, :], mesh.coords[1, :], connectivity_tri3)
-        self._pcm = self._ax.tricontourf(triang, value, **kwargs)
+        kwargs['projection'] = None
 
-        self.show_cbar = True
+        super().multi_plot(mesh, vlist, **kwargs)

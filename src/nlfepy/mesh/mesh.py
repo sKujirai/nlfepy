@@ -139,9 +139,16 @@ class Mesh:
         """
 
         reader = VtuReader(mesh_path)
-        self._set_mesh_dict(reader.mesh)
+        self.set_mesh_data(
+            mesh=reader.mesh,
+            bc=reader.bc,
+            mpc=reader.mpc
+        )
+
+    def set_mesh_data(self, *, mesh, bc, mpc) -> None:
+        self._set_mesh_dict(mesh)
         self._set_mesh_info()
-        self._set_bc_dict(bc=reader.bc, mpc=reader.mpc)
+        self._set_bc_dict(bc=bc, mpc=mpc)
 
     def set_shape(self, *, coords: np.ndarray, connectivity) -> None:
         """
