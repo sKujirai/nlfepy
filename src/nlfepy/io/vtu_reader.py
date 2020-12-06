@@ -12,7 +12,13 @@ class VtuReader:
     Read mesh info and set boundary conditions.
     """
 
-    def __init__(self, mesh_path=None) -> None:
+    def __init__(self, mesh_path: str = None) -> None:
+
+        self._mesh = None
+        self._bc = None
+        self._mpc = None
+        self._pdata_array = None
+        self._cdata_array = None
 
         self._logger = getLogger('LogReader')
 
@@ -21,6 +27,9 @@ class VtuReader:
 
     @property
     def mesh(self) -> dict:
+        if self._mesh is None:
+            self._logger.error('Mesh object is not set')
+            sys.exit(1)
         return self._mesh
 
     @property
@@ -68,28 +77,70 @@ class VtuReader:
 
         # Point data
         point_data = piece.find(r'{VTK}PointData')
-        pdata_array = point_data.findall(r'{VTK}DataArray')
+        self._pdata_array = point_data.findall(r'{VTK}DataArray')
+        self._keys_pnt = [dat.attrib['Name'] for dat in self._pdata_array]
 
         # Cell data
         cell_data = piece.find(r'{VTK}CellData')
-        cell_array = cell_data.findall(r'{VTK}DataArray')
+        self._cell_array = cell_data.findall(r'{VTK}DataArray')
+        self._keys_cell = [dat.attrib['Name'] for dat in self._cell_array]
 
         # Boundary condition
-        self._bc_table = self._get_value(pdata_array, r'Boundary Condition').astype(np.int)
-        self._prescribed_displacement = self._get_value(pdata_array, r'Prescribed Displacement').astype(np.float)
-        self._prescribed_traction = self._get_value(pdata_array, r'Prescribed Traction').astype(np.float)
-        self._applied_force = self._get_value(pdata_array, r'Applied Force').astype(np.float)
-        self._set_boundary_condition()
+        self._bc_table = self._get_value(self._pdata_array, r'Boundary Condition').astype(np.int)
+        self._prescribed_displacement = self._get_value(self._pdata_array, r'Prescribed Displacement').astype(np.float)
+        self._prescribed_traction = self._get_value(self._pdata_array, r'Prescribed Traction').astype(np.float)
+        self._applied_force = self._get_value(self._pdata_array, r'Applied Force').astype(np.float)
+        if self._bc_table.shape[0] > 0:
+            self._set_boundary_condition()
 
         # Multi point constraint
-        self._mpc_table = self._get_value(pdata_array, r'Multi-Point Constraints').astype(np.int)
-        self._mpc_ratio = self._get_value(pdata_array, r'MPC Ratio').astype(np.float)
-        self._set_multi_point_constraint()
+        self._mpc_table = self._get_value(self._pdata_array, r'Multi-Point Constraints').astype(np.int)
+        self._mpc_ratio = self._get_value(self._pdata_array, r'MPC Ratio').astype(np.float)
+        if self._mpc_table.shape[0] > 0:
+            self._set_multi_point_constraint()
 
         # Sub-structure
-        self._mesh['grain_numbers'] = self._get_value(cell_array, r'Cryst')[:, 0].astype(np.int)
-        self._mesh['material_numbers'] = self._get_value(cell_array, r'Mater')[:, 0].astype(np.int)
-        self._mesh['crystal_orientation'] = self._get_value(cell_array, r'Crystal Orientation').astype(np.float)
+        self._mesh['grain_numbers'] = self._get_value(self._cell_array, r'Cryst')[:, 0].astype(np.int)
+        self._mesh['material_numbers'] = self._get_value(self._cell_array, r'Mater')[:, 0].astype(np.int)
+        self._mesh['crystal_orientation'] = self._get_value(self._cell_array, r'Crystal Orientation').astype(np.float)
+
+    def get_elm_value(self, tag: str, *, sys: int = None) -> np.ndarray:
+        """
+        Get element value
+        """
+
+        if tag not in self._keys_cell:
+            self._logger.error('Cannot find value in cell data'.format(tag))
+            sys.exit(1)
+
+        value = self._get_value(self._cell_array, tag)
+
+        if sys is None:
+            return value
+        else:
+            if type(sys) is list:
+                sys = [s - 1 for s in sys]
+            else:
+                sys -= 1
+            return value[:, sys]
+
+    def get_point_value(self, tag: str, *, sys: int = 1) -> np.ndarray:
+        """
+        Get nodal value
+        """
+
+        if tag not in self._keys_pnt:
+            self._logger.error('Cannot find value {} in point data'.format(tag))
+            sys.exit(1)
+
+        if type(sys) is list:
+            sys = [s - 1 for s in sys]
+        else:
+            sys -= 1
+
+        value = self._get_value(self._pdata_array, tag)
+
+        return value[:, sys]
 
     def _read_coordinates(self, *, piece):
         """

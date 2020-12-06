@@ -61,6 +61,8 @@ class Mesh:
         self._bc = None
         self._mpc = None
 
+        self._logger = getLogger('LogMesh')
+
     @property
     def n_dof(self) -> int:
         return self._n_dof
@@ -111,10 +113,16 @@ class Mesh:
 
     @property
     def bc(self) -> dict:
+        if self._bc is None:
+            self._logger.error('B.C. object is not set')
+            sys.exit(1)
         return self._bc
 
     @property
     def mpc(self) -> dict:
+        if self._mpc is None:
+            self._logger.error('MPC object is not set')
+            sys.exit(1)
         return self._mpc
 
     def itg_idx(self, *, elm, itg) -> int:
@@ -230,8 +238,6 @@ class Mesh:
             Magnitude of prescribed displacement or traction
         """
 
-        logger = getLogger('bc')
-
         self._bc = {}
         self._bc['type'] = 'BC'
         # if constraint in ['compression', 'tensile', 'shear']:
@@ -239,7 +245,7 @@ class Mesh:
         # elif constraint in ['load']:
         #     self._bc['type'] = 'load'
         # else:
-        #     logger.error('Invalid constraint type: {}'.format(constraint))
+        #     self._logger.error('Invalid constraint type: {}'.format(constraint))
         #     sys.exit(1)
 
         self._bc['displacement'] = []
@@ -282,10 +288,10 @@ class Mesh:
             elif constraint in ['load']:
                 self._bc['traction'][idx_top, 3] = value
             else:
-                logger.error('Invalid constraint type: {}'.format(constraint))
+                self._logger.error('Invalid constraint type: {}'.format(constraint))
                 sys.exit(1)
         else:
-            logger.error('Invalid constraint type: {}'.format(constraint))
+            self._logger.error('Invalid constraint type: {}'.format(constraint))
             sys.exit(1)
 
         # MPC
