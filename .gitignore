@@ -9,6 +9,7 @@ __pycache__/
 *~
 .vscode
 **/.ipynb_checkpoints/
+Untitled*
 
 # due to using tox and pytest
 .tox
@@ -18,3 +19,5 @@ __pycache__/
 result.vtu
 result.png
 test.vtu
+out*/
+tmp*

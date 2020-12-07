@@ -1,10 +1,5 @@
 import os
 import sys
-import numpy as np
-import logging
-from logging import getLogger
-import matplotlib.pyplot as plt
-# import dmsh
 sys.path.append(os.path.join(os.path.dirname(__file__), '..', 'src'))
 from nlfepy import Viewer
 from nlfepy.io import VtuReader

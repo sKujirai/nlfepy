@@ -1,3 +1,6 @@
+import os
+import glob
+import re
 import numpy as np
 from .viewer2d import Viewer2d
 from .viewer3d import Viewer3d
@@ -57,6 +60,41 @@ class Viewer:
                 )
 
         self._viewer.multi_plot(mesh=mesh, vlist=val_list, **kwargs)
+
+    def get_frame_imgs(self, *, fig_cnfs: list, vtk_cnf: dict = {}) -> list:
+        """
+        Get image of each frame
+        """
+
+        # Get VTK file list
+        if 'dir' not in vtk_cnf:
+            vtk_cnf['dir'] = r'./out_3d'
+        if 'header' not in vtk_cnf:
+            vtk_cnf['header'] = r'result_'
+        if 'ext' not in vtk_cnf:
+            vtk_cnf['ext'] = r'.vtu'
+
+        vtk_list = glob.glob(os.path.join(vtk_cnf['dir'], vtk_cnf['header']) + '*' + vtk_cnf['ext'])
+        vtk_match_list = []
+        vtk_num_list = []
+        regex = re.compile('\d+')
+        for vtk in vtk_list:
+            if re.match(vtk_cnf['header'] + '[0-9]+.vtu', os.path.basename(vtk)):
+                vtk_match_list.append(vtk)
+                vtk_num_list.append(int(regex.findall(vtk)[-1]))
+
+        vtk_list = vtk_match_list
+        vtk_num_list.sort()
+
+        imgs = []
+        for inum in vtk_num_list:
+            self.multi_plot(os.path.join(vtk_cnf['dir'], vtk_cnf['header'] + str(inum) + vtk_cnf['ext']), fig_cnfs)
+            im = self._viewer.get_fig_array()
+            # self.save('tmp.png', dpi=300)
+            # im = np.array(Image.open('tmp.png'))
+            imgs.append(im)
+
+        return imgs
 
     def show(self) -> None:
         self._viewer.show()

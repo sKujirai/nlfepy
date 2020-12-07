@@ -1,4 +1,5 @@
 from abc import ABCMeta, abstractmethod
+import io
 import numpy as np
 import matplotlib.pyplot as plt
 
@@ -176,3 +177,26 @@ class ViewerBase(metaclass=ABCMeta):
     def save(self, file_name, **kwargs) -> None:
 
         self._fig.savefig(file_name, **kwargs)
+
+    def get_fig_array(self, **kwargs) -> np.ndarray:
+        """
+        Get figure as ndarray
+
+        Returns
+        -------
+        img_arr : np.ndarray
+            Numpy array of current figure
+        """
+
+        dpi = kwargs['dpi'] if 'dpi' in kwargs else 300
+        io_buf = io.BytesIO()
+        self._fig.savefig(io_buf, format='raw', dpi=dpi)
+        io_buf.seek(0)
+        img_arr = np.frombuffer(io_buf.getvalue(), dtype=np.uint8)
+        bbox = self._fig.get_window_extent().transformed(self._fig.dpi_scale_trans.inverted())
+        width, height = int(bbox.width), int(bbox.height)
+        l_unit = int(np.sqrt(img_arr.shape[0] / (4 * height * width)))
+        img_arr = img_arr.reshape(l_unit * height, l_unit * width, 4)
+        io_buf.close()
+
+        return img_arr
