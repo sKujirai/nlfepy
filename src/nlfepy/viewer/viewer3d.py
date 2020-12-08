@@ -455,6 +455,49 @@ class Viewer3d(ViewerBase):
         # Not implemented
         raise NotImplementedError()
 
+    def _ax_scatter(self, *, ax, mesh, val: np.ndarray, **kwargs):
+        """
+        Contour plot
+
+        Parameters
+        ----------
+        mesh :
+            Mesh class
+        val : ndarray
+            Value to plot in each nodes [n_point] (1D array)
+        xlim : array-like
+            Range of x-axis
+        ylim : array-like
+            Range of y-axis
+        cmap : str
+            Color map
+        edgecolor : str
+            Edge color
+        lw : int
+            Line width
+
+        Returns
+        -------
+        ax :
+            Axis
+        pcm :
+            PolyCollection
+        """
+
+        ax = self._set_window(ax, mesh.coords, **kwargs)
+
+        ax.scatter3D(
+            mesh.coords[0, :],
+            mesh.coords[1, :],
+            mesh.coords[2, :],
+            c=val,
+            **kwargs
+        )
+
+        pcm = ax.get_children()[0]
+
+        return ax, pcm
+
     def plot(self, *, mesh, val: np.ndarray = None, **kwargs) -> None:
         """
         Set coordinates, connectivity and values to plot
@@ -514,6 +557,32 @@ class Viewer3d(ViewerBase):
         kwargs['projection'] = '3d'
 
         super().contour(mesh=mesh, val=val, **kwargs)
+
+    def scatter(self, *, mesh, val: np.ndarray, **kwargs) -> None:
+        """
+        Scatter plot
+
+        Parameters
+        ----------
+        mesh :
+            Mesh class
+        val : ndarray
+            Value to plot in each nodes [n_point] (1D array)
+        xlim : array-like
+            Range of x-axis
+        ylim : array-like
+            Range of y-axis
+        cmap : str
+            Color map
+        edgecolor : str
+            Edge color
+        lw : int
+            Line width
+        """
+
+        kwargs['projection'] = '3d'
+
+        super().scatter(mesh=mesh, val=val, **kwargs)
 
     def multi_plot(self, mesh, vlist, **kwargs) -> None:
         """

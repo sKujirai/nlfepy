@@ -31,6 +31,9 @@ class Viewer:
     def contour(self, *, mesh, val: np.ndarray, **kwargs) -> None:
         self._viewer.contour(mesh=mesh, val=val, **kwargs)
 
+    def scatter(self, *, mesh, val: np.ndarray, **kwargs) -> None:
+        self._viewer.scatter(mesh=mesh, val=val, **kwargs)
+
     def multi_plot(self, file, cnfs: list, **kwargs) -> None:
         """
         Plot multile figures
@@ -55,7 +58,7 @@ class Viewer:
         for cnf in cnfs:
             sys = cnf['sys'] if 'sys' in cnf.keys() else None
             plot_mode = cnf['plot'] if 'plot' in cnf.keys() else 'fill'
-            if plot_mode == 'contour':
+            if plot_mode in ['contour', 'scatter']:
                 val = reader.get_point_value(cnf['val'], sys=sys).astype(np.float)
             else:
                 val = reader.get_elm_value(cnf['val'], sys=sys).astype(np.float)
@@ -128,6 +131,8 @@ class Viewer:
             for vl in val_list:
                 if vl['plot'] == 'contour':
                     self.contour(mesh=mesh, val=vl['val'], title=vl['figname'], **kwargs)
+                elif vl['plot'] == 'scatter':
+                    self.scatter(mesh=mesh, val=vl['val'], title=vl['figname'], **kwargs)
                 else:
                     self.plot(mesh=mesh, val=vl['val'], title=vl['figname'], **kwargs)
                 self.save(os.path.join(vtk_cnf['out_dir'], vtk_cnf['out_header'] + vl['figname'] + '_' + str(inum) + vtk_cnf['out_ext']), **save_cnf)

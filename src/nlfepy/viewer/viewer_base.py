@@ -28,6 +28,10 @@ class ViewerBase(metaclass=ABCMeta):
     def _ax_contour(self, *, ax, mesh, val: np.ndarray, **kwargs):
         pass
 
+    @abstractmethod
+    def _ax_scatter(self, *, ax, mesh, val: np.ndarray, **kwargs):
+        pass
+
     def plot(self, *, mesh, val: np.ndarray = None, **kwargs) -> None:
         """
         Set coordinates, connectivity and values to plot
@@ -128,6 +132,47 @@ class ViewerBase(metaclass=ABCMeta):
         if val is not None:
             plt.colorbar(self._pcm, ax=self._ax)
 
+    def scatter(self, *, mesh, val: np.ndarray, **kwargs) -> None:
+        """
+        Scatter plot
+
+        Parameters
+        ----------
+        mesh :
+            Mesh class
+        val : ndarray
+            Value to plot in each element [n_element] (1D array)
+        xlim : array-like
+            Range of x-axis
+        ylim : array-like
+            Range of y-axis
+        zlim : array-like
+            Range of z-axis
+        cmap : str
+            Color map
+        edgecolor : str
+            Edge color
+        lw : int
+            Line width
+        alpha : float
+            Transparency
+        """
+
+        plt.close()
+
+        title = kwargs['title'] if 'title' in kwargs else None
+
+        if 'show_axis_label' not in kwargs:
+            kwargs['show_axis_label'] = True
+
+        self._fig = plt.figure()
+        self._ax = self._fig.add_subplot(111, title=title, projection=kwargs['projection'])
+        self._delete_plt_unnecessary_keys(kwargs)
+        self._ax, self._pcm = self._ax_scatter(ax=self._ax, mesh=mesh, val=val, **kwargs)
+
+        if val is not None:
+            plt.colorbar(self._pcm, ax=self._ax)
+
     def _delete_plt_unnecessary_keys(self, fkeys: dict):
         if 'title' in fkeys:
             del fkeys['title']
@@ -147,7 +192,7 @@ class ViewerBase(metaclass=ABCMeta):
         vlist: list
             List of configurations.
             'val': Value to plot
-            'plot': Plot mode ('fill' or 'scatter')
+            'plot': Plot mode ('fill', 'contour' or 'scatter')
             'figname': Figure name
         """
 
@@ -162,10 +207,12 @@ class ViewerBase(metaclass=ABCMeta):
         for i, vl in enumerate(vlist):
             ax = self._fig.add_subplot(n_row, n_col, i + 1, projection=kwargs['projection'])
             ax.set_title(vl['figname'])
-            if vl['plot'] == 'fill':
-                ax, pcm = self._ax_plot(ax=ax, mesh=mesh, val=vl['val'], **kwargs)
-            else:
+            if vl['plot'] == 'contour':
                 ax, pcm = self._ax_contour(ax=ax, mesh=mesh, val=vl['val'], **kwargs)
+            elif vl['plot'] == 'scatter':
+                ax, pcm = self._ax_scatter(ax=ax, mesh=mesh, val=vl['val'], **kwargs)
+            else:
+                ax, pcm = self._ax_plot(ax=ax, mesh=mesh, val=vl['val'], **kwargs)
             self._ax.append(ax)
             self._pcm.append(pcm)
             self._fig.colorbar(pcm, ax=ax)
