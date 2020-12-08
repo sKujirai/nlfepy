@@ -10,6 +10,7 @@ __pycache__/
 .vscode
 **/.ipynb_checkpoints/
 Untitled*
+None0000000.*
 
 # due to using tox and pytest
 .tox
