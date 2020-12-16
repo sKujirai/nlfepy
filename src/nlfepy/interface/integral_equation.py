@@ -31,28 +31,28 @@ class IntegralEquation(metaclass=ABCMeta):
 
         # Set parameters
         self._config = {}
-        self._config['penalty_coefficient'] = 1.e8
-        self._config['logging'] = False
-        self._config['plane_stress'] = 0
-        self._config['thickness'] = 1.
+        self._config["penalty_coefficient"] = 1.0e8
+        self._config["logging"] = False
+        self._config["plane_stress"] = 0
+        self._config["thickness"] = 1.0
 
         for key, value in params.items():
             self._config[key] = value
 
         # Plane stress condition
-        if self._config['plane_stress'] > 0 and 'thickness' in self._config.keys():
-            self._cnst[0].set_thickness(self._config['thickness'])
+        if self._config["plane_stress"] > 0 and "thickness" in self._config.keys():
+            self._cnst[0].set_thickness(self._config["thickness"])
 
         # Set variables
-        if 'u_disp' not in self._val:
-            self._val['u_disp'] = np.zeros((self._mesh.n_dof, self._mesh.n_point))
-        if 'deltau' not in self._val:
-            self._val['deltau'] = np.zeros((self._mesh.n_dof, self._mesh.n_point))
+        if "u_disp" not in self._val:
+            self._val["u_disp"] = np.zeros((self._mesh.n_dof, self._mesh.n_point))
+        if "deltau" not in self._val:
+            self._val["deltau"] = np.zeros((self._mesh.n_dof, self._mesh.n_point))
 
         # Set logger
-        self._logger = getLogger('ItgEqn')
+        self._logger = getLogger("ItgEqn")
         ch = logging.StreamHandler()
-        if self._config['logging']:
+        if self._config["logging"]:
             self._logger.setLevel(logging.DEBUG)
         else:
             self._logger.setLevel(logging.WARNING)
@@ -75,13 +75,13 @@ class IntegralEquation(metaclass=ABCMeta):
         for ielm in range(n_element):
 
             mater_id = self._mesh.material_numbers[ielm]
-            n_node_v = self._mesh.n_node('vol', elm=ielm)
-            n_intgp_v = self._mesh.n_intgp('vol', elm=ielm)
-            u_elm = self._val['u_disp'][:, np.array(connectivity[ielm])]
+            n_node_v = self._mesh.n_node("vol", elm=ielm)
+            n_intgp_v = self._mesh.n_intgp("vol", elm=ielm)
+            u_elm = self._val["u_disp"][:, np.array(connectivity[ielm])]
 
             for itg in range(n_intgp_v):
 
-                Bmatrix, _ = self._mesh.get_Bmatrix('vol', elm=ielm, itg=itg)
+                Bmatrix, _ = self._mesh.get_Bmatrix("vol", elm=ielm, itg=itg)
                 Bd = np.zeros((n_dfdof, n_dof * n_node_v))
                 if n_dof == 2:
                     Bd[0, ::n_dof] = Bmatrix[0]
@@ -103,5 +103,5 @@ class IntegralEquation(metaclass=ABCMeta):
                     u_disp=u_elm,
                     bm=Bd,
                     itg=self._mesh.itg_idx(elm=ielm, itg=itg),
-                    plane_stress_type=self._config['plane_stress']
+                    plane_stress_type=self._config["plane_stress"],
                 )

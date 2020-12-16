@@ -10,7 +10,7 @@ class ConstitutiveBase(metaclass=ABCMeta):
     Attributes
     ----------
     metal :
-        Metal class inheriting material class (See metal.py) 
+        Metal class inheriting material class (See metal.py)
     ntintgp : int
         Number of total integral points
     val : dict
@@ -26,21 +26,22 @@ class ConstitutiveBase(metaclass=ABCMeta):
         self._val = val
         self._params = params
 
-        if 'cmatrix' not in self._val:
-            self._val['cmatrix'] = np.tile(self._metal.Cmatrix, (self._ntintgp, 1, 1))
-        if 'rvector' not in self._val:
-            self._val['rvector'] = np.zeros((self._ntintgp, 6))
-        if 'stress' not in self._val:
-            self._val['stress'] = np.zeros((self._ntintgp, 6))
-        if 'thickness' not in self._val:
-            self._val['thickness'] = np.ones(self._ntintgp)
+        if "cmatrix" not in self._val:
+            self._val["cmatrix"] = np.tile(self._metal.Cmatrix, (self._ntintgp, 1, 1))
+        if "rvector" not in self._val:
+            self._val["rvector"] = np.zeros((self._ntintgp, 6))
+        if "stress" not in self._val:
+            self._val["stress"] = np.zeros((self._ntintgp, 6))
+        if "thickness" not in self._val:
+            self._val["thickness"] = np.ones(self._ntintgp)
 
-        if 'dt' not in self._params:
-            self._params['dt'] = 0.01
+        if "dt" not in self._params:
+            self._params["dt"] = 0.01
 
     @abstractmethod
     def constitutive_equation(
-        self, *,
+        self,
+        *,
         du: np.ndarray = None,
         bm: np.ndarray = None,
         itg: int = None,
@@ -92,7 +93,9 @@ class ConstitutiveBase(metaclass=ABCMeta):
         C99 = np.concatenate([Cij, Cij[:, 3:6]], axis=1)
         C99 = np.concatenate([C99, C99[3:6, :]], axis=0)
         C99[[0, 3, 8, 6, 1, 4, 5, 7, 2], :][:, [0, 3, 8, 6, 1, 4, 5, 7, 2]]
-        Cijkl = C99[[0, 3, 8, 6, 1, 4, 5, 7, 2], :][:, [0, 3, 8, 6, 1, 4, 5, 7, 2]].reshape(3, 3, 3, 3)
+        Cijkl = C99[[0, 3, 8, 6, 1, 4, 5, 7, 2], :][
+            :, [0, 3, 8, 6, 1, 4, 5, 7, 2]
+        ].reshape(3, 3, 3, 3)
 
         return Cijkl
 
@@ -111,7 +114,9 @@ class ConstitutiveBase(metaclass=ABCMeta):
             Elastic modulus matrix Cij (6 x 6)
         """
 
-        return Cijkl.reshape(9, 9)[[0, 4, 8, 1, 5, 6, 3, 7, 2], :][:, [0, 4, 8, 1, 5, 6, 3, 7, 2]][:6, :6]
+        return Cijkl.reshape(9, 9)[[0, 4, 8, 1, 5, 6, 3, 7, 2], :][
+            :, [0, 4, 8, 1, 5, 6, 3, 7, 2]
+        ][:6, :6]
 
     def set_thickness(self, thickness: float) -> None:
         """
@@ -123,7 +128,7 @@ class ConstitutiveBase(metaclass=ABCMeta):
             Thickness of specimen
         """
 
-        self._val['thickness'] = np.full(self._ntintgp, thickness)
+        self._val["thickness"] = np.full(self._ntintgp, thickness)
 
     def get_thickness(self, itg: int) -> float:
         """
@@ -140,13 +145,9 @@ class ConstitutiveBase(metaclass=ABCMeta):
             Thickness of specimen
         """
 
-        return self._val['thickness'][itg]
+        return self._val["thickness"][itg]
 
-    def get_elastic_modulus(
-        self,
-        n_dof: int,
-        plane_stress_type: int = 0
-    ) -> np.ndarray:
+    def get_elastic_modulus(self, n_dof: int, plane_stress_type: int = 0) -> np.ndarray:
         """
         Get elastic modulus matrix
 
@@ -171,7 +172,15 @@ class ConstitutiveBase(metaclass=ABCMeta):
         else:
             C124 = self._metal.Cmatrix[[0, 1, 3], :][:, [0, 1, 3]]
             if plane_stress_type == 1:
-                return C124 - np.tensordot(self._metal.Cmatrix[[0, 1, 3], 2], self._metal.Cmatrix[2, [0, 1, 3]], axes=0) / self._metal.Cmatrix[2, 2]
+                return (
+                    C124
+                    - np.tensordot(
+                        self._metal.Cmatrix[[0, 1, 3], 2],
+                        self._metal.Cmatrix[2, [0, 1, 3]],
+                        axes=0,
+                    )
+                    / self._metal.Cmatrix[2, 2]
+                )
             elif plane_stress_type == 2:
                 C356 = self._metal.Cmatrix[[2, 4, 5], :][:, [2, 4, 5]]
                 C356_124 = self._metal.Cmatrix[[2, 4, 5], :][:, [0, 1, 3]]
@@ -181,7 +190,8 @@ class ConstitutiveBase(metaclass=ABCMeta):
                 return C124
 
     def calc_stress_elastic(
-        self, *,
+        self,
+        *,
         u_disp: np.ndarray,
         bm: np.ndarray,
         itg: int,
@@ -206,18 +216,15 @@ class ConstitutiveBase(metaclass=ABCMeta):
         Ce = self.get_elastic_modulus(n_dof, plane_stress_type)
         Stress = np.dot(Ce, Ee)
 
-        self._val['stress'][itg] = 0.
-        self._val['stress'][itg, :2] = Stress[:2]
+        self._val["stress"][itg] = 0.0
+        self._val["stress"][itg, :2] = Stress[:2]
         if n_dof == 2:
-            self._val['stress'][itg, 3] = Stress[2]
+            self._val["stress"][itg, 3] = Stress[2]
         else:
-            self._val['stress'][itg, 2:] = Stress[2:]
+            self._val["stress"][itg, 2:] = Stress[2:]
 
     def calc_correction_term_plane_stress_CR(
-        self,
-        Cmatrix: np.ndarray,
-        Rvector: np.ndarray,
-        plane_stress_type: int = 0
+        self, Cmatrix: np.ndarray, Rvector: np.ndarray, plane_stress_type: int = 0
     ) -> Tuple[np.ndarray, np.ndarray]:
         """
         Calc. correction term for plane stress condition
@@ -262,10 +269,7 @@ class ConstitutiveBase(metaclass=ABCMeta):
         return C_corr, R_corr
 
     def calc_correction_term_plane_stress_L(
-        self,
-        Ltensor: np.ndarray,
-        itg: int,
-        plane_stress_type: int = 0
+        self, Ltensor: np.ndarray, itg: int, plane_stress_type: int = 0
     ) -> np.ndarray:
         """
         Calc. correction term for plane stress condition
@@ -289,26 +293,30 @@ class ConstitutiveBase(metaclass=ABCMeta):
         """
 
         L_corr = Ltensor
-        EPS = 1.e-15
+        EPS = 1.0e-15
 
         if plane_stress_type == 1:
-            if self._val['cmatrix'][itg, 2, 2] > EPS:
-                L_corr[2, 2] = -1. / self._val['cmatrix'][itg, 2, 2] * (
-                    self._val['cmatrix'][itg, 2, 0] * L_corr[0, 0]
-                    + self._val['cmatrix'][itg, 2, 1] * L_corr[1, 1]
-                    + self._val['cmatrix'][itg, 2, 3] * L_corr[0, 1]
-                    - self._val['rvector'][itg, 2]
-                    + self._val['stress'][itg, 2]
+            if self._val["cmatrix"][itg, 2, 2] > EPS:
+                L_corr[2, 2] = (
+                    -1.0
+                    / self._val["cmatrix"][itg, 2, 2]
+                    * (
+                        self._val["cmatrix"][itg, 2, 0] * L_corr[0, 0]
+                        + self._val["cmatrix"][itg, 2, 1] * L_corr[1, 1]
+                        + self._val["cmatrix"][itg, 2, 3] * L_corr[0, 1]
+                        - self._val["rvector"][itg, 2]
+                        + self._val["stress"][itg, 2]
+                    )
                 )
         elif plane_stress_type == 2:
-            C356 = self._val['cmatrix'][itg, [2, 4, 5], :][:, [2, 4, 5]]
+            C356 = self._val["cmatrix"][itg, [2, 4, 5], :][:, [2, 4, 5]]
             if np.linalg.det(C356) > EPS:
                 C356inv = np.linalg.inv(C356)
-                C356_124 = self._val['cmatrix'][itg, [2, 4, 5], :][:, [0, 1, 3]]
-                D3 = np.array(Ltensor[0, 0], Ltensor[1, 1], 2.*Ltensor[0, 1])
-                R356 = self._val['rvector'][itg, [2, 4, 5]] - np.dot(C356_124, D3)
-                W12 = 0.5*(Ltensor[0, 1] - Ltensor[1, 0])
-                T356 = self._val['stress'][itg, [2, 4, 5]]
+                C356_124 = self._val["cmatrix"][itg, [2, 4, 5], :][:, [0, 1, 3]]
+                D3 = np.array(Ltensor[0, 0], Ltensor[1, 1], 2.0 * Ltensor[0, 1])
+                R356 = self._val["rvector"][itg, [2, 4, 5]] - np.dot(C356_124, D3)
+                W12 = 0.5 * (Ltensor[0, 1] - Ltensor[1, 0])
+                T356 = self._val["stress"][itg, [2, 4, 5]]
                 R356[0] -= T356[0]
                 R356[1] -= T356[1] - W12 * T356[2]
                 R356[2] -= T356[2] + W12 * T356[1]

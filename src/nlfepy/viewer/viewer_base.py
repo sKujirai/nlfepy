@@ -60,13 +60,15 @@ class ViewerBase(metaclass=ABCMeta):
 
         plt.close()
 
-        title = kwargs['title'] if 'title' in kwargs else None
+        title = kwargs["title"] if "title" in kwargs else None
 
-        if 'show_axis_label' not in kwargs:
-            kwargs['show_axis_label'] = True
+        if "show_axis_label" not in kwargs:
+            kwargs["show_axis_label"] = True
 
         self._fig = plt.figure()
-        self._ax = self._fig.add_subplot(111, title=title, projection=kwargs['projection'])
+        self._ax = self._fig.add_subplot(
+            111, title=title, projection=kwargs["projection"]
+        )
         self._ax, self._pcm = self._ax_plot(ax=self._ax, mesh=mesh, val=val, **kwargs)
 
         if val is not None:
@@ -82,11 +84,11 @@ class ViewerBase(metaclass=ABCMeta):
             Mesh class
         """
 
-        if 'title' not in kwargs:
-            kwargs['title'] = 'Boundary conditions'
+        if "title" not in kwargs:
+            kwargs["title"] = "Boundary conditions"
 
-        if 'show_axis_label' not in kwargs:
-            kwargs['show_axis_label'] = True
+        if "show_axis_label" not in kwargs:
+            kwargs["show_axis_label"] = True
 
         self.plot(mesh=mesh, **kwargs)
 
@@ -120,14 +122,18 @@ class ViewerBase(metaclass=ABCMeta):
 
         plt.close()
 
-        title = kwargs['title'] if 'title' in kwargs else None
+        title = kwargs["title"] if "title" in kwargs else None
 
-        if 'show_axis_label' not in kwargs:
-            kwargs['show_axis_label'] = True
+        if "show_axis_label" not in kwargs:
+            kwargs["show_axis_label"] = True
 
         self._fig = plt.figure()
-        self._ax = self._fig.add_subplot(111, title=title, projection=kwargs['projection'])
-        self._ax, self._pcm = self._ax_contour(ax=self._ax, mesh=mesh, val=val, **kwargs)
+        self._ax = self._fig.add_subplot(
+            111, title=title, projection=kwargs["projection"]
+        )
+        self._ax, self._pcm = self._ax_contour(
+            ax=self._ax, mesh=mesh, val=val, **kwargs
+        )
 
         if val is not None:
             plt.colorbar(self._pcm, ax=self._ax)
@@ -160,26 +166,30 @@ class ViewerBase(metaclass=ABCMeta):
 
         plt.close()
 
-        title = kwargs['title'] if 'title' in kwargs else None
+        title = kwargs["title"] if "title" in kwargs else None
 
-        if 'show_axis_label' not in kwargs:
-            kwargs['show_axis_label'] = True
+        if "show_axis_label" not in kwargs:
+            kwargs["show_axis_label"] = True
 
         self._fig = plt.figure()
-        self._ax = self._fig.add_subplot(111, title=title, projection=kwargs['projection'])
+        self._ax = self._fig.add_subplot(
+            111, title=title, projection=kwargs["projection"]
+        )
         self._delete_plt_unnecessary_keys(kwargs)
-        self._ax, self._pcm = self._ax_scatter(ax=self._ax, mesh=mesh, val=val, **kwargs)
+        self._ax, self._pcm = self._ax_scatter(
+            ax=self._ax, mesh=mesh, val=val, **kwargs
+        )
 
         if val is not None:
             plt.colorbar(self._pcm, ax=self._ax)
 
     def _delete_plt_unnecessary_keys(self, fkeys: dict):
-        if 'title' in fkeys:
-            del fkeys['title']
-        if 'show_axis_label' in fkeys:
-            del fkeys['show_axis_label']
-        if 'projection' in fkeys:
-            del fkeys['projection']
+        if "title" in fkeys:
+            del fkeys["title"]
+        if "show_axis_label" in fkeys:
+            del fkeys["show_axis_label"]
+        if "projection" in fkeys:
+            del fkeys["projection"]
 
     def multi_plot(self, mesh, vlist, **kwargs) -> None:
         """
@@ -197,7 +207,7 @@ class ViewerBase(metaclass=ABCMeta):
         """
 
         n_fig = len(vlist)
-        n_col = kwargs['max_ncol'] if 'max_ncol' in kwargs.keys() else 3
+        n_col = kwargs["max_ncol"] if "max_ncol" in kwargs.keys() else 3
         n_row = -(-n_fig // n_col)
 
         self._fig = plt.figure(figsize=(3 * n_col, 3 * n_row))
@@ -205,14 +215,16 @@ class ViewerBase(metaclass=ABCMeta):
         self._pcm = []
 
         for i, vl in enumerate(vlist):
-            ax = self._fig.add_subplot(n_row, n_col, i + 1, projection=kwargs['projection'])
-            ax.set_title(vl['figname'])
-            if vl['plot'] == 'contour':
-                ax, pcm = self._ax_contour(ax=ax, mesh=mesh, val=vl['val'], **kwargs)
-            elif vl['plot'] == 'scatter':
-                ax, pcm = self._ax_scatter(ax=ax, mesh=mesh, val=vl['val'], **kwargs)
+            ax = self._fig.add_subplot(
+                n_row, n_col, i + 1, projection=kwargs["projection"]
+            )
+            ax.set_title(vl["figname"])
+            if vl["plot"] == "contour":
+                ax, pcm = self._ax_contour(ax=ax, mesh=mesh, val=vl["val"], **kwargs)
+            elif vl["plot"] == "scatter":
+                ax, pcm = self._ax_scatter(ax=ax, mesh=mesh, val=vl["val"], **kwargs)
             else:
-                ax, pcm = self._ax_plot(ax=ax, mesh=mesh, val=vl['val'], **kwargs)
+                ax, pcm = self._ax_plot(ax=ax, mesh=mesh, val=vl["val"], **kwargs)
             self._ax.append(ax)
             self._pcm.append(pcm)
             self._fig.colorbar(pcm, ax=ax)
@@ -235,12 +247,14 @@ class ViewerBase(metaclass=ABCMeta):
             Numpy array of current figure
         """
 
-        dpi = kwargs['dpi'] if 'dpi' in kwargs else 300
+        dpi = kwargs["dpi"] if "dpi" in kwargs else 300
         io_buf = io.BytesIO()
-        self._fig.savefig(io_buf, format='raw', dpi=dpi)
+        self._fig.savefig(io_buf, format="raw", dpi=dpi)
         io_buf.seek(0)
         img_arr = np.frombuffer(io_buf.getvalue(), dtype=np.uint8)
-        bbox = self._fig.get_window_extent().transformed(self._fig.dpi_scale_trans.inverted())
+        bbox = self._fig.get_window_extent().transformed(
+            self._fig.dpi_scale_trans.inverted()
+        )
         width, height = int(bbox.width), int(bbox.height)
         l_unit = int(np.sqrt(img_arr.shape[0] / (4 * height * width)))
         img_arr = img_arr.reshape(l_unit * height, l_unit * width, 4)

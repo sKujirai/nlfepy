@@ -103,7 +103,7 @@ class ShapeFunction(metaclass=ABCMeta):
         detJ = np.sqrt(np.linalg.det(np.dot(JacobT, JacobT.T)))
         Jinv = np.linalg.inv(JacobT)
         Bmatrix_phys = np.dot(Jinv, self._Bmatrix_nat[:, :, iint])
-        wdetJ = self._weight[iint]*detJ
+        wdetJ = self._weight[iint] * detJ
         return Bmatrix_phys, wdetJ
 
     def get_Nmatrix(self, cod: np.ndarray, iint: int) -> Tuple[np.ndarray, float]:
@@ -144,4 +144,4 @@ class ShapeFunction(metaclass=ABCMeta):
 
         Jacob = np.dot(cod, self._Bmatrix_nat[:, :, iint].T)
         detJ = np.sqrt(np.linalg.det(np.dot(Jacob.T, Jacob)))
-        return self._weight[iint]*detJ
+        return self._weight[iint] * detJ

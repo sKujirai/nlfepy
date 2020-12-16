@@ -47,32 +47,32 @@ class Viewer2d(ViewerBase):
         )
         ax.axes.xaxis.set_ticks([])
         ax.axes.yaxis.set_ticks([])
-        ax.spines['left'].set_visible(False)
-        ax.spines['bottom'].set_visible(False)
-        ax.spines['right'].set_visible(False)
-        ax.spines['top'].set_visible(False)
-        ax.set_aspect('equal')
+        ax.spines["left"].set_visible(False)
+        ax.spines["bottom"].set_visible(False)
+        ax.spines["right"].set_visible(False)
+        ax.spines["top"].set_visible(False)
+        ax.set_aspect("equal")
 
-        if 'show_axis_label' in kwargs and kwargs['show_axis_label']:
-            ax.set_xlabel('x')
-            ax.set_ylabel('y')
+        if "show_axis_label" in kwargs and kwargs["show_axis_label"]:
+            ax.set_xlabel("x")
+            ax.set_ylabel("y")
 
         ratio_margin = 0.1
         specimen_size = np.max(coords, axis=1)
 
-        if 'xlim' in kwargs:
-            ax.set_xlim(kwargs['xlim'][0], kwargs['xlim'][1])
+        if "xlim" in kwargs:
+            ax.set_xlim(kwargs["xlim"][0], kwargs["xlim"][1])
         else:
             ax.set_xlim(
                 np.min(coords[0]) - specimen_size[0] * ratio_margin,
-                np.max(coords[0]) + specimen_size[0] * ratio_margin
+                np.max(coords[0]) + specimen_size[0] * ratio_margin,
             )
-        if 'ylim' in kwargs:
-            ax.set_ylim(kwargs['ylim'][0], kwargs['ylim'][1])
+        if "ylim" in kwargs:
+            ax.set_ylim(kwargs["ylim"][0], kwargs["ylim"][1])
         else:
             ax.set_ylim(
                 np.min(coords[1]) - specimen_size[1] * ratio_margin,
-                np.max(coords[1]) + specimen_size[1] * ratio_margin
+                np.max(coords[1]) + specimen_size[1] * ratio_margin,
             )
 
         return ax
@@ -93,13 +93,13 @@ class Viewer2d(ViewerBase):
         """
 
         rr = 0.2
-        eps_crit = 1.e-10
-        eps_min = 1.e-30
+        eps_crit = 1.0e-10
+        eps_min = 1.0e-30
 
-        disp_pts, disp_dof = np.divmod(mesh.bc['idx_disp'], mesh.n_dof)
+        disp_pts, disp_dof = np.divmod(mesh.bc["idx_disp"], mesh.n_dof)
         idx_disp_x = np.where(disp_dof == 0)
         idx_disp_y = np.where(disp_dof == 1)
-        fix_pts, fix_dof = np.divmod(mesh.bc['idx_fix'], mesh.n_dof)
+        fix_pts, fix_dof = np.divmod(mesh.bc["idx_fix"], mesh.n_dof)
         fix_x = fix_pts[fix_dof == 0]
         fix_y = fix_pts[fix_dof == 1]
         fix_x = np.setdiff1d(fix_x, disp_pts[idx_disp_x])
@@ -108,59 +108,63 @@ class Viewer2d(ViewerBase):
         fix_x = np.setdiff1d(fix_x, fix_xy)
         fix_y = np.setdiff1d(fix_y, fix_xy)
 
-        ll = max(np.max(mesh.coords[:mesh.n_dof], axis=1)) * rr
+        ll = max(np.max(mesh.coords[: mesh.n_dof], axis=1)) * rr
 
         # Fix points
         ax.scatter(
             mesh.coords[0, fix_xy],
             mesh.coords[1, fix_xy],
-            color='r',
-            label='Completely fixed',
+            color="r",
+            label="Completely fixed",
         )
 
         if len(fix_x) > 0:
             ax.scatter(
                 mesh.coords[0, fix_x],
                 mesh.coords[1, fix_x],
-                color='b',
-                label='Fixed in x direction',
+                color="b",
+                label="Fixed in x direction",
             )
 
         if len(fix_y) > 0:
             ax.scatter(
                 mesh.coords[0, fix_y],
                 mesh.coords[1, fix_y],
-                color='g',
-                label='Fixed in y direction',
+                color="g",
+                label="Fixed in y direction",
             )
 
         # Prescribed displacement
-        ratio_disp = ll / abs(np.max(mesh.bc['displacement'])) * rr if len(mesh.bc['idx_disp']) > 0 else None
+        ratio_disp = (
+            ll / abs(np.max(mesh.bc["displacement"])) * rr
+            if len(mesh.bc["idx_disp"]) > 0
+            else None
+        )
 
         if len(idx_disp_x[0]) > 0:
             ax.quiver(
                 mesh.coords[0, disp_pts[idx_disp_x]],
                 mesh.coords[1, disp_pts[idx_disp_x]],
-                mesh.bc['displacement'][idx_disp_x]*ratio_disp,
-                0.,
-                color='r',
-                label='Prescribed displacement',
+                mesh.bc["displacement"][idx_disp_x] * ratio_disp,
+                0.0,
+                color="r",
+                label="Prescribed displacement",
             )
 
         if len(idx_disp_y[0]) > 0:
-            label_disp_y = None if len(idx_disp_x[0]) > 0 else 'Prescribed displacement'
+            label_disp_y = None if len(idx_disp_x[0]) > 0 else "Prescribed displacement"
             ax.quiver(
                 mesh.coords[0, disp_pts[idx_disp_y]],
                 mesh.coords[1, disp_pts[idx_disp_y]],
-                0.,
-                mesh.bc['displacement'][idx_disp_y]*ratio_disp,
-                color='r',
+                0.0,
+                mesh.bc["displacement"][idx_disp_y] * ratio_disp,
+                color="r",
                 label=label_disp_y,
             )
 
         # Traction
-        if 'traction' in mesh.bc:
-            Traction = mesh.bc['traction']
+        if "traction" in mesh.bc:
+            Traction = mesh.bc["traction"]
             max_trc = np.max(np.abs(Traction))
             if max_trc > eps_min:
                 trc_crit = max_trc * eps_crit
@@ -174,25 +178,25 @@ class Viewer2d(ViewerBase):
                         mesh.coords[0, pnt_trc[idx_trc_x]],
                         mesh.coords[1, pnt_trc[idx_trc_x]],
                         Traction[pnt_trc[idx_trc_x], 0] * ratio_trc,
-                        0.,
-                        color='g',
-                        label='Traction',
+                        0.0,
+                        color="g",
+                        label="Traction",
                     )
 
                 if len(idx_trc_y[0]) > 0:
-                    label_trc_y = None if len(idx_trc_x[0]) > 0 else 'Traction'
+                    label_trc_y = None if len(idx_trc_x[0]) > 0 else "Traction"
                     ax.quiver(
                         mesh.coords[0, pnt_trc[idx_trc_y]],
                         mesh.coords[1, pnt_trc[idx_trc_y]],
-                        0.,
+                        0.0,
                         Traction[pnt_trc[idx_trc_y], 1] * ratio_trc,
-                        color='g',
+                        color="g",
                         label=label_trc_y,
                     )
 
         # Applied force
-        if 'applied_force' in mesh.bc:
-            ApplForce = mesh.bc['applied_force']
+        if "applied_force" in mesh.bc:
+            ApplForce = mesh.bc["applied_force"]
             max_af = np.max(np.abs(ApplForce))
             if max_af > eps_min:
                 af_crit = max_af * eps_crit
@@ -205,20 +209,20 @@ class Viewer2d(ViewerBase):
                     ax.quiver(
                         mesh.coords[0, pnt_af[idx_af_x]],
                         mesh.coords[1, pnt_af[idx_af_x]],
-                        ApplForce[pnt_af[idx_af_x], 0]*ratio_af,
-                        0.,
-                        color='b',
-                        label='Applied force',
+                        ApplForce[pnt_af[idx_af_x], 0] * ratio_af,
+                        0.0,
+                        color="b",
+                        label="Applied force",
                     )
 
                 if len(idx_af_y[0]) > 0:
-                    label_trc_y = None if len(idx_af_y[0]) > 0 else 'Applied force'
+                    label_trc_y = None if len(idx_af_y[0]) > 0 else "Applied force"
                     ax.quiver(
                         mesh.coords[0, pnt_af[idx_af_y]],
                         mesh.coords[1, pnt_af[idx_af_y]],
-                        0.,
-                        ApplForce[pnt_af[idx_af_y], 1]*ratio_af,
-                        color='b',
+                        0.0,
+                        ApplForce[pnt_af[idx_af_y], 1] * ratio_af,
+                        color="b",
                         label=label_trc_y,
                     )
 
@@ -259,29 +263,26 @@ class Viewer2d(ViewerBase):
 
         vertices = mesh.coords[:2, :].T[np.asarray(mesh.connectivity)]
 
-        if 'edgecolor' not in kwargs:
-            kwargs['edgecolor'] = 'k'
-        if 'lw' not in kwargs:
-            kwargs['lw'] = 1
-        if 'cmap' not in kwargs:
-            kwargs['cmap'] = 'rainbow'
+        if "edgecolor" not in kwargs:
+            kwargs["edgecolor"] = "k"
+        if "lw" not in kwargs:
+            kwargs["lw"] = 1
+        if "cmap" not in kwargs:
+            kwargs["cmap"] = "rainbow"
         self._delete_plt_unnecessary_keys(kwargs)
 
         if val is None:
-            pcm = PolyCollection(
-                vertices,
-                facecolor='None',
-                **kwargs
-            )
+            pcm = PolyCollection(vertices, facecolor="None", **kwargs)
         else:
-            pcm = PolyCollection(
-                vertices,
-                **kwargs
-            )
+            pcm = PolyCollection(vertices, **kwargs)
             value = np.array(val)
             if value.shape[0] != mesh.n_element:
-                logger = getLogger('viewer2d')
-                logger.error('Value arrray has invalid size. Size of values: {}, Number of elements: {}'.format(value.shape[0], mesh.n_element))
+                logger = getLogger("viewer2d")
+                logger.error(
+                    "Value arrray has invalid size. Size of values: {}, Number of elements: {}".format(
+                        value.shape[0], mesh.n_element
+                    )
+                )
                 sys.exit(1)
             pcm.set_array(value)
         ax.add_collection(pcm)
@@ -319,24 +320,30 @@ class Viewer2d(ViewerBase):
 
         ax = self._set_window(ax, mesh.coords, **kwargs)
 
-        logger = getLogger('viewer2d')
+        logger = getLogger("viewer2d")
 
         value = np.array(val)
         if value.shape[0] != mesh.n_point:
-            logger.error('Value arrray has invalid size. Size of values: {}, Number of total nodes: {}'.format(value.shape[0], mesh.n_point))
+            logger.error(
+                "Value arrray has invalid size. Size of values: {}, Number of total nodes: {}".format(
+                    value.shape[0], mesh.n_point
+                )
+            )
             sys.exit(1)
 
         # TRI6, QUAD -> TRI3
         connectivity_tri3 = []
         for ielm, lnod in enumerate(mesh.connectivity):
             element_shape = mesh.element_shape[ielm]
-            if element_shape == 'TRI':
+            if element_shape == "TRI":
                 connectivity_tri3.append([lnod[0], lnod[1], lnod[2]])
-            elif element_shape == 'QUAD':
+            elif element_shape == "QUAD":
                 connectivity_tri3.append([lnod[0], lnod[1], lnod[2]])
                 connectivity_tri3.append([lnod[0], lnod[2], lnod[3]])
 
-        triang = mtri.Triangulation(mesh.coords[0, :], mesh.coords[1, :], connectivity_tri3)
+        triang = mtri.Triangulation(
+            mesh.coords[0, :], mesh.coords[1, :], connectivity_tri3
+        )
         pcm = ax.tricontourf(triang, value, **kwargs)
 
         return ax, pcm
@@ -400,7 +407,7 @@ class Viewer2d(ViewerBase):
             Line width
         """
 
-        kwargs['projection'] = None
+        kwargs["projection"] = None
 
         super().plot(mesh=mesh, val=val, **kwargs)
 
@@ -426,7 +433,7 @@ class Viewer2d(ViewerBase):
             Line width
         """
 
-        kwargs['projection'] = None
+        kwargs["projection"] = None
 
         super().contour(mesh=mesh, val=val, **kwargs)
 
@@ -452,7 +459,7 @@ class Viewer2d(ViewerBase):
             Line width
         """
 
-        kwargs['projection'] = None
+        kwargs["projection"] = None
 
         super().scatter(mesh=mesh, val=val, **kwargs)
 
@@ -471,6 +478,6 @@ class Viewer2d(ViewerBase):
             'figname': Figure name
         """
 
-        kwargs['projection'] = None
+        kwargs["projection"] = None
 
         super().multi_plot(mesh, vlist, **kwargs)

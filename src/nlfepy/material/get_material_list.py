@@ -18,11 +18,11 @@ def get_material(material_name: str) -> list:
         Material class
     """
 
-    if material_name == 'Al' or material_name == 'Aluminium':
+    if material_name == "Al" or material_name == "Aluminium":
         return Aluminium()
     else:
-        logger = getLogger('Material')
-        logger.error('Invalid material: {}'.format(material_name))
+        logger = getLogger("Material")
+        logger.error("Invalid material: {}".format(material_name))
         sys.exit(1)
 
 

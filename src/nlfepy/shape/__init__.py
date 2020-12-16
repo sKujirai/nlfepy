@@ -5,9 +5,9 @@ from .quad4 import Quad4
 from .hexa8 import Hexa8
 
 __all__ = [
-    'Nd2',
-    'Tri3',
-    'Tri6',
-    'Quad4',
-    'Hexa8',
+    "Nd2",
+    "Tri3",
+    "Tri6",
+    "Quad4",
+    "Hexa8",
 ]

@@ -1,6 +1,7 @@
 import os
 import sys
-sys.path.append(os.path.join(os.path.dirname(__file__), '..', 'src'))
+
+sys.path.append(os.path.join(os.path.dirname(__file__), "..", "src"))
 from nlfepy.io import VtuReader
 
 
@@ -16,8 +17,8 @@ def main(mesh_path):
     for key, value in BC.items():
         print(key, value)
 
-    print('OK')
+    print("OK")
 
 
-if __name__ == '__main__':
-    main('tests/data/mesh_mpc.vtu')
+if __name__ == "__main__":
+    main("tests/data/mesh_mpc.vtu")

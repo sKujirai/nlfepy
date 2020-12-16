@@ -10,11 +10,11 @@ def Variable() -> dict:
 
     vals = {
         # Values in global nodes
-        'point': {},
+        "point": {},
         # Values in each element
-        'element': {},
+        "element": {},
         # Values in each integral points
-        'itg': {},
+        "itg": {},
     }
 
     return vals

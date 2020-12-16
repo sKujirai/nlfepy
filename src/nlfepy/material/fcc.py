@@ -28,18 +28,30 @@ class FCC(Metal):
         Set elastic modulus: Cmatrix [C]
         """
 
-        C11 = self._Young / ((1. + self._Poisson) * (1. - 2.*self._Poisson)) * (1. - self._Poisson)
-        C12 = self._Young / ((1. + self._Poisson) * (1. - 2.*self._Poisson)) * self._Poisson
-        C44 = (C11 - C12) / 2.
+        C11 = (
+            self._Young
+            / ((1.0 + self._Poisson) * (1.0 - 2.0 * self._Poisson))
+            * (1.0 - self._Poisson)
+        )
+        C12 = (
+            self._Young
+            / ((1.0 + self._Poisson) * (1.0 - 2.0 * self._Poisson))
+            * self._Poisson
+        )
+        C44 = (C11 - C12) / 2.0
 
-        self._Cmatrix = np.array([
-            [C11, C12, C12, 0., 0., 0.],
-            [C12, C11, C12, 0., 0., 0.],
-            [C12, C12, C11, 0., 0., 0.],
-            [0., 0., 0., C44, 0., 0.],
-            [0., 0., 0., 0., C44, 0.],
-            [0., 0., 0., 0., 0., C44]
-        ])
+        self._Cmatrix = np.array(
+            [
+                [C11, C12, C12, 0.0, 0.0, 0.0],
+                [C12, C11, C12, 0.0, 0.0, 0.0],
+                [C12, C12, C11, 0.0, 0.0, 0.0],
+                [0.0, 0.0, 0.0, C44, 0.0, 0.0],
+                [0.0, 0.0, 0.0, 0.0, C44, 0.0],
+                [0.0, 0.0, 0.0, 0.0, 0.0, C44],
+            ]
+        )
 
     def set_shear_modulus(self) -> None:
-        self._shear_modulus = np.full(self._n_system, self._Young / (2. * self._Poisson))
+        self._shear_modulus = np.full(
+            self._n_system, self._Young / (2.0 * self._Poisson)
+        )

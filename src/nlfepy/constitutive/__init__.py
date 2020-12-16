@@ -5,9 +5,9 @@ from .constitutive import Constitutive
 from .variable import Variable
 
 __all__ = [
-    'Isotropic',
-    'J2flow',
-    'CrystalPlasticity',
-    'Constitutive',
-    'Variable',
+    "Isotropic",
+    "J2flow",
+    "CrystalPlasticity",
+    "Constitutive",
+    "Variable",
 ]

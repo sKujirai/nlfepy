@@ -20,29 +20,29 @@ def get_element_name(*, n_dof: int, n_node: int) -> str:
         Name of finite element
     """
 
-    logger = getLogger('shape')
+    logger = getLogger("shape")
 
     element_name = None
 
     if n_dof == 2:
         if n_node == 3:
-            element_name = 'TRI3'
+            element_name = "TRI3"
         elif n_node == 4:
-            element_name = 'QUAD4'
+            element_name = "QUAD4"
         elif n_node == 6:
-            element_name = 'TRI6'
+            element_name = "TRI6"
         elif n_node == 8:
-            element_name = 'QUAD8'
+            element_name = "QUAD8"
         else:
-            logger.error('Invalid 2D element')
+            logger.error("Invalid 2D element")
             sys.exit(1)
     else:
         if n_node == 4:
-            element_name = 'TET4'
+            element_name = "TET4"
         elif n_node == 8:
-            element_name = 'HEXA8'
+            element_name = "HEXA8"
         else:
-            logger.error('Invalid 2D element')
+            logger.error("Invalid 2D element")
             sys.exit(1)
 
     return element_name
@@ -63,24 +63,24 @@ def get_shape_function(element_name: str) -> dict:
         Dictionary of shape function ('vol', 'area')
     """
 
-    logger = getLogger('shape')
+    logger = getLogger("shape")
 
     shapef = {}
 
-    if element_name == 'TRI3':
-        shapef['vol'] = Tri3()
-        shapef['area'] = Nd2()
-    elif element_name == 'TRI6':
-        shapef['vol'] = Tri6()
-        shapef['area'] = Nd2()
-    elif element_name == 'QUAD4':
-        shapef['vol'] = Quad4()
-        shapef['area'] = Nd2()
-    elif element_name == 'HEXA8':
-        shapef['vol'] = Hexa8()
-        shapef['area'] = Quad4()
+    if element_name == "TRI3":
+        shapef["vol"] = Tri3()
+        shapef["area"] = Nd2()
+    elif element_name == "TRI6":
+        shapef["vol"] = Tri6()
+        shapef["area"] = Nd2()
+    elif element_name == "QUAD4":
+        shapef["vol"] = Quad4()
+        shapef["area"] = Nd2()
+    elif element_name == "HEXA8":
+        shapef["vol"] = Hexa8()
+        shapef["area"] = Quad4()
     else:
-        logger.error('Invalid element name: {}'.format(element_name))
+        logger.error("Invalid element name: {}".format(element_name))
         sys.exit(1)
 
     return shapef
