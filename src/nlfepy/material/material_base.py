@@ -8,10 +8,10 @@ class MaterialBase(metaclass=ABCMeta):
     """
 
     def __init__(self) -> None:
-        self._Young = None
-        self._Poisson = None
-        self._shear_modulus = None
-        self._Cmatrix = None
+        self._Young: float
+        self._Poisson: float
+        self._shear_modulus: np.ndarray
+        self._Cmatrix: np.ndarray
 
     @property
     def Cmatrix(self) -> np.ndarray:

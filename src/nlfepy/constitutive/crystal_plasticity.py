@@ -12,12 +12,7 @@ class CrystalPlasticity(ConstitutiveBase):
         super().__init__(metal=metal, nitg=nitg, val=val, params=params)
 
     def constitutive_equation(
-        self,
-        *,
-        du: np.ndarray = None,
-        bm: np.ndarray = None,
-        itg: int = None,
-        plane_stress_type: int = 0
+        self, *, du: np.ndarray, bm: np.ndarray, itg: int, plane_stress_type: int = 0
     ) -> Tuple[np.ndarray, np.ndarray, np.ndarray]:
 
         n_dof = du.shape[0]

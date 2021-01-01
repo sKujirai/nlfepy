@@ -1,3 +1,4 @@
+import numpy as np
 from abc import abstractmethod
 from .material_base import MaterialBase
 
@@ -11,10 +12,10 @@ class Metal(MaterialBase):
 
         super().__init__()
 
-        self._n_system = None
-        self._base_s = None
-        self._base_m = None
-        self._burgers_vec = None
+        self._n_system: int
+        self._base_s: np.ndarray
+        self._base_m: np.ndarray
+        self._burgers_vec: np.ndarray
 
     @abstractmethod
     def set_crystal(self) -> None:

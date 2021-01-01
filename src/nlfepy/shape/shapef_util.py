@@ -1,6 +1,8 @@
 from ..shape import Nd2, Tri3, Tri6, Quad4, Hexa8
 import sys
 from logging import getLogger
+from .shape_function import ShapeFunction
+from typing import Dict
 
 
 def get_element_name(*, n_dof: int, n_node: int) -> str:
@@ -48,7 +50,7 @@ def get_element_name(*, n_dof: int, n_node: int) -> str:
     return element_name
 
 
-def get_shape_function(element_name: str) -> dict:
+def get_shape_function(element_name: str) -> Dict[str, ShapeFunction]:
     """
     Get shape function
 
@@ -65,7 +67,7 @@ def get_shape_function(element_name: str) -> dict:
 
     logger = getLogger("shape")
 
-    shapef = {}
+    shapef: Dict[str, ShapeFunction] = {}
 
     if element_name == "TRI3":
         shapef["vol"] = Tri3()

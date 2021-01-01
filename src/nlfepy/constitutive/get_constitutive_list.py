@@ -1,6 +1,8 @@
 import sys
 from logging import getLogger
 from functools import singledispatch
+from typing import List
+from .constitutive_base import ConstitutiveBase
 from .isotropic import Isotropic
 from .j2flow import J2flow
 from .crystal_plasticity import CrystalPlasticity
@@ -8,7 +10,9 @@ from ..material import get_material
 
 
 @singledispatch
-def get_constitutive_list(cnst_dict: dict, *, nitg: int, val: dict = {}) -> list:
+def get_constitutive_list(
+    cnst_dict: dict, *, nitg: int, val: dict = {}
+) -> List[ConstitutiveBase]:
     """
     Get constitutive classes
 
@@ -27,7 +31,7 @@ def get_constitutive_list(cnst_dict: dict, *, nitg: int, val: dict = {}) -> list
         List of Constitutive equation class
     """
 
-    cnsts = []
+    cnsts: List[ConstitutiveBase] = []
 
     for mater, citems in cnst_dict.items():
         cname = citems[0]
@@ -55,7 +59,7 @@ def get_constitutive_list(cnst_dict: dict, *, nitg: int, val: dict = {}) -> list
 
 
 @get_constitutive_list.register(list)
-def _(maters: list, *, nitg: int, val: dict = {}) -> list:
+def _(maters: list, *, nitg: int, val: dict = {}) -> List[ConstitutiveBase]:
     """
     Get constitutive classes
 
@@ -74,7 +78,7 @@ def _(maters: list, *, nitg: int, val: dict = {}) -> list:
         List of Constitutive equation class
     """
 
-    cnsts = []
+    cnsts: List[ConstitutiveBase] = []
 
     for mater in maters:
         cnsts.append(Isotropic(metal=mater, nitg=nitg, val=val))

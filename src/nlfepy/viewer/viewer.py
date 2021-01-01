@@ -4,6 +4,7 @@ import glob
 import re
 import numpy as np
 from logging import getLogger
+from .viewer_base import ViewerBase
 from .viewer2d import Viewer2d
 from .viewer3d import Viewer3d
 from ..io.vtu_reader import VtuReader
@@ -17,6 +18,7 @@ class Viewer:
 
     def __init__(self, projection: str = None) -> None:
 
+        self._viewer: ViewerBase
         if projection == "3d":
             self._viewer = Viewer3d()
         else:
@@ -55,9 +57,9 @@ class Viewer:
             sys = cnf["sys"] if "sys" in cnf.keys() else None
             plot_mode = cnf["plot"] if "plot" in cnf.keys() else "fill"
             if plot_mode in ["contour", "scatter"]:
-                val = reader.get_point_value(cnf["val"], sys=sys).astype(np.float)
+                val = reader.get_point_value(cnf["val"], systems=sys).astype(np.float)
             else:
-                val = reader.get_elm_value(cnf["val"], sys=sys).astype(np.float)
+                val = reader.get_elm_value(cnf["val"], systems=sys).astype(np.float)
             if sys is None:
                 sys = [i for i in range(val.shape[1])]
             for i, isys in enumerate(sys):

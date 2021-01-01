@@ -1,8 +1,7 @@
-from os import read
 import sys
 import numpy as np
 from logging import getLogger
-from typing import Tuple
+from typing import Tuple, Optional, List, Dict, Union, cast
 from ..io.vtu_reader import VtuReader
 from ..shape.shapef_util import get_shape_function, get_element_name
 
@@ -44,43 +43,43 @@ class Mesh:
     """
 
     def __init__(self) -> None:
-        self._n_dof = None
-        self._n_point = None
-        self._n_element = None
-        self._n_dfdof = None
-        self._n_tintgp = None
-        self._itg_idx = None
-        self._coords = None
-        self._connectivity = None
-        self._element_name = None
-        self._element_shape = None
-        self._material_numbers = None
-        self._grain_numbers = None
-        self._crystal_orientation = None
-        self._shapef = None
-        self._bc = None
-        self._mpc = None
+        self._n_dof: Optional[int] = None
+        self._n_point: Optional[int] = None
+        self._n_element: Optional[int] = None
+        self._n_dfdof: Optional[int] = None
+        self._n_tintgp: Optional[int] = None
+        self._itg_idx: List[int] = []
+        self._coords: np.ndarray = np.empty(shape=(0, 0))
+        self._connectivity: List[List[int]] = []
+        self._element_name: List[str] = []
+        self._element_shape: List[str] = []
+        self._material_numbers: Optional[Union[List[int], np.ndarray]] = None
+        self._grain_numbers: Optional[Union[List[int], np.ndarray]] = None
+        self._crystal_orientation: Optional[np.ndarray] = None
+        self._shapef: Dict[str, dict] = {}
+        self._bc: Optional[dict] = None
+        self._mpc: Optional[dict] = None
 
         self._logger = getLogger("LogMesh")
 
     @property
-    def n_dof(self) -> int:
+    def n_dof(self) -> Optional[int]:
         return self._n_dof
 
     @property
-    def n_point(self) -> int:
+    def n_point(self) -> Optional[int]:
         return self._n_point
 
     @property
-    def n_element(self) -> int:
+    def n_element(self) -> Optional[int]:
         return self._n_element
 
     @property
-    def n_dfdof(self) -> int:
+    def n_dfdof(self) -> Optional[int]:
         return self._n_dfdof
 
     @property
-    def n_tintgp(self) -> int:
+    def n_tintgp(self) -> Optional[int]:
         return self._n_tintgp
 
     @property
@@ -88,27 +87,27 @@ class Mesh:
         return self._coords
 
     @property
-    def connectivity(self) -> list:
+    def connectivity(self) -> List[List[int]]:
         return self._connectivity
 
     @property
-    def element_name(self) -> list:
+    def element_name(self) -> List[str]:
         return self._element_name
 
     @property
-    def element_shape(self) -> list:
+    def element_shape(self) -> List[str]:
         return self._element_shape
 
     @property
-    def material_numbers(self):
+    def material_numbers(self) -> Optional[Union[List[int], np.ndarray]]:
         return self._material_numbers
 
     @property
-    def grain_numbers(self):
+    def grain_numbers(self) -> Optional[Union[List[int], np.ndarray]]:
         return self._grain_numbers
 
     @property
-    def crystal_orientation(self) -> np.ndarray:
+    def crystal_orientation(self) -> Optional[np.ndarray]:
         return self._crystal_orientation
 
     @property
@@ -125,7 +124,7 @@ class Mesh:
             sys.exit(1)
         return self._mpc
 
-    def itg_idx(self, *, elm, itg) -> int:
+    def itg_idx(self, *, elm: int, itg: int) -> int:
         return self._itg_idx[elm] + itg
 
     def read(self, mesh_path: str) -> None:
@@ -141,7 +140,9 @@ class Mesh:
         reader = VtuReader(mesh_path)
         self.set_mesh_data(mesh=reader.mesh, bc=reader.bc, mpc=reader.mpc)
 
-    def set_mesh_data(self, *, mesh, bc, mpc) -> None:
+    def set_mesh_data(
+        self, *, mesh: dict, bc: Optional[dict], mpc: Optional[dict]
+    ) -> None:
         self._set_mesh_dict(mesh)
         self._set_mesh_info()
         self._set_bc_dict(bc=bc, mpc=mpc)
@@ -210,7 +211,9 @@ class Mesh:
 
         for lnod in self._connectivity:
             n_nod = len(lnod)
-            self._element_name.append(get_element_name(n_dof=self._n_dof, n_node=n_nod))
+            self._element_name.append(
+                get_element_name(n_dof=cast(int, self._n_dof), n_node=n_nod)
+            )
 
         for elm_name in set(self._element_name):
             self._shapef[elm_name] = get_shape_function(elm_name)
@@ -218,14 +221,14 @@ class Mesh:
         self._n_tintgp = 0
         self._element_shape = []
         self._itg_idx = []
-        for ielm in range(self._n_element):
-            self._itg_idx.append(self._n_tintgp)
+        for ielm in range(cast(int, self._n_element)):
+            self._itg_idx.append(cast(int, self._n_tintgp))
             self._n_tintgp += self._shapef[self._element_name[ielm]]["vol"].n_intgp
             self._element_shape.append(
                 self._shapef[self._element_name[ielm]]["vol"].shape
             )
 
-    def _set_bc_dict(self, *, bc: dict, mpc: dict) -> None:
+    def _set_bc_dict(self, *, bc: Optional[dict], mpc: Optional[dict]) -> None:
         self._bc = bc
         self._mpc = mpc
 
@@ -262,6 +265,7 @@ class Mesh:
         eps = min(specimen_size) * 1.0e-10
 
         # bottom
+        self._coords = cast(np.ndarray, self._coords)
         idx_bottom = np.where(self._coords[1] < cod_min[1] + eps)[0]
         idx_top = np.where(self._coords[1] > cod_max[1] - eps)[0]
         idx_left = np.where(self._coords[0] < cod_min[0] + eps)[0]

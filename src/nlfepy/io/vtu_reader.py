@@ -3,6 +3,7 @@ import sys
 import xml.etree.ElementTree as ET
 import numpy as np
 from logging import getLogger
+from typing import Tuple, Optional, List, Union
 
 
 class VtuReader:
@@ -14,11 +15,11 @@ class VtuReader:
 
     def __init__(self, mesh_path: str = None) -> None:
 
-        self._mesh = None
-        self._bc = None
-        self._mpc = None
-        self._pdata_array = None
-        self._cdata_array = None
+        self._mesh: dict = {}
+        self._bc: Optional[dict] = None
+        self._mpc: Optional[dict] = None
+        self._pdata_array: Optional[List[ET.Element]] = None
+        self._cdata_array: Optional[List[ET.Element]] = None
 
         self._logger = getLogger("LogReader")
 
@@ -33,11 +34,11 @@ class VtuReader:
         return self._mesh
 
     @property
-    def bc(self) -> dict:
+    def bc(self) -> Optional[dict]:
         return self._bc
 
     @property
-    def mpc(self) -> dict:
+    def mpc(self) -> Optional[dict]:
         return self._mpc
 
     def read(self, mesh_path: str) -> None:
@@ -62,7 +63,13 @@ class VtuReader:
 
         root = tree.getroot()
         unstructured_grid = root.find(r"{VTK}UnstructuredGrid")
+        if unstructured_grid is None:
+            self._logger.error("Cannot get element of unstructured grid")
+            sys.exit(1)
         piece = unstructured_grid.find(r"{VTK}Piece")
+        if piece is None:
+            self._logger.error("Cannot get value in unstructured grid")
+            sys.exit(1)
 
         # Mesh info.
         self._mesh = {}
@@ -81,11 +88,17 @@ class VtuReader:
 
         # Point data
         point_data = piece.find(r"{VTK}PointData")
+        if point_data is None:
+            self._logger.error("Cannot find point data")
+            sys.exit(1)
         self._pdata_array = point_data.findall(r"{VTK}DataArray")
         self._keys_pnt = [dat.attrib["Name"] for dat in self._pdata_array]
 
         # Cell data
         cell_data = piece.find(r"{VTK}CellData")
+        if cell_data is None:
+            self._logger.error("Cannot find cell data")
+            sys.exit(1)
         self._cell_array = cell_data.findall(r"{VTK}DataArray")
         self._keys_cell = [dat.attrib["Name"] for dat in self._cell_array]
 
@@ -126,29 +139,33 @@ class VtuReader:
             self._cell_array, r"Crystal Orientation"
         ).astype(np.float)
 
-    def get_elm_value(self, tag: str, *, sys: int = None) -> np.ndarray:
+    def get_elm_value(
+        self, tag: str, *, systems: Optional[Union[int, List[int], np.ndarray]] = None
+    ) -> np.ndarray:
         """
         Get element value
         """
 
         if tag not in self._keys_cell:
-            self._logger.error("Cannot find value in cell data".format(tag))
+            self._logger.error("Cannot find value {} in cell data".format(tag))
             sys.exit(1)
 
         value = self._get_value(self._cell_array, tag)
 
-        if sys is None:
+        if systems is None:
             return value
         else:
-            if type(sys) is list:
-                sys = [s - 1 for s in sys]
+            if isinstance(systems, list):
+                systems = [s - 1 for s in systems]
             else:
-                sys -= 1
-                if type(sys) is int:
-                    sys = [sys]
-            return value[:, sys]
+                systems -= 1
+                if type(systems) is int:
+                    systems = [systems]
+            return value[:, systems]
 
-    def get_point_value(self, tag: str, *, sys: int = 1) -> np.ndarray:
+    def get_point_value(
+        self, tag: str, *, systems: Optional[Union[int, List[int], np.ndarray]] = None
+    ) -> np.ndarray:
         """
         Get nodal value
         """
@@ -159,18 +176,18 @@ class VtuReader:
 
         value = self._get_value(self._pdata_array, tag)
 
-        if sys is None:
+        if systems is None:
             return value
         else:
-            if type(sys) is list:
-                sys = [s - 1 for s in sys]
+            if isinstance(systems, list):
+                systems = [s - 1 for s in systems]
             else:
-                sys -= 1
-                if type(sys) is int:
-                    sys = [sys]
-            return value[:, sys]
+                systems -= 1
+                if type(systems) is int:
+                    systems = [systems]
+            return value[:, systems]
 
-    def _read_coordinates(self, *, piece):
+    def _read_coordinates(self, *, piece) -> np.ndarray:
         """
         Read coordinate of mesh file
         """
@@ -193,7 +210,7 @@ class VtuReader:
 
         return coords
 
-    def _read_connectivity(self, *, piece):
+    def _read_connectivity(self, *, piece) -> Tuple[List[List[int]], List[int], int]:
         """
         Read and set connectivity between element and nodes
         """
@@ -220,7 +237,7 @@ class VtuReader:
 
         return lnodes, n_node, m_node
 
-    def _get_value(self, darray, tag):
+    def _get_value(self, darray, tag) -> np.ndarray:
 
         vals = []
         for d in darray:
@@ -240,7 +257,7 @@ class VtuReader:
 
         return vals
 
-    def _set_boundary_condition(self):
+    def _set_boundary_condition(self) -> None:
         """
         Set boundary conditions (Fix point, prescribed displacement, ...)
         """
@@ -280,7 +297,7 @@ class VtuReader:
         self._bc["traction"] = self._prescribed_traction
         self._bc["applied_force"] = self._applied_force
 
-    def _set_multi_point_constraint(self):
+    def _set_multi_point_constraint(self) -> None:
         """
         Set multi-point constraint for homogenization or unit cell analysis
         """

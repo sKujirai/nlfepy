@@ -1,7 +1,6 @@
-import os
 import sys
 import numpy as np
-from logging import Logger, getLogger
+from logging import getLogger
 
 
 class VtuWriter:
@@ -11,7 +10,7 @@ class VtuWriter:
     Write mesh info and physical quantities
     """
 
-    def __init__(self, *, mesh, values: dict = None) -> None:
+    def __init__(self, *, mesh, values: dict = {}) -> None:
 
         self._mesh = mesh
         self._values = values

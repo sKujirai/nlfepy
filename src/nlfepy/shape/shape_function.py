@@ -1,6 +1,6 @@
 from abc import ABCMeta
 import numpy as np
-from typing import Tuple
+from typing import Optional, Tuple
 
 
 class ShapeFunction(metaclass=ABCMeta):
@@ -34,44 +34,44 @@ class ShapeFunction(metaclass=ABCMeta):
     """
 
     def __init__(self) -> None:
-        self._shape = None
-        self._name = None
-        self._n_dof = None
-        self._n_node = None
-        self._n_intgp = None
-        self._n_face = None
-        self._n_fnode = None
-        self._weight = None
-        self._Shpfnc = None
-        self._Bmatrix_nat = None
-        self._idx_face = None
+        self._shape: Optional[str] = None
+        self._name: Optional[str] = None
+        self._n_dof: Optional[int] = None
+        self._n_node: Optional[int] = None
+        self._n_intgp: Optional[int] = None
+        self._n_face: Optional[int] = None
+        self._n_fnode: Optional[int] = None
+        self._weight: np.ndarray = np.empty(0)
+        self._Shpfnc: np.ndarray = np.empty((0, 0))
+        self._Bmatrix_nat: np.ndarray = np.empty((0, 0, 0))
+        self._idx_face: np.ndarray = np.empty((0, 0))
 
     @property
-    def shape(self) -> str:
+    def shape(self) -> Optional[str]:
         return self._shape
 
     @property
-    def name(self) -> str:
+    def name(self) -> Optional[str]:
         return self._name
 
     @property
-    def n_dof(self) -> int:
+    def n_dof(self) -> Optional[int]:
         return self._n_dof
 
     @property
-    def n_node(self) -> int:
+    def n_node(self) -> Optional[int]:
         return self._n_node
 
     @property
-    def n_intgp(self) -> int:
+    def n_intgp(self) -> Optional[int]:
         return self._n_intgp
 
     @property
-    def n_face(self) -> int:
+    def n_face(self) -> Optional[int]:
         return self._n_face
 
     @property
-    def n_fnode(self) -> int:
+    def n_fnode(self) -> Optional[int]:
         return self._n_fnode
 
     @property

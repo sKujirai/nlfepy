@@ -334,7 +334,7 @@ class Viewer3d(ViewerBase):
 
         return ax
 
-    def _ax_plot(self, *, ax, mesh, val: np.ndarray = None, **kwargs) -> None:
+    def _ax_plot(self, *, ax, mesh, val: np.ndarray = None, **kwargs):
         """
         Set coordinates, connectivity and values to plot
 
