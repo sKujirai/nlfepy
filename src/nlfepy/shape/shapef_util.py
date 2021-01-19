@@ -44,7 +44,7 @@ def get_element_name(*, n_dof: int, n_node: int) -> str:
         elif n_node == 8:
             element_name = "HEXA8"
         else:
-            logger.error("Invalid 2D element")
+            logger.error("Invalid 3D element")
             sys.exit(1)
 
     return element_name

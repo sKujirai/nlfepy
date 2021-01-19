@@ -88,56 +88,68 @@ class VtuReader:
 
         # Point data
         point_data = piece.find(r"{VTK}PointData")
-        if point_data is None:
-            self._logger.error("Cannot find point data")
-            sys.exit(1)
-        self._pdata_array = point_data.findall(r"{VTK}DataArray")
-        self._keys_pnt = [dat.attrib["Name"] for dat in self._pdata_array]
+        if point_data is not None:
+            self._pdata_array = point_data.findall(r"{VTK}DataArray")
+            self._keys_pnt = [dat.attrib["Name"] for dat in self._pdata_array]
+
+            # Boundary condition
+            self._bc_table = self._get_value(
+                self._pdata_array, r"Boundary Condition"
+            ).astype(np.int)
+            self._prescribed_displacement = self._get_value(
+                self._pdata_array, r"Prescribed Displacement"
+            ).astype(np.float)
+            self._prescribed_traction = self._get_value(
+                self._pdata_array, r"Prescribed Traction"
+            ).astype(np.float)
+            self._applied_force = self._get_value(
+                self._pdata_array, r"Applied Force"
+            ).astype(np.float)
+            if self._bc_table.shape[0] > 0:
+                self._set_boundary_condition()
+
+            # Multi point constraint
+            self._mpc_table = self._get_value(
+                self._pdata_array, r"Multi-Point Constraints"
+            ).astype(np.int)
+            self._mpc_ratio = self._get_value(self._pdata_array, r"MPC Ratio").astype(
+                np.float
+            )
+            if self._mpc_table.shape[0] > 0:
+                self._set_multi_point_constraint()
 
         # Cell data
         cell_data = piece.find(r"{VTK}CellData")
-        if cell_data is None:
-            self._logger.error("Cannot find cell data")
-            sys.exit(1)
-        self._cell_array = cell_data.findall(r"{VTK}DataArray")
-        self._keys_cell = [dat.attrib["Name"] for dat in self._cell_array]
+        if cell_data is not None:
+            self._mesh["mesh_type"] = "FiniteElement"
 
-        # Boundary condition
-        self._bc_table = self._get_value(
-            self._pdata_array, r"Boundary Condition"
-        ).astype(np.int)
-        self._prescribed_displacement = self._get_value(
-            self._pdata_array, r"Prescribed Displacement"
-        ).astype(np.float)
-        self._prescribed_traction = self._get_value(
-            self._pdata_array, r"Prescribed Traction"
-        ).astype(np.float)
-        self._applied_force = self._get_value(
-            self._pdata_array, r"Applied Force"
-        ).astype(np.float)
-        if self._bc_table.shape[0] > 0:
-            self._set_boundary_condition()
+            self._cell_array = cell_data.findall(r"{VTK}DataArray")
+            self._keys_cell = [dat.attrib["Name"] for dat in self._cell_array]
+ 
+            # Sub-structure
+            self._mesh["grain_numbers"] = self._get_value(self._cell_array, r"Cryst")[
+                :, 0
+            ].astype(np.int)
+            self._mesh["material_numbers"] = self._get_value(self._cell_array, r"Mater")[
+                :, 0
+            ].astype(np.int)
+            self._mesh["crystal_orientation"] = self._get_value(
+                self._cell_array, r"Crystal Orientation"
+            ).astype(np.float)
+        else:
+            self._mesh["mesh_type"] = "Meshfree"
 
-        # Multi point constraint
-        self._mpc_table = self._get_value(
-            self._pdata_array, r"Multi-Point Constraints"
-        ).astype(np.int)
-        self._mpc_ratio = self._get_value(self._pdata_array, r"MPC Ratio").astype(
-            np.float
-        )
-        if self._mpc_table.shape[0] > 0:
-            self._set_multi_point_constraint()
-
-        # Sub-structure
-        self._mesh["grain_numbers"] = self._get_value(self._cell_array, r"Cryst")[
-            :, 0
-        ].astype(np.int)
-        self._mesh["material_numbers"] = self._get_value(self._cell_array, r"Mater")[
-            :, 0
-        ].astype(np.int)
-        self._mesh["crystal_orientation"] = self._get_value(
-            self._cell_array, r"Crystal Orientation"
-        ).astype(np.float)
+            if point_data is not None:
+                # Sub-structure
+                self._mesh["grain_numbers"] = self._get_value(self._pdata_array, r"Cryst")[
+                    :, 0
+                ].astype(np.int)
+                self._mesh["material_numbers"] = self._get_value(self._pdata_array, r"Mater")[
+                    :, 0
+                ].astype(np.int)
+                self._mesh["crystal_orientation"] = self._get_value(
+                    self._pdata_array, r"Crystal Orientation"
+                ).astype(np.float)
 
     def get_elm_value(
         self, tag: str, *, systems: Optional[Union[int, List[int], np.ndarray]] = None
@@ -145,6 +157,10 @@ class VtuReader:
         """
         Get element value
         """
+
+        if self._cell_array is None:
+            self._logger.error("No cell data is found")
+            sys.exit(1)
 
         if tag not in self._keys_cell:
             self._logger.error("Cannot find value {} in cell data".format(tag))
@@ -169,6 +185,10 @@ class VtuReader:
         """
         Get nodal value
         """
+
+        if self._pdata_array is None:
+            self._logger.error("No point data is found")
+            sys.exit(1)
 
         if tag not in self._keys_pnt:
             self._logger.error("Cannot find value {} in point data".format(tag))
@@ -249,7 +269,7 @@ class VtuReader:
                     vl = vlst.split(" ")
                     vs = []
                     for v in vl:
-                        if vars != "":
+                        if v != "":
                             vs.append(v)
                     vals.append(vs)
 

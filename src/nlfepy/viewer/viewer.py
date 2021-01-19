@@ -54,22 +54,31 @@ class Viewer:
 
         val_list = []
         for cnf in cnfs:
-            sys = cnf["sys"] if "sys" in cnf.keys() else None
-            plot_mode = cnf["plot"] if "plot" in cnf.keys() else "fill"
-            if plot_mode in ["contour", "scatter"]:
-                val = reader.get_point_value(cnf["val"], systems=sys).astype(np.float)
-            else:
-                val = reader.get_elm_value(cnf["val"], systems=sys).astype(np.float)
-            if sys is None:
-                sys = [i for i in range(val.shape[1])]
-            for i, isys in enumerate(sys):
+            if "val" not in cnf.keys() or cnf["val"] is None:
                 val_list.append(
                     {
-                        "val": val[:, i],
-                        "figname": cnf["val"] + " " + str(isys),
-                        "plot": plot_mode,
+                        "val": None,
+                        "figname": "wireframe",
+                        "plot": "fill",
                     }
                 )
+            else:
+                sys = cnf["sys"] if "sys" in cnf.keys() else None
+                plot_mode = cnf["plot"] if "plot" in cnf.keys() else "fill"
+                if plot_mode in ["contour", "scatter"]:
+                    val = reader.get_point_value(cnf["val"], systems=sys).astype(np.float)
+                else:
+                    val = reader.get_elm_value(cnf["val"], systems=sys).astype(np.float)
+                if sys is None:
+                    sys = [i for i in range(val.shape[1])]
+                for i, isys in enumerate(sys):
+                    val_list.append(
+                        {
+                            "val": val[:, i],
+                            "figname": cnf["val"] + " " + str(isys),
+                            "plot": plot_mode,
+                        }
+                    )
 
         return mesh, val_list
 

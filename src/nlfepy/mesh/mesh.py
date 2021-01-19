@@ -12,6 +12,8 @@ class Mesh:
 
     Attributes
     ----------
+    mesh_type : str
+        Mesh type ("FiniteElement" or "Meshfree")
     n_dof : int
         Number of degrees of freedom
     n_point : int
@@ -43,6 +45,7 @@ class Mesh:
     """
 
     def __init__(self) -> None:
+        self._mesh_type: str = "FiniteElement"
         self._n_dof: Optional[int] = None
         self._n_point: Optional[int] = None
         self._n_element: Optional[int] = None
@@ -61,6 +64,10 @@ class Mesh:
         self._mpc: Optional[dict] = None
 
         self._logger = getLogger("LogMesh")
+
+    @property
+    def mesh_type(self) -> str:
+        return self._mesh_type
 
     @property
     def n_dof(self) -> Optional[int]:
@@ -185,6 +192,7 @@ class Mesh:
             Mesh info (keys: 'n_dof', 'n_point', 'n_element', 'n_node', 'coords', 'connectivity')
         """
 
+        self._mesh_type = data["mesh_type"]
         self._n_dof = data["n_dof"]
         self._n_dfdof = 3 if self._n_dof == 2 else 6
         self._n_point = data["n_point"]
@@ -194,17 +202,29 @@ class Mesh:
         if "material_numbers" in data:
             self._material_numbers = data["material_numbers"]
         else:
-            self._material_numbers = np.zeros(self._n_element)
+            if self._mesh_type == "FiniteElement":
+                self._material_numbers = np.zeros(self._n_element)
+            else:
+                self._material_numbers = np.zeros(self._n_point)
         if "grain_numbers" in data:
             self._grain_numbers = data["grain_numbers"]
         else:
-            self._material_numbers = np.zeros(self._n_element)
+            if self._mesh_type == "FiniteElement":
+                self._material_numbers = np.zeros(self._n_element)
+            else:
+                self._material_numbers = np.zeros(self._n_point)
         if "crystal_orientation" in data:
             self._crystal_orientation = data["crystal_orientation"]
         else:
-            self._crystal_orientation = np.zeros((3, self._n_element))
+            if self._mesh_type == "FiniteElement":
+                self._crystal_orientation = np.zeros((3, self._n_element))
+            else:
+                self._crystal_orientation = np.zeros((3, self._n_point))
 
     def _set_mesh_info(self) -> None:
+
+        if self._mesh_type != "FiniteElement":
+            return
 
         self._shapef = {}
         self._element_name = []

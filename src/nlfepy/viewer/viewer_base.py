@@ -190,6 +190,8 @@ class ViewerBase(metaclass=ABCMeta):
             del fkeys["show_axis_label"]
         if "projection" in fkeys:
             del fkeys["projection"]
+        if "overlay" in fkeys:
+            del fkeys["overlay"]
 
     def multi_plot(self, mesh, vlist, **kwargs) -> None:
         """
@@ -206,18 +208,27 @@ class ViewerBase(metaclass=ABCMeta):
             'figname': Figure name
         """
 
+        if "overlay" not in kwargs or self._fig is None:
+            kwargs["overlay"] = False
+
         n_fig = len(vlist)
-        n_col = kwargs["max_ncol"] if "max_ncol" in kwargs.keys() else 3
+        n_col = kwargs["max_ncol"] if "max_ncol" in kwargs.keys() else min(n_fig, 3)
         n_row = -(-n_fig // n_col)
 
-        self._fig = plt.figure(figsize=(3 * n_col, 3 * n_row))
-        self._ax = []
-        self._pcm = []
+        if not kwargs["overlay"]:
+            plt.close()
+            self._fig = plt.figure(figsize=(3 * n_col, 3 * n_row))
+
+            self._ax = []
+            self._pcm = []
 
         for i, vl in enumerate(vlist):
-            ax = self._fig.add_subplot(
-                n_row, n_col, i + 1, projection=kwargs["projection"]
-            )
+            if not kwargs["overlay"]:
+                ax = self._fig.add_subplot(
+                    n_row, n_col, i + 1, projection=kwargs["projection"]
+                )
+            else:
+                ax = self._ax[i]
             ax.set_title(vl["figname"])
             if vl["plot"] == "contour":
                 ax, pcm = self._ax_contour(ax=ax, mesh=mesh, val=vl["val"], **kwargs)
@@ -225,9 +236,10 @@ class ViewerBase(metaclass=ABCMeta):
                 ax, pcm = self._ax_scatter(ax=ax, mesh=mesh, val=vl["val"], **kwargs)
             else:
                 ax, pcm = self._ax_plot(ax=ax, mesh=mesh, val=vl["val"], **kwargs)
-            self._ax.append(ax)
-            self._pcm.append(pcm)
-            self._fig.colorbar(pcm, ax=ax)
+            if not kwargs["overlay"]:
+                self._ax.append(ax)
+                self._pcm.append(pcm)
+                self._fig.colorbar(pcm, ax=ax)
 
     def show(self) -> None:
 

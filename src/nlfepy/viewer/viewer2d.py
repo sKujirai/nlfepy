@@ -320,6 +320,8 @@ class Viewer2d(ViewerBase):
 
         ax = self._set_window(ax, mesh.coords, **kwargs)
 
+        self._delete_plt_unnecessary_keys(kwargs)
+
         logger = getLogger("viewer2d")
 
         value = np.array(val)
@@ -378,6 +380,8 @@ class Viewer2d(ViewerBase):
         """
 
         ax = self._set_window(ax, mesh.coords, **kwargs)
+
+        self._delete_plt_unnecessary_keys(kwargs)
 
         ax.scatter(mesh.coords[0, :], mesh.coords[1, :], c=val, **kwargs)
 

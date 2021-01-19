@@ -12,7 +12,7 @@ def main():
 
     reader = VtuReader()
     reader.read(vtu_path)
-    stress = reader.get_elm_value("stress", sys=[0, 1, 3])
+    # stress = reader.get_elm_value("stress", systems=[0, 1, 3])
     # print(stress.shape, stress.ndim)
 
     viewer_cnf = [
