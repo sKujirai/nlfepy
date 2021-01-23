@@ -11,13 +11,18 @@ long_description = (here / "README.md").read_text(encoding="utf-8")
 
 setup(
     name="nlfepy",  # Required
-    version="0.1.0",  # Required
+    version="0.1.2",  # Required
     description="A simple finite element library for nonlinear analysis",  # Optional
     long_description=long_description,  # Optional
     long_description_content_type="text/markdown",
     url="https://github.com/sKujirai/nlfepy",  # Optional
     # author='hoge',  # Optional
     # author_email='author@example.com',  # Optional
+    install_requires=[
+        'numpy',
+        'matplotlib',
+        'scipy',
+    ],
     classifiers=[  # Optional
         "Development Status :: 3 - Alpha",  # 3: Alpha, 4: Beta, 5: Production/Stable
         "License :: OSI Approved :: MIT License",
