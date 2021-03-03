@@ -65,23 +65,23 @@ def main(mesh_path):
 
     # Check B.C.
     viewer.plot_bc(mesh)
-    viewer.show()
+    viewer.save("boundary_conditions.png")
+    # viewer.show()
 
     # Plot result
     viewer.plot(
-        mesh=mesh,
-        val=vals["element"]["stress"][:, 1],
-        title="Stress YY",
+        mesh=mesh, val=vals["element"]["stress"][:, 1], title="Stress YY",
     )
-    viewer.save("result.png", transparent=True, dpi=300)
-    viewer.show()
+    viewer.save("result.png")
+    # viewer.show()
 
     # Contour plot
     if mesh.n_dof == 2:
         viewer.contour(
             mesh=mesh, val=vals["point"]["u_disp"][1], title="Displacement Y"
         )
-        viewer.show()
+        viewer.save("result_contour.png")
+        # viewer.show()
 
     # Save results
     logger.info("Saving results")

@@ -84,8 +84,8 @@ def main(mesh_path):
     viewer = Viewer(projection=projection)
     val = None
     viewer.plot(mesh=mesh, val=val)
-    # viewer.save('result.png', transparent=True, dpi=300)
-    viewer.show()
+    viewer.save("result.png")
+    # viewer.show()
 
     logger.info("Program end")
 

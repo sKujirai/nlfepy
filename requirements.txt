@@ -1,0 +1,9 @@
+black==19.10b0
+dmsh==0.2.10
+flake8==3.8.4
+jupyter==1.0.0
+jupyterlab==3.0.9
+matplotlib==3.3.3
+mypy==0.812
+numpy==1.19.5
+scipy==1.6.0
