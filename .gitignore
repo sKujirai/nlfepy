@@ -18,7 +18,8 @@ None0000000.*
 
 # results or temporary files
 result.vtu
-result.png
 test.vtu
+*.png
+*.ps
 out*/
 tmp*

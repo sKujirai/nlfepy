@@ -22,7 +22,8 @@ def main():
     projection = "3d" if reader.mesh["n_dof"] == 3 else "2d"
     viewer = Viewer(projection=projection)
     viewer.multi_plot(vtu_path, viewer_cnf)
-    viewer.show()
+    viewer.save("multi_plot.png")
+    # viewer.show()
 
     print("OK")
 

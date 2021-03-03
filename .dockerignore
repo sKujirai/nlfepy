@@ -1,0 +1,6 @@
+.git
+.cache
+.vscode/
+.mypy_cache/
+.venv/
+__pycache__/
