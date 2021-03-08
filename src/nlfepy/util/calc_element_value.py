@@ -32,14 +32,12 @@ def calc_element_value(*, mesh, values: dict, keys: list = []):
 
     for ielm in range(mesh.n_element):
         n_intgp = mesh.n_intgp("vol", elm=ielm)
-        sum_weight = 0
-        for itg in range(n_intgp):
-            ii = mesh.itg_idx(elm=ielm, itg=itg)
-            weight = mesh.get_wdetJ("vol", elm=ielm, itg=itg)
-            sum_weight += weight
-            for key in elm_keys:
-                values["element"][key][ielm] += (
-                    values["itg"][key][ii].flatten() * weight
-                )
+
+        itg = mesh.itg_idx(elm=ielm)
+        weight = mesh.get_wdetJ("vol", elm=ielm)
         for key in elm_keys:
-            values["element"][key][ielm] /= sum_weight
+            values["element"][key][ielm] = np.dot(
+                values["itg"][key][itg].reshape(n_intgp, -1).T, weight
+            )
+        for key in elm_keys:
+            values["element"][key][ielm] /= np.sum(weight)

@@ -76,13 +76,13 @@ class ShapeFunction(metaclass=ABCMeta):
 
     @property
     def Shpfnc(self) -> np.ndarray:
-        return self._Shpfnc
+        return self._Shpfnc.T
 
     @property
     def idx_face(self) -> np.ndarray:
         return self._idx_face
 
-    def get_Bmatrix(self, cod: np.ndarray, iint: int) -> Tuple[np.ndarray, float]:
+    def get_Bmatrix(self, cod: np.ndarray) -> Tuple[np.ndarray, np.ndarray]:
         """
         Get 1st derivative of shape function (B-matrix) in global coordinates
 
@@ -90,8 +90,6 @@ class ShapeFunction(metaclass=ABCMeta):
         ----------
         cod : ndarray
             Coordinates of node in each element
-        iint : int
-            Index of integral point
 
         Returns
         -------
@@ -99,14 +97,14 @@ class ShapeFunction(metaclass=ABCMeta):
             B-matrix and weigh * determinant of Jacobi matrix
         """
 
-        JacobT = np.dot(self._Bmatrix_nat[:, :, iint], cod.T)
-        detJ = np.sqrt(np.linalg.det(np.dot(JacobT, JacobT.T)))
+        JacobT = np.matmul(self._Bmatrix_nat.transpose(2, 0, 1), cod.T)
+        detJ = np.sqrt(np.linalg.det(np.matmul(JacobT, JacobT.transpose(0, 2, 1))))
         Jinv = np.linalg.inv(JacobT)
-        Bmatrix_phys = np.dot(Jinv, self._Bmatrix_nat[:, :, iint])
-        wdetJ = self._weight[iint] * detJ
+        Bmatrix_phys = np.matmul(Jinv, self._Bmatrix_nat.transpose(2, 0, 1))
+        wdetJ = self._weight * detJ
         return Bmatrix_phys, wdetJ
 
-    def get_Nmatrix(self, cod: np.ndarray, iint: int) -> Tuple[np.ndarray, float]:
+    def get_Nmatrix(self, cod: np.ndarray) -> Tuple[np.ndarray, np.ndarray]:
         """
         Get shape function (N-matrix) and w*detJ
 
@@ -114,8 +112,6 @@ class ShapeFunction(metaclass=ABCMeta):
         ----------
         cod : ndarray
             Coordinates of node in each element
-        iint : int
-            Index of integral point
 
         Returns
         -------
@@ -123,9 +119,9 @@ class ShapeFunction(metaclass=ABCMeta):
             N-matrix and weigh * determinant of Jacobi matrix
         """
 
-        return self._Shpfnc, self.get_wdetJ(cod, iint)
+        return self._Shpfnc.T, self.get_wdetJ(cod)
 
-    def get_wdetJ(self, cod: np.ndarray, iint: int) -> float:
+    def get_wdetJ(self, cod: np.ndarray) -> np.ndarray:
         """
         Get w*detJ
 
@@ -133,15 +129,13 @@ class ShapeFunction(metaclass=ABCMeta):
         ----------
         cod : ndarray
             Coordinates of node in each element
-        iint : int
-            Index of integral point
 
         Returns
         -------
-        shapef : float
+        shapef : ndarray
             Weigh * determinant of Jacobi matrix
         """
 
-        Jacob = np.dot(cod, self._Bmatrix_nat[:, :, iint].T)
-        detJ = np.sqrt(np.linalg.det(np.dot(Jacob.T, Jacob)))
-        return self._weight[iint] * detJ
+        JacobT = np.matmul(self._Bmatrix_nat.transpose(2, 0, 1), cod.T)
+        detJ = np.sqrt(np.linalg.det(np.matmul(JacobT, JacobT.transpose(0, 2, 1))))
+        return self._weight * detJ

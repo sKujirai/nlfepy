@@ -16,7 +16,7 @@ class Isotropic(ConstitutiveBase):
         *,
         du: np.ndarray = None,
         bm: np.ndarray = None,
-        itg: int = None,
+        itg: np.ndarray = None,
         plane_stress_type: int = 0
     ) -> Tuple[np.ndarray, np.ndarray, np.ndarray]:
 

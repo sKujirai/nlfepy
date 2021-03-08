@@ -131,8 +131,12 @@ class Mesh:
             sys.exit(1)
         return self._mpc
 
-    def itg_idx(self, *, elm: int, itg: int) -> int:
-        return self._itg_idx[elm] + itg
+    def itg_idx(self, *, elm: int) -> np.ndarray:
+        return (
+            np.arange(self._itg_idx[elm], self._itg_idx[elm + 1])
+            if elm < self._n_element - 1
+            else np.arange(self._itg_idx[elm], self._n_tintgp)
+        )
 
     def read(self, mesh_path: str) -> None:
         """
@@ -356,8 +360,8 @@ class Mesh:
         return self._shapef[self._element_name[elm]][etype].Shpfnc
 
     def get_Nmatrix(
-        self, etype: str, *, elm: int, itg: int, nds: list = None
-    ) -> Tuple[np.ndarray, float]:
+        self, etype: str, *, elm: int, nds: list = None
+    ) -> Tuple[np.ndarray, np.ndarray]:
         """
         Get shape function (N-matrix) and w*detJ
 
@@ -367,8 +371,6 @@ class Mesh:
             Element type ('vol' or 'area')
         elm : int
             Index of element
-        ing : int
-            Index of integral point
         nds : list
             List of nodes index ('area')
 
@@ -382,11 +384,11 @@ class Mesh:
         else:
             cod = self._coords[:, self._connectivity[elm]][: self._n_dof]
 
-        return self._shapef[self._element_name[elm]][etype].get_Nmatrix(cod, itg)
+        return self._shapef[self._element_name[elm]][etype].get_Nmatrix(cod)
 
     def get_Bmatrix(
-        self, etype: str, *, elm: int, itg: int, nds: list = None
-    ) -> Tuple[np.ndarray, float]:
+        self, etype: str, *, elm: int, nds: list = None
+    ) -> Tuple[np.ndarray, np.ndarray]:
         """
         Get 1st derivative of shape function (B-matrix) in global coordinates
 
@@ -396,8 +398,6 @@ class Mesh:
             Element type ('vol' or 'area')
         elm : int
             Index of element
-        ing : int
-            Index of integral point
         nds : list
             List of nodes index ('area')
 
@@ -411,9 +411,9 @@ class Mesh:
         else:
             cod = self._coords[:, self._connectivity[elm]][: self._n_dof]
 
-        return self._shapef[self._element_name[elm]][etype].get_Bmatrix(cod, itg)
+        return self._shapef[self._element_name[elm]][etype].get_Bmatrix(cod)
 
-    def get_wdetJ(self, etype: str, *, elm: int, itg: int, nds: list = None) -> float:
+    def get_wdetJ(self, etype: str, *, elm: int, nds: list = None) -> np.ndarray:
         """
         Get 1st derivative of shape function (B-matrix) in global coordinates
 
@@ -423,14 +423,12 @@ class Mesh:
             Element type ('vol' or 'area')
         elm : int
             Index of element
-        ing : int
-            Index of integral point
         nds : list
             List of nodes index ('area')
 
         Returns
         -------
-        wdetJ : float
+        wdetJ : ndarray
             Weigh * determinant of Jacobi matrix
         """
         if etype == "area":
@@ -438,7 +436,7 @@ class Mesh:
         else:
             cod = self._coords[:, self._connectivity[elm]][: self._n_dof]
 
-        return self._shapef[self._element_name[elm]][etype].get_wdetJ(cod, itg)
+        return self._shapef[self._element_name[elm]][etype].get_wdetJ(cod)
 
     def n_intgp(self, etype: str, *, elm) -> int:
         """

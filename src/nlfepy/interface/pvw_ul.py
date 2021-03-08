@@ -78,141 +78,139 @@ class PVW_UL(IntegralEquation):
             dfe_app = np.zeros(n_dof * n_node_v)
             dfe_ext = np.zeros(n_dof * n_node_v)
 
-            for itg in range(n_intgp_v):
+            # Bmatrix & wdetJ
+            Bmatrix, wdetJv = self._mesh.get_Bmatrix("vol", elm=ielm)
 
-                # Bmatrix & wdetJ
-                Bmatrix, wdetJv = self._mesh.get_Bmatrix("vol", elm=ielm, itg=itg)
+            # Plane stress condition
+            if n_dof == 2 and self._config["plane_stress"] > 0:
+                wdetJv *= self._cnst[mater_id].get_thickness[
+                    self._mesh.itg_idx(elm=ielm)
+                ]
 
-                # Plane stress condition
-                if n_dof == 2 and self._config["plane_stress"] > 0:
-                    wdetJv *= self._cnst[mater_id].get_thickness[
-                        self._mesh.itg_idx(elm=ielm, itg=itg)
-                    ]
+            # [C], {R}, {T}
+            Cmatrix, Rvector, Tvector = self._cnst[mater_id].constitutive_equation(
+                du=dUelm,
+                bm=Bmatrix,
+                itg=self._mesh.itg_idx(elm=ielm),
+                plane_stress_type=self._config["plane_stress"],
+            )
+            Tmatrix = Tvector[:, [0, 3, 5, 3, 1, 4, 5, 4, 2]].reshape(-1, 3, 3)
 
-                # [C], {R}, {T}
-                Cmatrix, Rvector, Tvector = self._cnst[mater_id].constitutive_equation(
-                    du=dUelm,
-                    bm=Bmatrix,
-                    itg=self._mesh.itg_idx(elm=ielm, itg=itg),
-                    plane_stress_type=self._config["plane_stress"],
+            # [ke], {dfint}, {Fint}, {dfext_b}, {fext_b}
+            Bd = np.zeros((n_intgp_v, n_dfdof, n_dof * n_node_v))
+            Bl = np.zeros((n_intgp_v, n_dof * n_dof, n_dof * n_node_v))
+            Td = np.zeros((n_intgp_v, n_dfdof, n_dfdof))
+            Tl = np.zeros((n_intgp_v, n_dof * n_dof, n_dof * n_dof))
+            TtrL = np.zeros((n_intgp_v, n_dof * n_dof, n_dof * n_dof))
+            if n_dof == 2:
+                # [Bd]
+                Bd[:, 0, ::n_dof] = Bmatrix[:, 0]
+                Bd[:, 2, ::n_dof] = Bmatrix[:, 1]
+                Bd[:, 1, 1::n_dof] = Bmatrix[:, 1]
+                Bd[:, 2, 1::n_dof] = Bmatrix[:, 0]
+                # [Bl]
+                Bl[:, 0, ::n_dof] = Bmatrix[:, 0]
+                Bl[:, 1, 1::n_dof] = Bmatrix[:, 0]
+                Bl[:, 2, ::n_dof] = Bmatrix[:, 1]
+                Bl[:, 3, 1::n_dof] = Bmatrix[:, 1]
+                # [Td]
+                Td[:, 0, 0] = 2.0 * Tmatrix[:, 0, 0]
+                Td[:, 1, 1] = 2.0 * Tmatrix[:, 1, 1]
+                Td[:, 2, 2] = 0.5 * (Tmatrix[:, 0, 0] + Tmatrix[:, 1, 1])
+                Td[:, 0, 2] = Tmatrix[0, 1]
+                Td[:, 2, 0] = Tmatrix[0, 1]
+                Td[:, 1, 2] = Tmatrix[0, 1]
+                Td[:, 2, 1] = Tmatrix[0, 1]
+                # [Tl]
+                Tl[:, ::n_dof, :][:, :, ::n_dof] = Tmatrix[:, :2, :2]
+                Tl[:, 1::n_dof, :][:, :, 1::n_dof] = Tmatrix[:, :2, :2]
+                # [TtrL]
+                TtrL[:, 0, :] = Tmatrix[:, :2, :2].reshape(-1, 4)
+                TtrL[:, 3, :] = Tmatrix[:, :2, :2].reshape(-1, 4)
+                # {T}
+                Tvector = Tvector[:, [0, 1, 3]]
+                # [C] & {R}
+                Cmatrix, Rvector = self._cnst[
+                    mater_id
+                ].calc_correction_term_plane_stress_CR(
+                    Cmatrix, Rvector, self._config["plane_stress"]
                 )
-                Tmatrix = Tvector[[0, 3, 5, 3, 1, 4, 5, 4, 2]].reshape(3, 3)
+            else:
+                # [Bd]
+                Bd[:, 0, ::n_dof] = Bmatrix[:, 0]
+                Bd[:, 3, ::n_dof] = Bmatrix[:, 1]
+                Bd[:, 5, ::n_dof] = Bmatrix[:, 2]
+                Bd[:, 1, 1::n_dof] = Bmatrix[:, 1]
+                Bd[:, 3, 1::n_dof] = Bmatrix[:, 0]
+                Bd[:, 4, 1::n_dof] = Bmatrix[:, 2]
+                Bd[:, 2, 2::n_dof] = Bmatrix[:, 2]
+                Bd[:, 4, 2::n_dof] = Bmatrix[:, 1]
+                Bd[:, 5, 2::n_dof] = Bmatrix[:, 0]
+                # [Bl]
+                Bl[:, 0, ::n_dof] = Bmatrix[:, 0]
+                Bl[:, 1, 1::n_dof] = Bmatrix[:, 0]
+                Bl[:, 2, 2::n_dof] = Bmatrix[:, 0]
+                Bl[:, 3, ::n_dof] = Bmatrix[:, 1]
+                Bl[:, 4, 1::n_dof] = Bmatrix[:, 1]
+                Bl[:, 5, 2::n_dof] = Bmatrix[:, 1]
+                Bl[:, 6, ::n_dof] = Bmatrix[:, 2]
+                Bl[:, 7, 1::n_dof] = Bmatrix[:, 2]
+                Bl[:, 8, 2::n_dof] = Bmatrix[:, 2]
+                # [Td]
+                Td[:, 0, 0] = 2.0 * Tmatrix[:, 0, 0]
+                Td[:, 1, 1] = 2.0 * Tmatrix[:, 1, 1]
+                Td[:, 2, 2] = 2.0 * Tmatrix[:, 2, 2]
+                Td[:, 3, 3] = 0.5 * (Tmatrix[:, 0, 0] + Tmatrix[:, 1, 1])
+                Td[:, 4, 4] = 0.5 * (Tmatrix[:, 1, 1] + Tmatrix[:, 2, 2])
+                Td[:, 5, 5] = 0.5 * (Tmatrix[:, 2, 2] + Tmatrix[:, 0, 0])
+                Td[:, 0, 3] = Tmatrix[:, 0, 1]
+                Td[:, 0, 5] = Tmatrix[:, 2, 0]
+                Td[:, 1, 3] = Tmatrix[:, 0, 1]
+                Td[:, 1, 4] = Tmatrix[:, 1, 2]
+                Td[:, 2, 4] = Tmatrix[:, 1, 2]
+                Td[:, 2, 5] = Tmatrix[:, 2, 0]
+                Td[:, 3, 0] = Tmatrix[:, 0, 1]
+                Td[:, 3, 1] = Tmatrix[:, 0, 1]
+                Td[:, 4, 1] = Tmatrix[:, 1, 2]
+                Td[:, 4, 2] = Tmatrix[:, 1, 2]
+                Td[:, 5, 0] = Tmatrix[:, 2, 0]
+                Td[:, 5, 2] = Tmatrix[:, 2, 0]
+                Td[:, 3, 4] = 0.5 * Tmatrix[:, 2, 0]
+                Td[:, 3, 5] = 0.5 * Tmatrix[:, 1, 2]
+                Td[:, 4, 3] = 0.5 * Tmatrix[:, 2, 0]
+                Td[:, 4, 5] = 0.5 * Tmatrix[:, 0, 1]
+                Td[:, 5, 3] = 0.5 * Tmatrix[:, 1, 2]
+                Td[:, 5, 4] = 0.5 * Tmatrix[:, 0, 1]
+                # [Tl]
+                Tl[:, ::n_dof, :][:, :, ::n_dof] = Tmatrix
+                Tl[:, 1::n_dof, :][:, :, 1::n_dof] = Tmatrix
+                Tl[:, 2::n_dof, :][:, :, 2::n_dof] = Tmatrix
+                # [TtrL]
+                TtrL[:, 0, :] = Tmatrix.reshape(-1, 9)
+                TtrL[:, 4, :] = Tmatrix.reshape(-1, 9)
+                TtrL[:, 8, :] = Tmatrix.reshape(-1, 9)
 
-                # [ke], {dfint}, {Fint}, {dfext_b}, {fext_b}
-                Bd = np.zeros((n_dfdof, n_dof * n_node_v))
-                Bl = np.zeros((n_dof * n_dof, n_dof * n_node_v))
-                Td = np.zeros((n_dfdof, n_dfdof))
-                Tl = np.zeros((n_dof * n_dof, n_dof * n_dof))
-                TtrL = np.zeros((n_dof * n_dof, n_dof * n_dof))
+            # [ke] = ([Bd]^T([C]-[D])[Bd] + [Bl]^T([Tl]*[TtrL])[Bd])*wdetJ
+            ke = np.einsum(
+                "bki, bkl, blj, b -> ij", Bd, (Cmatrix - Td), Bd, wdetJv
+            ) + np.einsum("bki, bkl, blj, b -> ij", Bl, (Tl + TtrL), Bl, wdetJv)
+            # {dfapp}
+            dfe_app = np.einsum("bji, bj, b -> i", Bd, Rvector, wdetJv)
+            # {Fint}
+            fe_int = np.einsum("bji, bj, b -> i", Bd, Tvector, wdetJv)
+            # Body force
+            if BodyForceRate is not None:
+                bfr = BodyForceRate[np.array(connectivity[ielm])][:, :n_dof].flatten()
+                Nb = np.zeros((n_intgp_v, n_dof, n_dof * n_node_v))
                 if n_dof == 2:
-                    # [Bd]
-                    Bd[0, ::n_dof] = Bmatrix[0]
-                    Bd[2, ::n_dof] = Bmatrix[1]
-                    Bd[1, 1::n_dof] = Bmatrix[1]
-                    Bd[2, 1::n_dof] = Bmatrix[0]
-                    # [Bl]
-                    Bl[0, ::n_dof] = Bmatrix[0]
-                    Bl[1, 1::n_dof] = Bmatrix[0]
-                    Bl[2, ::n_dof] = Bmatrix[1]
-                    Bl[3, 1::n_dof] = Bmatrix[1]
-                    # [Td]
-                    Td[0, 0] = 2.0 * Tmatrix[0, 0]
-                    Td[1, 1] = 2.0 * Tmatrix[1, 1]
-                    Td[2, 2] = 0.5 * (Tmatrix[0, 0] + Tmatrix[1, 1])
-                    Td[0, 2] = Tmatrix[0, 1]
-                    Td[2, 0] = Tmatrix[0, 1]
-                    Td[1, 2] = Tmatrix[0, 1]
-                    Td[2, 1] = Tmatrix[0, 1]
-                    # [Tl]
-                    Tl[::n_dof, :][:, ::n_dof] = Tmatrix[:2, :2]
-                    Tl[1::n_dof, :][:, 1::n_dof] = Tmatrix[:2, :2]
-                    # [TtrL]
-                    TtrL[0:, :] = Tmatrix[:2, :2].flatten()
-                    TtrL[3:, :] = Tmatrix[:2, :2].flatten()
-                    # {T}
-                    Tvector = Tvector[[0, 1, 3]]
-                    # [C] & {R}
-                    Cmatrix, Rvector = self._cnst[
-                        mater_id
-                    ].calc_correction_term_plane_stress_CR(
-                        Cmatrix, Rvector, self._config["plane_stress"]
-                    )
+                    Nb[:, 0, ::n_dof] = Nbmatrix
+                    Nb[:, 1, 1::n_dof] = Nbmatrix
                 else:
-                    # [Bd]
-                    Bd[0, ::n_dof] = Bmatrix[0]
-                    Bd[3, ::n_dof] = Bmatrix[1]
-                    Bd[5, ::n_dof] = Bmatrix[2]
-                    Bd[1, 1::n_dof] = Bmatrix[1]
-                    Bd[3, 1::n_dof] = Bmatrix[0]
-                    Bd[4, 1::n_dof] = Bmatrix[2]
-                    Bd[2, 2::n_dof] = Bmatrix[2]
-                    Bd[4, 2::n_dof] = Bmatrix[1]
-                    Bd[5, 2::n_dof] = Bmatrix[0]
-                    # [Bl]
-                    Bl[0, ::n_dof] = Bmatrix[0]
-                    Bl[1, 1::n_dof] = Bmatrix[0]
-                    Bl[2, 2::n_dof] = Bmatrix[0]
-                    Bl[3, ::n_dof] = Bmatrix[1]
-                    Bl[4, 1::n_dof] = Bmatrix[1]
-                    Bl[5, 2::n_dof] = Bmatrix[1]
-                    Bl[6, ::n_dof] = Bmatrix[2]
-                    Bl[7, 1::n_dof] = Bmatrix[2]
-                    Bl[8, 2::n_dof] = Bmatrix[2]
-                    # [Td]
-                    Td[0, 0] = 2.0 * Tmatrix[0, 0]
-                    Td[1, 1] = 2.0 * Tmatrix[1, 1]
-                    Td[2, 2] = 2.0 * Tmatrix[2, 2]
-                    Td[3, 3] = 0.5 * (Tmatrix[0, 0] + Tmatrix[1, 1])
-                    Td[4, 4] = 0.5 * (Tmatrix[1, 1] + Tmatrix[2, 2])
-                    Td[5, 5] = 0.5 * (Tmatrix[2, 2] + Tmatrix[0, 0])
-                    Td[0, 3] = Tmatrix[0, 1]
-                    Td[0, 5] = Tmatrix[2, 0]
-                    Td[1, 3] = Tmatrix[0, 1]
-                    Td[1, 4] = Tmatrix[1, 2]
-                    Td[2, 4] = Tmatrix[1, 2]
-                    Td[2, 5] = Tmatrix[2, 0]
-                    Td[3, 0] = Tmatrix[0, 1]
-                    Td[3, 1] = Tmatrix[0, 1]
-                    Td[4, 1] = Tmatrix[1, 2]
-                    Td[4, 2] = Tmatrix[1, 2]
-                    Td[5, 0] = Tmatrix[2, 0]
-                    Td[5, 2] = Tmatrix[2, 0]
-                    Td[3, 4] = 0.5 * Tmatrix[2, 0]
-                    Td[3, 5] = 0.5 * Tmatrix[1, 2]
-                    Td[4, 3] = 0.5 * Tmatrix[2, 0]
-                    Td[4, 5] = 0.5 * Tmatrix[0, 1]
-                    Td[5, 3] = 0.5 * Tmatrix[1, 2]
-                    Td[5, 4] = 0.5 * Tmatrix[0, 1]
-                    # [Tl]
-                    Tl[::n_dof, :][:, ::n_dof] = Tmatrix
-                    Tl[1::n_dof, :][:, 1::n_dof] = Tmatrix
-                    Tl[2::n_dof, :][:, 2::n_dof] = Tmatrix
-                    # [TtrL]
-                    TtrL[0:, :] = Tmatrix.flatten()
-                    TtrL[4:, :] = Tmatrix.flatten()
-                    TtrL[8:, :] = Tmatrix.flatten()
-
-                # [ke] += [Bd]^T[D][Bd]*wdetJ
-                ke += np.dot(Bd.T, np.dot(Cmatrix, Bd)) * wdetJv
-                # {dfapp}
-                dfe_app += np.dot(Bd.T, Rvector) * wdetJv
-                # {Fint}
-                fe_int += np.dot(Bd.T, Tvector) * wdetJv
-                # Body force
-                if BodyForceRate is not None:
-                    bfr = BodyForceRate[np.array(connectivity[ielm])][
-                        :, :n_dof
-                    ].flatten()
-                    Nb = np.zeros((n_dof, n_dof * n_node_v))
-                    if n_dof == 2:
-                        Nb[0, ::n_dof] = Nbmatrix[:, itg]
-                        Nb[1, 1::n_dof] = Nbmatrix[:, itg]
-                    else:
-                        Nb[0, ::n_dof] = Nbmatrix[:, itg]
-                        Nb[1, 1::n_dof] = Nbmatrix[:, itg]
-                        Nb[2, 2::n_dof] = Nbmatrix[:, itg]
-                    # {dfext_b}
-                    dfe_ext += np.dot(Nb.T, np.dot(Nb, bfr)) * wdetJv
+                    Nb[:, 0, ::n_dof] = Nbmatrix
+                    Nb[:, 1, 1::n_dof] = Nbmatrix
+                    Nb[:, 2, 2::n_dof] = Nbmatrix
+                # {dfext_b}
+                dfe_ext = np.einsum("bji, bjk, k, b -> i", Nb, Nb, bfr, wdetJv)
 
             # Apply traction
             if TractionRate is not None:
@@ -222,23 +220,22 @@ class PVW_UL(IntegralEquation):
                     ].flatten()
                     n_node_a = self._mesh.n_node("area", elm=ielm)
                     n_intgp_a = self._mesh.n_intgp("area", elm=ielm)
-                    for jtg in range(n_intgp_a):
-                        Namatrix, wdetJa = self._mesh.get_Nmatrix(
-                            "area", elm=ielm, itg=jtg, nds=idx_nd
-                        )
-                        Na = np.zeros((n_dof, n_dof * n_node_a))
-                        if n_dof == 2:
-                            Na[0, ::n_dof] = Namatrix[:, jtg]
-                            Na[1, 1::n_dof] = Namatrix[:, jtg]
-                        else:
-                            Na[0, ::n_dof] = Namatrix[:, jtg]
-                            Na[1, 1::n_dof] = Namatrix[:, jtg]
-                            Na[2, 2::n_dof] = Namatrix[:, jtg]
-                        dfe_t = np.dot(Na.T, np.dot(Na, trcr)) * wdetJa
-                        for i, inod in enumerate(idx_nd):
-                            dfe_ext[n_dof * inod : n_dof * (inod + 1)] += dfe_t[
-                                n_dof * i : n_dof * (i + 1)
-                            ]
+                    Namatrix, wdetJa = self._mesh.get_Nmatrix(
+                        "area", elm=ielm, nds=idx_nd
+                    )
+                    Na = np.zeros((n_intgp_a, n_dof, n_dof * n_node_a))
+                    if n_dof == 2:
+                        Na[:, 0, ::n_dof] = Namatrix
+                        Na[:, 1, 1::n_dof] = Namatrix
+                    else:
+                        Na[:, 0, ::n_dof] = Namatrix
+                        Na[:, 1, 1::n_dof] = Namatrix
+                        Na[:, 2, 2::n_dof] = Namatrix
+                    dfe_t = np.einsum("bji, bjk, k, b -> i", Na, Na, trcr, wdetJa)
+                    for i, inod in enumerate(idx_nd):
+                        dfe_ext[n_dof * inod : n_dof * (inod + 1)] += dfe_t[
+                            n_dof * i : n_dof * (i + 1)
+                        ]
 
             # Assemble
             for inod in range(n_node_v):

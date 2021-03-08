@@ -79,29 +79,27 @@ class IntegralEquation(metaclass=ABCMeta):
             n_intgp_v = self._mesh.n_intgp("vol", elm=ielm)
             u_elm = self._val["u_disp"][:, np.array(connectivity[ielm])]
 
-            for itg in range(n_intgp_v):
+            Bmatrix, _ = self._mesh.get_Bmatrix("vol", elm=ielm)
+            Bd = np.zeros((n_intgp_v, n_dfdof, n_dof * n_node_v))
+            if n_dof == 2:
+                Bd[:, 0, ::n_dof] = Bmatrix[:, 0]
+                Bd[:, 2, ::n_dof] = Bmatrix[:, 1]
+                Bd[:, 1, 1::n_dof] = Bmatrix[:, 1]
+                Bd[:, 2, 1::n_dof] = Bmatrix[:, 0]
+            else:
+                Bd[:, 0, ::n_dof] = Bmatrix[:, 0]
+                Bd[:, 3, ::n_dof] = Bmatrix[:, 1]
+                Bd[:, 5, ::n_dof] = Bmatrix[:, 2]
+                Bd[:, 1, 1::n_dof] = Bmatrix[:, 1]
+                Bd[:, 3, 1::n_dof] = Bmatrix[:, 0]
+                Bd[:, 4, 1::n_dof] = Bmatrix[:, 2]
+                Bd[:, 2, 2::n_dof] = Bmatrix[:, 2]
+                Bd[:, 4, 2::n_dof] = Bmatrix[:, 1]
+                Bd[:, 5, 2::n_dof] = Bmatrix[:, 0]
 
-                Bmatrix, _ = self._mesh.get_Bmatrix("vol", elm=ielm, itg=itg)
-                Bd = np.zeros((n_dfdof, n_dof * n_node_v))
-                if n_dof == 2:
-                    Bd[0, ::n_dof] = Bmatrix[0]
-                    Bd[2, ::n_dof] = Bmatrix[1]
-                    Bd[1, 1::n_dof] = Bmatrix[1]
-                    Bd[2, 1::n_dof] = Bmatrix[0]
-                else:
-                    Bd[0, ::n_dof] = Bmatrix[0]
-                    Bd[3, ::n_dof] = Bmatrix[1]
-                    Bd[5, ::n_dof] = Bmatrix[2]
-                    Bd[1, 1::n_dof] = Bmatrix[1]
-                    Bd[3, 1::n_dof] = Bmatrix[0]
-                    Bd[4, 1::n_dof] = Bmatrix[2]
-                    Bd[2, 2::n_dof] = Bmatrix[2]
-                    Bd[4, 2::n_dof] = Bmatrix[1]
-                    Bd[5, 2::n_dof] = Bmatrix[0]
-
-                self._cnst[mater_id].calc_stress_elastic(
-                    u_disp=u_elm,
-                    bm=Bd,
-                    itg=self._mesh.itg_idx(elm=ielm, itg=itg),
-                    plane_stress_type=self._config["plane_stress"],
-                )
+            self._cnst[mater_id].calc_stress_elastic(
+                u_disp=u_elm,
+                bm=Bd,
+                itg=self._mesh.itg_idx(elm=ielm),
+                plane_stress_type=self._config["plane_stress"],
+            )

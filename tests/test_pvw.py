@@ -70,7 +70,9 @@ def main(mesh_path):
 
     # Plot result
     viewer.plot(
-        mesh=mesh, val=vals["element"]["stress"][:, 1], title="Stress YY",
+        mesh=mesh,
+        val=vals["element"]["stress"][:, 1],
+        title="Stress YY",
     )
     viewer.save("result.png")
     # viewer.show()

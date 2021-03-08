@@ -35,8 +35,8 @@ def main(mesh_path):
     # cnst_params = {}
     cnst_dict = {
         "Al": ["isotropic"],
-        # 'Al': ['j2flow'],  # , cnst_params],
-        # 'Al': ['crystal_plasticity'],  # , cnst_params],
+        # "Al": ["j2flow"],  # , cnst_params],
+        # "Al": ["crystal_plasticity"],  # , cnst_params],
     }
     constitutive = Constitutive(cnst_dict, nitg=mesh.n_tintgp, val=vals["itg"])
 
