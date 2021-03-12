@@ -1,3 +1,6 @@
+"""
+.. include:: ../../README.md
+"""
 from .mesh import Mesh
 from .material import Material
 from .constitutive import Variable, Constitutive
