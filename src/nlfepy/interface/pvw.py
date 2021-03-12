@@ -55,52 +55,51 @@ class PVW(IntegralEquation):
             ke = np.zeros((n_dof * n_node_v, n_dof * n_node_v))
             fe = np.zeros(n_dof * n_node_v)
 
-            for itg in range(n_intgp_v):
-                Bmatrix, wdetJv = self._mesh.get_Bmatrix("vol", elm=ielm, itg=itg)
+            Bmatrix, wdetJv = self._mesh.get_Bmatrix("vol", elm=ielm)
 
-                # Plane stress condition
-                if n_dof == 2 and self._config["plane_stress"] > 0:
-                    wdetJv *= self._cnst[mater_id].get_thickness[
-                        self._mesh.itg_idx(elm=ielm, itg=itg)
-                    ]
+            # Plane stress condition
+            if n_dof == 2 and self._config["plane_stress"] > 0:
+                wdetJv *= self._cnst[mater_id].get_thickness[
+                    self._mesh.itg_idx(elm=ielm)
+                ]
 
-                # Element stiffness
-                Bd = np.zeros((n_dfdof, n_dof * n_node_v))
-                Ce = np.zeros((n_dfdof, n_dfdof))
+            # Element stiffness
+            Bd = np.zeros((n_intgp_v, n_dfdof, n_dof * n_node_v))
+            Ce = np.zeros((n_intgp_v, n_dfdof, n_dfdof))
+            if n_dof == 2:
+                Bd[:, 0, ::n_dof] = Bmatrix[:, 0]
+                Bd[:, 2, ::n_dof] = Bmatrix[:, 1]
+                Bd[:, 1, 1::n_dof] = Bmatrix[:, 1]
+                Bd[:, 2, 1::n_dof] = Bmatrix[:, 0]
+            else:
+                Bd[:, 0, ::n_dof] = Bmatrix[:, 0]
+                Bd[:, 3, ::n_dof] = Bmatrix[:, 1]
+                Bd[:, 5, ::n_dof] = Bmatrix[:, 2]
+                Bd[:, 1, 1::n_dof] = Bmatrix[:, 1]
+                Bd[:, 3, 1::n_dof] = Bmatrix[:, 0]
+                Bd[:, 4, 1::n_dof] = Bmatrix[:, 2]
+                Bd[:, 2, 2::n_dof] = Bmatrix[:, 2]
+                Bd[:, 4, 2::n_dof] = Bmatrix[:, 1]
+                Bd[:, 5, 2::n_dof] = Bmatrix[:, 0]
+            Ce = self._cnst[mater_id].get_elastic_modulus(
+                n_dof, self._config["plane_stress"]
+            )
+            ke = np.einsum("bki, kl, blj, b -> ij", Bd, Ce, Bd, wdetJv)
+
+            # Body force
+            if BodyForce is not None:
+                bf = BodyForce[np.array(connectivity[ielm])][:, :n_dof].flatten()
+                Nbmatrix = self._mesh.get_shpfnc("vol", elm=ielm)
+                Nb = np.zeros((n_intgp_v, n_dof, n_dof * n_node_v))
                 if n_dof == 2:
-                    Bd[0, ::n_dof] = Bmatrix[0]
-                    Bd[2, ::n_dof] = Bmatrix[1]
-                    Bd[1, 1::n_dof] = Bmatrix[1]
-                    Bd[2, 1::n_dof] = Bmatrix[0]
+                    Nb[:, 0, ::n_dof] = Nbmatrix
+                    Nb[:, 1, 1::n_dof] = Nbmatrix
                 else:
-                    Bd[0, ::n_dof] = Bmatrix[0]
-                    Bd[3, ::n_dof] = Bmatrix[1]
-                    Bd[5, ::n_dof] = Bmatrix[2]
-                    Bd[1, 1::n_dof] = Bmatrix[1]
-                    Bd[3, 1::n_dof] = Bmatrix[0]
-                    Bd[4, 1::n_dof] = Bmatrix[2]
-                    Bd[2, 2::n_dof] = Bmatrix[2]
-                    Bd[4, 2::n_dof] = Bmatrix[1]
-                    Bd[5, 2::n_dof] = Bmatrix[0]
-                Ce = self._cnst[mater_id].get_elastic_modulus(
-                    n_dof, self._config["plane_stress"]
-                )
-                ke += np.dot(Bd.T, np.dot(Ce, Bd)) * wdetJv
-
-                # Body force
-                if BodyForce is not None:
-                    bf = BodyForce[np.array(connectivity[ielm])][:, :n_dof].flatten()
-                    Nbmatrix = self._mesh.get_shpfnc("vol", elm=ielm)
-                    Nb = np.zeros((n_dof, n_dof * n_node_v))
-                    if n_dof == 2:
-                        Nb[0, ::n_dof] = Nbmatrix[:, itg]
-                        Nb[1, 1::n_dof] = Nbmatrix[:, itg]
-                    else:
-                        Nb[0, ::n_dof] = Nbmatrix[:, itg]
-                        Nb[1, 1::n_dof] = Nbmatrix[:, itg]
-                        Nb[2, 2::n_dof] = Nbmatrix[:, itg]
-                    fe_b = np.dot(Nb.T, np.dot(Nb, bf)) * wdetJv
-                    fe += fe_b
+                    Nb[:, 0, ::n_dof] = Nbmatrix
+                    Nb[:, 1, 1::n_dof] = Nbmatrix
+                    Nb[:, 2, 2::n_dof] = Nbmatrix
+                fe_b = np.einsum("bji, bjk, k, b -> i", Nb, Nb, bf, wdetJv)
+                fe += fe_b
 
             # Apply traction
             if Traction is not None:
@@ -110,23 +109,22 @@ class PVW(IntegralEquation):
                     ].flatten()
                     n_node_a = self._mesh.n_node("area", elm=ielm)
                     n_intgp_a = self._mesh.n_intgp("area", elm=ielm)
-                    for jtg in range(n_intgp_a):
-                        Namatrix, wdetJa = self._mesh.get_Nmatrix(
-                            "area", elm=ielm, itg=jtg, nds=idx_nd
-                        )
-                        Na = np.zeros((n_dof, n_dof * n_node_a))
-                        if n_dof == 2:
-                            Na[0, ::n_dof] = Namatrix[:, jtg]
-                            Na[1, 1::n_dof] = Namatrix[:, jtg]
-                        else:
-                            Na[0, ::n_dof] = Namatrix[:, jtg]
-                            Na[1, 1::n_dof] = Namatrix[:, jtg]
-                            Na[2, 2::n_dof] = Namatrix[:, jtg]
-                        fe_t = np.dot(Na.T, np.dot(Na, trc)) * wdetJa
-                        for i, inod in enumerate(idx_nd):
-                            fe[n_dof * inod : n_dof * (inod + 1)] += fe_t[
-                                n_dof * i : n_dof * (i + 1)
-                            ]
+                    Namatrix, wdetJa = self._mesh.get_Nmatrix(
+                        "area", elm=ielm, nds=idx_nd
+                    )
+                    Na = np.zeros((n_intgp_a, n_dof, n_dof * n_node_a))
+                    if n_dof == 2:
+                        Na[:, 0, ::n_dof] = Namatrix
+                        Na[:, 1, 1::n_dof] = Namatrix
+                    else:
+                        Na[:, 0, ::n_dof] = Namatrix
+                        Na[:, 1, 1::n_dof] = Namatrix
+                        Na[:, 2, 2::n_dof] = Namatrix
+                    fe_t = np.einsum("bji, bjk, k, b -> i", Na, Na, trc, wdetJa)
+                    for i, inod in enumerate(idx_nd):
+                        fe[n_dof * inod : n_dof * (inod + 1)] += fe_t[
+                            n_dof * i : n_dof * (i + 1)
+                        ]
 
             # Assemble global stiffness and force
             for inod in range(n_node_v):
