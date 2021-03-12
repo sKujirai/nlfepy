@@ -1,0 +1,1072 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, minimum-scale=1" />
+<meta name="generator" content="pdoc 0.9.2" />
+<title>nlfepy.io.vtu_writer API documentation</title>
+<meta name="description" content="" />
+<link rel="preload stylesheet" as="style" href="https://cdnjs.cloudflare.com/ajax/libs/10up-sanitize.css/11.0.1/sanitize.min.css" integrity="sha256-PK9q560IAAa6WVRRh76LtCaI8pjTJ2z11v0miyNNjrs=" crossorigin>
+<link rel="preload stylesheet" as="style" href="https://cdnjs.cloudflare.com/ajax/libs/10up-sanitize.css/11.0.1/typography.min.css" integrity="sha256-7l/o7C8jubJiy74VsKTidCy1yBkRtiUGbVkYBylBqUg=" crossorigin>
+<link rel="stylesheet preload" as="style" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/10.1.1/styles/github.min.css" crossorigin>
+<style>:root{--highlight-color:#fe9}.flex{display:flex !important}body{line-height:1.5em}#content{padding:20px}#sidebar{padding:30px;overflow:hidden}#sidebar > *:last-child{margin-bottom:2cm}.http-server-breadcrumbs{font-size:130%;margin:0 0 15px 0}#footer{font-size:.75em;padding:5px 30px;border-top:1px solid #ddd;text-align:right}#footer p{margin:0 0 0 1em;display:inline-block}#footer p:last-child{margin-right:30px}h1,h2,h3,h4,h5{font-weight:300}h1{font-size:2.5em;line-height:1.1em}h2{font-size:1.75em;margin:1em 0 .50em 0}h3{font-size:1.4em;margin:25px 0 10px 0}h4{margin:0;font-size:105%}h1:target,h2:target,h3:target,h4:target,h5:target,h6:target{background:var(--highlight-color);padding:.2em 0}a{color:#058;text-decoration:none;transition:color .3s ease-in-out}a:hover{color:#e82}.title code{font-weight:bold}h2[id^="header-"]{margin-top:2em}.ident{color:#900}pre code{background:#f8f8f8;font-size:.8em;line-height:1.4em}code{background:#f2f2f1;padding:1px 4px;overflow-wrap:break-word}h1 code{background:transparent}pre{background:#f8f8f8;border:0;border-top:1px solid #ccc;border-bottom:1px solid #ccc;margin:1em 0;padding:1ex}#http-server-module-list{display:flex;flex-flow:column}#http-server-module-list div{display:flex}#http-server-module-list dt{min-width:10%}#http-server-module-list p{margin-top:0}.toc ul,#index{list-style-type:none;margin:0;padding:0}#index code{background:transparent}#index h3{border-bottom:1px solid #ddd}#index ul{padding:0}#index h4{margin-top:.6em;font-weight:bold}@media (min-width:200ex){#index .two-column{column-count:2}}@media (min-width:300ex){#index .two-column{column-count:3}}dl{margin-bottom:2em}dl dl:last-child{margin-bottom:4em}dd{margin:0 0 1em 3em}#header-classes + dl > dd{margin-bottom:3em}dd dd{margin-left:2em}dd p{margin:10px 0}.name{background:#eee;font-weight:bold;font-size:.85em;padding:5px 10px;display:inline-block;min-width:40%}.name:hover{background:#e0e0e0}dt:target .name{background:var(--highlight-color)}.name > span:first-child{white-space:nowrap}.name.class > span:nth-child(2){margin-left:.4em}.inherited{color:#999;border-left:5px solid #eee;padding-left:1em}.inheritance em{font-style:normal;font-weight:bold}.desc h2{font-weight:400;font-size:1.25em}.desc h3{font-size:1em}.desc dt code{background:inherit}.source summary,.git-link-div{color:#666;text-align:right;font-weight:400;font-size:.8em;text-transform:uppercase}.source summary > *{white-space:nowrap;cursor:pointer}.git-link{color:inherit;margin-left:1em}.source pre{max-height:500px;overflow:auto;margin:0}.source pre code{font-size:12px;overflow:visible}.hlist{list-style:none}.hlist li{display:inline}.hlist li:after{content:',\2002'}.hlist li:last-child:after{content:none}.hlist .hlist{display:inline;padding-left:1em}img{max-width:100%}td{padding:0 .5em}.admonition{padding:.1em .5em;margin-bottom:1em}.admonition-title{font-weight:bold}.admonition.note,.admonition.info,.admonition.important{background:#aef}.admonition.todo,.admonition.versionadded,.admonition.tip,.admonition.hint{background:#dfd}.admonition.warning,.admonition.versionchanged,.admonition.deprecated{background:#fd4}.admonition.error,.admonition.danger,.admonition.caution{background:lightpink}</style>
+<style media="screen and (min-width: 700px)">@media screen and (min-width:700px){#sidebar{width:30%;height:100vh;overflow:auto;position:sticky;top:0}#content{width:70%;max-width:100ch;padding:3em 4em;border-left:1px solid #ddd}pre code{font-size:1em}.item .name{font-size:1em}main{display:flex;flex-direction:row-reverse;justify-content:flex-end}.toc ul ul,#index ul{padding-left:1.5em}.toc > ul > li{margin-top:.5em}}</style>
+<style media="print">@media print{#sidebar h1{page-break-before:always}.source{display:none}}@media print{*{background:transparent !important;color:#000 !important;box-shadow:none !important;text-shadow:none !important}a[href]:after{content:" (" attr(href) ")";font-size:90%}a[href][title]:after{content:none}abbr[title]:after{content:" (" attr(title) ")"}.ir a:after,a[href^="javascript:"]:after,a[href^="#"]:after{content:""}pre,blockquote{border:1px solid #999;page-break-inside:avoid}thead{display:table-header-group}tr,img{page-break-inside:avoid}img{max-width:100% !important}@page{margin:0.5cm}p,h2,h3{orphans:3;widows:3}h1,h2,h3,h4,h5,h6{page-break-after:avoid}}</style>
+<script defer src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/10.1.1/highlight.min.js" integrity="sha256-Uv3H6lx7dJmRfRvH8TH6kJD1TSK1aFcwgx+mdg3epi8=" crossorigin></script>
+<script>window.addEventListener('DOMContentLoaded', () => hljs.initHighlighting())</script>
+</head>
+<body>
+<main>
+<article id="content">
+<header>
+<h1 class="title">Module <code>nlfepy.io.vtu_writer</code></h1>
+</header>
+<section id="section-intro">
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">import sys
+import numpy as np
+from logging import getLogger
+
+
+class VtuWriter:
+    &#34;&#34;&#34;
+    VTU Writer
+
+    Write mesh info and physical quantities
+    &#34;&#34;&#34;
+
+    def __init__(self, *, mesh, values: dict = {}) -&gt; None:
+
+        self._mesh = mesh
+        self._values = values
+
+        self._EPS_MIN = 1.0e-30
+
+        self._logger = getLogger(&#34;LogWriter&#34;)
+
+    def _rearrange_node_numbers(self, nods: list, elm_name: str) -&gt; list:
+        &#34;&#34;&#34;
+        Rearrange node numbers for VTK file
+
+        Parameters
+        ----------
+        nods : list
+            Node numbers that consist finite element
+        elm_name : str
+            Finite element name
+
+        Returns
+        -------
+        nods_rearranged : list
+            Rearranged node numbers
+        &#34;&#34;&#34;
+
+        if elm_name == &#34;TRI6&#34;:
+            return np.array(nods)[[0, 3, 1, 4, 2, 5]].tolist()
+        elif elm_name == &#34;QUAD8&#34;:
+            return np.array(nods)[[0, 4, 1, 5, 2, 6, 3, 7]].tolist()
+        else:
+            return nods
+
+    def _get_cell_type(self, elm_name: str) -&gt; str:
+        &#34;&#34;&#34;
+        Get VTK cell type
+
+        Parameters
+        ----------
+        elm_name : str
+            Finite element name
+
+        Returns
+        -------
+        cell_type : str
+            VTK cell type
+        &#34;&#34;&#34;
+
+        if elm_name in [&#34;TRI3&#34;]:
+            return &#34;5&#34;
+        elif elm_name in [&#34;QUAD4&#34;]:
+            return &#34;9&#34;
+        elif elm_name in [&#34;TRI6&#34;, &#34;QUAD8&#34;]:
+            return &#34;7&#34;
+        elif elm_name in [&#34;TET4&#34;]:
+            return &#34;10&#34;
+        elif elm_name in [&#34;HEXA8&#34;]:
+            return &#34;12&#34;
+        else:
+            self._logger.error(&#34;Invalid finite element: {}&#34;.format(elm_name))
+            sys.exit(1)
+
+    def _write_bc(self, f) -&gt; None:
+
+        # B.C.
+        FIX, DISPLACEMENT, LOAD, FORCE = 1, -1, -2, -3
+        bc_table = np.zeros((3, self._mesh.n_point), dtype=&#34;int8&#34;)
+        idx_cmp_fix = self._mesh.bc[&#34;idx_fix&#34;]
+        # Displacement
+        disp_pts = None
+        disp_dof = None
+        if self._mesh.bc[&#34;n_disp&#34;] &gt; 0:
+            disp_pts, disp_dof = np.divmod(self._mesh.bc[&#34;idx_disp&#34;], self._mesh.n_dof)
+            bc_table[disp_dof, disp_pts] = DISPLACEMENT
+            idx_cmp_fix = np.setdiff1d(
+                self._mesh.bc[&#34;idx_fix&#34;], self._mesh.bc[&#34;idx_disp&#34;]
+            )
+        # Fix point
+        fix_pts, fix_dof = np.divmod(idx_cmp_fix, self._mesh.n_dof)
+        bc_table[fix_dof, fix_pts] = FIX
+        # Traction
+        if &#34;traction&#34; in self._mesh.bc:
+            traction = np.float32(self._mesh.bc[&#34;traction&#34;])
+            if traction.shape[1] == 2:
+                traction = np.insert(traction, 2, 0.0, axis=1)
+            trc_pts, trc_dof = np.where(np.abs(traction) &gt; self._EPS_MIN)
+            bc_table[trc_dof, trc_pts] = LOAD
+        else:
+            traction = np.zeros((self._mesh.n_point, 3))
+        # Applied force
+        if &#34;applied_force&#34; in self._mesh.bc:
+            appl_force = np.float32(self._mesh.bc[&#34;applied_force&#34;])
+            if appl_force.shape[1] == 2:
+                appl_force = np.insert(appl_force, 2, 0.0, axis=1)
+            af_pts, af_dof = np.where(np.abs(appl_force) &gt; self._EPS_MIN)
+            bc_table[af_dof, af_pts] = FORCE
+        else:
+            appl_force = np.zeros((self._mesh.n_point, 3))
+
+        # B.C. table
+        f.write(
+            &#34;&lt;DataArray NumberOfComponents=&#39;3&#39; type=&#39;Int8&#39; Name=&#39;Boundary Condition&#39; format=&#39;ascii&#39;&gt;\n&#34;
+        )
+        for ipnt in range(self._mesh.n_point):
+            f.write(
+                &#34;{} {} {}\n&#34;.format(
+                    bc_table[0, ipnt], bc_table[1, ipnt], bc_table[2, ipnt]
+                )
+            )
+        f.write(&#34;&lt;/DataArray&gt;\n&#34;)
+
+        # Prescribed displacement
+        prescribed_disp = np.zeros((3, self._mesh.n_point))
+        if self._mesh.bc[&#34;n_disp&#34;] &gt; 0:
+            prescribed_disp[disp_dof, disp_pts] = self._mesh.bc[&#34;displacement&#34;]
+        f.write(
+            &#34;&lt;DataArray NumberOfComponents=&#39;3&#39; type=&#39;Float32&#39; Name=&#39;Prescribed Displacement&#39; format=&#39;ascii&#39;&gt;\n&#34;
+        )
+        for ipnt in range(self._mesh.n_point):
+            f.write(
+                &#34;{:e} {:e} {:e}\n&#34;.format(
+                    prescribed_disp[0, ipnt],
+                    prescribed_disp[1, ipnt],
+                    prescribed_disp[2, ipnt],
+                )
+            )
+        f.write(&#34;&lt;/DataArray&gt;\n&#34;)
+
+        # Prescribed traction
+        f.write(
+            &#34;&lt;DataArray NumberOfComponents=&#39;3&#39; type=&#39;Float32&#39; Name=&#39;Prescribed Traction&#39; format=&#39;ascii&#39;&gt;\n&#34;
+        )
+        for ipnt in range(self._mesh.n_point):
+            f.write(
+                &#34;{:e} {:e} {:e}\n&#34;.format(
+                    traction[ipnt, 0], traction[ipnt, 1], traction[ipnt, 2]
+                )
+            )
+        f.write(&#34;&lt;/DataArray&gt;\n&#34;)
+
+        # Applied force
+        f.write(
+            &#34;&lt;DataArray NumberOfComponents=&#39;3&#39; type=&#39;Float32&#39; Name=&#39;Applied Force&#39; format=&#39;ascii&#39;&gt;\n&#34;
+        )
+        for ipnt in range(self._mesh.n_point):
+            f.write(
+                &#34;{:e} {:e} {:e}\n&#34;.format(
+                    appl_force[ipnt, 0], appl_force[ipnt, 1], appl_force[ipnt, 2]
+                )
+            )
+        f.write(&#34;&lt;/DataArray&gt;\n&#34;)
+
+        # MPC
+        mpc_table = np.zeros((3, self._mesh.n_point), dtype=&#34;int32&#34;)
+        mpc_ratio = np.zeros((3, self._mesh.n_point))
+        if self._mesh.mpc[&#34;nmpcpt&#34;] &gt; 0:
+            idx_mpc = np.arange(1, self._mesh.mpc[&#34;nmpcpt&#34;] + 1)
+            # Slave
+            slv_pts, slv_dof = np.divmod(
+                np.array(self._mesh.mpc[&#34;slave&#34;]), self._mesh.n_dof
+            )
+            mpc_table[slv_dof, slv_pts] = idx_mpc
+            mpc_ratio[slv_dof, slv_pts] = self._mesh.mpc[&#34;ratio&#34;]
+            # Master
+            mst_pts, mst_dof = np.divmod(
+                np.array(self._mesh.mpc[&#34;master&#34;]), self._mesh.n_dof
+            )
+            mpc_table[mst_dof, mst_pts] = idx_mpc
+
+        # MPC table
+        f.write(
+            &#34;&lt;DataArray NumberOfComponents=&#39;3&#39; type=&#39;UInt8&#39; Name=&#39;Multi-Point Constraints&#39; format=&#39;ascii&#39;&gt;\n&#34;
+        )
+        for ipnt in range(self._mesh.n_point):
+            f.write(
+                &#34;{} {} {}\n&#34;.format(
+                    mpc_table[0, ipnt], mpc_table[1, ipnt], mpc_table[2, ipnt]
+                )
+            )
+        f.write(&#34;&lt;/DataArray&gt;\n&#34;)
+
+        # MPC ratio
+        f.write(
+            &#34;&lt;DataArray NumberOfComponents=&#39;3&#39; type=&#39;Float32&#39; Name=&#39;MPC Ratio&#39; format=&#39;ascii&#39;&gt;\n&#34;
+        )
+        for ipnt in range(self._mesh.n_point):
+            f.write(
+                &#34;{:e} {:e} {:e}\n&#34;.format(
+                    mpc_ratio[0, ipnt], mpc_ratio[1, ipnt], mpc_ratio[2, ipnt]
+                )
+            )
+        f.write(&#34;&lt;/DataArray&gt;\n&#34;)
+
+    def _write_pnt_value(self, f, key: str):
+
+        val = self._values[&#34;point&#34;][key]
+        val = val.astype(&#34;float32&#34;)
+        val[np.abs(val) &lt; self._EPS_MIN] = 0.0
+        if val.ndim == 1:
+            val = val[np.newaxis, :]
+
+        f.write(
+            &#34;&lt;DataArray NumberOfComponents=&#39;&#34;
+            + str(val.shape[0])
+            + &#34;&#39; type=&#39;Float32&#39; Name=&#39;&#34;
+            + key
+            + &#34;&#39; format=&#39;ascii&#39;&gt;\n&#34;
+        )
+
+        for ipnt in range(self._mesh.n_point):
+            f.write(&#34; &#34;.join(map(str, val[:, ipnt])) + &#34;\n&#34;)
+
+        f.write(&#34;&lt;/DataArray&gt;\n&#34;)
+
+    def _write_elm_value(self, f, key: str):
+
+        val = self._values[&#34;element&#34;][key]
+        val = val.astype(&#34;float32&#34;)
+        val[np.abs(val) &lt; self._EPS_MIN] = 0.0
+        if val.ndim == 1:
+            val = val[:, np.newaxis]
+
+        f.write(
+            &#34;&lt;DataArray NumberOfComponents=&#39;&#34;
+            + str(val.shape[1])
+            + &#34;&#39; type=&#39;Float32&#39; Name=&#39;&#34;
+            + key
+            + &#34;&#39; format=&#39;ascii&#39;&gt;\n&#34;
+        )
+
+        for elm in range(self._mesh.n_element):
+            f.write(&#34; &#34;.join(map(str, val[elm])) + &#34;\n&#34;)
+
+        f.write(&#34;&lt;/DataArray&gt;\n&#34;)
+
+    def write(self, file_path: str, **kwargs) -&gt; None:
+        &#34;&#34;&#34;
+        Write .vtu file
+
+        Parameters
+        ----------
+        file_path : str
+            Output file path
+        output_bc : bool
+            Output B.C. or not
+        point : list
+            Output list of node values
+        element : list
+            Output list of element values
+        &#34;&#34;&#34;
+
+        output_bc = kwargs[&#34;output_bc&#34;] if &#34;output_bc&#34; in kwargs else True
+
+        out_pnt_list = []
+        if &#34;point&#34; in kwargs:
+            for key in kwargs[&#34;point&#34;]:
+                if key in self._values[&#34;point&#34;].keys():
+                    out_pnt_list.append(key)
+        else:
+            out_pnt_list = self._values[&#34;point&#34;].keys()
+
+        out_elm_list = []
+        if &#34;element&#34; in kwargs:
+            for key in kwargs[&#34;element&#34;]:
+                if key in self._values[&#34;element&#34;].keys():
+                    out_elm_list.append(key)
+        else:
+            out_elm_list = self._values[&#34;element&#34;].keys()
+
+        with open(file_path, mode=&#34;w&#34;, newline=&#34;\n&#34;) as f:
+
+            # Header
+            f.write(&#34;&lt;?xml version=&#39;1.0&#39; encoding=&#39;utf-8&#39;?&gt;\n&#34;)
+            f.write(
+                &#34;&lt;VTKFile byte_order=&#39;LittleEndian&#39; type=&#39;UnstructuredGrid&#39; version=&#39;0.1&#39; xmlns=&#39;VTK&#39;&gt;\n&#34;
+            )
+            f.write(&#34;&lt;UnstructuredGrid&gt;\n&#34;)
+            f.write(
+                &#34;&lt;Piece NumberOfCells=&#39;&#34;
+                + str(self._mesh.n_element)
+                + &#34;&#39; NumberOfPoints=&#39;&#34;
+                + str(self._mesh.n_point)
+                + &#34;&#39;&gt;\n&#34;
+            )
+
+            # Coordinates
+            coords = np.float32(self._mesh.coords)
+            if coords.shape[0] == 2:
+                coords = np.insert(coords, 2, 0.0, axis=0)
+            f.write(&#34;&lt;Points&gt;\n&#34;)
+            f.write(
+                &#34;&lt;DataArray NumberOfComponents=&#39;3&#39; type=&#39;Float32&#39; Name=&#39;Position&#39; format=&#39;ascii&#39;&gt;\n&#34;
+            )
+            for ipnt in range(self._mesh.n_point):
+                f.write(
+                    &#34;{:e} {:e} {:e}\n&#34;.format(
+                        coords[0, ipnt], coords[1, ipnt], coords[2, ipnt]
+                    )
+                )
+            f.write(&#34;&lt;/DataArray&gt;\n&#34;)
+            f.write(&#34;&lt;/Points&gt;\n&#34;)
+
+            # Begin cell value
+            f.write(&#34;&lt;Cells&gt;\n&#34;)
+
+            # Connectivity
+            f.write(&#34;&lt;DataArray type=&#39;Int32&#39; Name=&#39;connectivity&#39; format=&#39;ascii&#39;&gt;\n&#34;)
+            for ielm, lnd in enumerate(self._mesh.connectivity):
+                lnd = self._rearrange_node_numbers(lnd, self._mesh.element_name[ielm])
+                for l in lnd:
+                    f.write(str(l) + &#34; &#34;)
+                f.write(&#34;\n&#34;)
+            f.write(&#34;&lt;/DataArray&gt;\n&#34;)
+
+            # Cumulative number of nodes
+            f.write(&#34;&lt;DataArray type=&#39;Int32&#39; Name=&#39;offsets&#39; format=&#39;ascii&#39;&gt;\n&#34;)
+            n_totpnt = 0
+            for lnd in self._mesh.connectivity:
+                n_totpnt += len(lnd)
+                f.write(str(n_totpnt) + &#34;\n&#34;)
+            f.write(&#34;&lt;/DataArray&gt;\n&#34;)
+
+            # Cell type
+            f.write(&#34;&lt;DataArray type=&#39;UInt8&#39; Name=&#39;types&#39; format=&#39;ascii&#39;&gt;\n&#34;)
+            for ename in self._mesh.element_name:
+                f.write(self._get_cell_type(ename) + &#34;\n&#34;)
+            f.write(&#34;&lt;/DataArray&gt;\n&#34;)
+
+            # End cell data
+            f.write(&#34;&lt;/Cells&gt;\n&#34;)
+
+            # Write point data
+            if output_bc or len(out_pnt_list) &gt; 0:
+
+                # Start point data
+                f.write(&#34;&lt;PointData&gt;\n&#34;)
+
+                # Write B.C.
+                if output_bc:
+                    self._write_bc(f)
+
+                # Node value
+                for key in out_pnt_list:
+                    self._write_pnt_value(f, key)
+
+                # End point data
+                f.write(&#34;&lt;/PointData&gt;\n&#34;)
+
+            # Start cell data
+            f.write(&#34;&lt;CellData&gt;\n&#34;)
+
+            # Grain number
+            f.write(
+                &#34;&lt;DataArray NumberOfComponents=&#39;1&#39; type=&#39;UInt8&#39; Name=&#39;Cryst&#39; format=&#39;ascii&#39;&gt;\n&#34;
+            )
+            for ielm in range(self._mesh.n_element):
+                f.write(&#34;{}\n&#34;.format(self._mesh.grain_numbers[ielm]))
+            f.write(&#34;&lt;/DataArray&gt;\n&#34;)
+
+            # Material number
+            f.write(
+                &#34;&lt;DataArray NumberOfComponents=&#39;1&#39; type=&#39;UInt8&#39; Name=&#39;Mater&#39; format=&#39;ascii&#39;&gt;\n&#34;
+            )
+            for ielm in range(self._mesh.n_element):
+                f.write(&#34;{}\n&#34;.format(self._mesh.material_numbers[ielm]))
+            f.write(&#34;&lt;/DataArray&gt;\n&#34;)
+
+            # Crystal orientation
+            f.write(
+                &#34;&lt;DataArray NumberOfComponents=&#39;3&#39; type=&#39;Float32&#39; Name=&#39;Crystal Orientation&#39; format=&#39;ascii&#39;&gt;\n&#34;
+            )
+            for ielm in range(self._mesh.n_element):
+                f.write(
+                    &#34;{:e} {:e} {:e}\n&#34;.format(
+                        self._mesh.crystal_orientation[ielm, 0],
+                        self._mesh.crystal_orientation[ielm, 1],
+                        self._mesh.crystal_orientation[ielm, 2],
+                    )
+                )
+            f.write(&#34;&lt;/DataArray&gt;\n&#34;)
+
+            # Element values
+            for key in out_elm_list:
+                self._write_elm_value(f, key)
+
+            # End cell data
+            f.write(&#34;&lt;/CellData&gt;\n&#34;)
+
+            # Footer
+            f.write(&#34;&lt;/Piece&gt;\n&#34;)
+            f.write(&#34;&lt;/UnstructuredGrid&gt;\n&#34;)
+            f.write(&#34;&lt;/VTKFile&gt;\n&#34;)
+            f.close()</code></pre>
+</details>
+</section>
+<section>
+</section>
+<section>
+</section>
+<section>
+</section>
+<section>
+<h2 class="section-title" id="header-classes">Classes</h2>
+<dl>
+<dt id="nlfepy.io.vtu_writer.VtuWriter"><code class="flex name class">
+<span>class <span class="ident">VtuWriter</span></span>
+<span>(</span><span>*, mesh, values: dict = {})</span>
+</code></dt>
+<dd>
+<div class="desc"><p>VTU Writer</p>
+<p>Write mesh info and physical quantities</p></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">class VtuWriter:
+    &#34;&#34;&#34;
+    VTU Writer
+
+    Write mesh info and physical quantities
+    &#34;&#34;&#34;
+
+    def __init__(self, *, mesh, values: dict = {}) -&gt; None:
+
+        self._mesh = mesh
+        self._values = values
+
+        self._EPS_MIN = 1.0e-30
+
+        self._logger = getLogger(&#34;LogWriter&#34;)
+
+    def _rearrange_node_numbers(self, nods: list, elm_name: str) -&gt; list:
+        &#34;&#34;&#34;
+        Rearrange node numbers for VTK file
+
+        Parameters
+        ----------
+        nods : list
+            Node numbers that consist finite element
+        elm_name : str
+            Finite element name
+
+        Returns
+        -------
+        nods_rearranged : list
+            Rearranged node numbers
+        &#34;&#34;&#34;
+
+        if elm_name == &#34;TRI6&#34;:
+            return np.array(nods)[[0, 3, 1, 4, 2, 5]].tolist()
+        elif elm_name == &#34;QUAD8&#34;:
+            return np.array(nods)[[0, 4, 1, 5, 2, 6, 3, 7]].tolist()
+        else:
+            return nods
+
+    def _get_cell_type(self, elm_name: str) -&gt; str:
+        &#34;&#34;&#34;
+        Get VTK cell type
+
+        Parameters
+        ----------
+        elm_name : str
+            Finite element name
+
+        Returns
+        -------
+        cell_type : str
+            VTK cell type
+        &#34;&#34;&#34;
+
+        if elm_name in [&#34;TRI3&#34;]:
+            return &#34;5&#34;
+        elif elm_name in [&#34;QUAD4&#34;]:
+            return &#34;9&#34;
+        elif elm_name in [&#34;TRI6&#34;, &#34;QUAD8&#34;]:
+            return &#34;7&#34;
+        elif elm_name in [&#34;TET4&#34;]:
+            return &#34;10&#34;
+        elif elm_name in [&#34;HEXA8&#34;]:
+            return &#34;12&#34;
+        else:
+            self._logger.error(&#34;Invalid finite element: {}&#34;.format(elm_name))
+            sys.exit(1)
+
+    def _write_bc(self, f) -&gt; None:
+
+        # B.C.
+        FIX, DISPLACEMENT, LOAD, FORCE = 1, -1, -2, -3
+        bc_table = np.zeros((3, self._mesh.n_point), dtype=&#34;int8&#34;)
+        idx_cmp_fix = self._mesh.bc[&#34;idx_fix&#34;]
+        # Displacement
+        disp_pts = None
+        disp_dof = None
+        if self._mesh.bc[&#34;n_disp&#34;] &gt; 0:
+            disp_pts, disp_dof = np.divmod(self._mesh.bc[&#34;idx_disp&#34;], self._mesh.n_dof)
+            bc_table[disp_dof, disp_pts] = DISPLACEMENT
+            idx_cmp_fix = np.setdiff1d(
+                self._mesh.bc[&#34;idx_fix&#34;], self._mesh.bc[&#34;idx_disp&#34;]
+            )
+        # Fix point
+        fix_pts, fix_dof = np.divmod(idx_cmp_fix, self._mesh.n_dof)
+        bc_table[fix_dof, fix_pts] = FIX
+        # Traction
+        if &#34;traction&#34; in self._mesh.bc:
+            traction = np.float32(self._mesh.bc[&#34;traction&#34;])
+            if traction.shape[1] == 2:
+                traction = np.insert(traction, 2, 0.0, axis=1)
+            trc_pts, trc_dof = np.where(np.abs(traction) &gt; self._EPS_MIN)
+            bc_table[trc_dof, trc_pts] = LOAD
+        else:
+            traction = np.zeros((self._mesh.n_point, 3))
+        # Applied force
+        if &#34;applied_force&#34; in self._mesh.bc:
+            appl_force = np.float32(self._mesh.bc[&#34;applied_force&#34;])
+            if appl_force.shape[1] == 2:
+                appl_force = np.insert(appl_force, 2, 0.0, axis=1)
+            af_pts, af_dof = np.where(np.abs(appl_force) &gt; self._EPS_MIN)
+            bc_table[af_dof, af_pts] = FORCE
+        else:
+            appl_force = np.zeros((self._mesh.n_point, 3))
+
+        # B.C. table
+        f.write(
+            &#34;&lt;DataArray NumberOfComponents=&#39;3&#39; type=&#39;Int8&#39; Name=&#39;Boundary Condition&#39; format=&#39;ascii&#39;&gt;\n&#34;
+        )
+        for ipnt in range(self._mesh.n_point):
+            f.write(
+                &#34;{} {} {}\n&#34;.format(
+                    bc_table[0, ipnt], bc_table[1, ipnt], bc_table[2, ipnt]
+                )
+            )
+        f.write(&#34;&lt;/DataArray&gt;\n&#34;)
+
+        # Prescribed displacement
+        prescribed_disp = np.zeros((3, self._mesh.n_point))
+        if self._mesh.bc[&#34;n_disp&#34;] &gt; 0:
+            prescribed_disp[disp_dof, disp_pts] = self._mesh.bc[&#34;displacement&#34;]
+        f.write(
+            &#34;&lt;DataArray NumberOfComponents=&#39;3&#39; type=&#39;Float32&#39; Name=&#39;Prescribed Displacement&#39; format=&#39;ascii&#39;&gt;\n&#34;
+        )
+        for ipnt in range(self._mesh.n_point):
+            f.write(
+                &#34;{:e} {:e} {:e}\n&#34;.format(
+                    prescribed_disp[0, ipnt],
+                    prescribed_disp[1, ipnt],
+                    prescribed_disp[2, ipnt],
+                )
+            )
+        f.write(&#34;&lt;/DataArray&gt;\n&#34;)
+
+        # Prescribed traction
+        f.write(
+            &#34;&lt;DataArray NumberOfComponents=&#39;3&#39; type=&#39;Float32&#39; Name=&#39;Prescribed Traction&#39; format=&#39;ascii&#39;&gt;\n&#34;
+        )
+        for ipnt in range(self._mesh.n_point):
+            f.write(
+                &#34;{:e} {:e} {:e}\n&#34;.format(
+                    traction[ipnt, 0], traction[ipnt, 1], traction[ipnt, 2]
+                )
+            )
+        f.write(&#34;&lt;/DataArray&gt;\n&#34;)
+
+        # Applied force
+        f.write(
+            &#34;&lt;DataArray NumberOfComponents=&#39;3&#39; type=&#39;Float32&#39; Name=&#39;Applied Force&#39; format=&#39;ascii&#39;&gt;\n&#34;
+        )
+        for ipnt in range(self._mesh.n_point):
+            f.write(
+                &#34;{:e} {:e} {:e}\n&#34;.format(
+                    appl_force[ipnt, 0], appl_force[ipnt, 1], appl_force[ipnt, 2]
+                )
+            )
+        f.write(&#34;&lt;/DataArray&gt;\n&#34;)
+
+        # MPC
+        mpc_table = np.zeros((3, self._mesh.n_point), dtype=&#34;int32&#34;)
+        mpc_ratio = np.zeros((3, self._mesh.n_point))
+        if self._mesh.mpc[&#34;nmpcpt&#34;] &gt; 0:
+            idx_mpc = np.arange(1, self._mesh.mpc[&#34;nmpcpt&#34;] + 1)
+            # Slave
+            slv_pts, slv_dof = np.divmod(
+                np.array(self._mesh.mpc[&#34;slave&#34;]), self._mesh.n_dof
+            )
+            mpc_table[slv_dof, slv_pts] = idx_mpc
+            mpc_ratio[slv_dof, slv_pts] = self._mesh.mpc[&#34;ratio&#34;]
+            # Master
+            mst_pts, mst_dof = np.divmod(
+                np.array(self._mesh.mpc[&#34;master&#34;]), self._mesh.n_dof
+            )
+            mpc_table[mst_dof, mst_pts] = idx_mpc
+
+        # MPC table
+        f.write(
+            &#34;&lt;DataArray NumberOfComponents=&#39;3&#39; type=&#39;UInt8&#39; Name=&#39;Multi-Point Constraints&#39; format=&#39;ascii&#39;&gt;\n&#34;
+        )
+        for ipnt in range(self._mesh.n_point):
+            f.write(
+                &#34;{} {} {}\n&#34;.format(
+                    mpc_table[0, ipnt], mpc_table[1, ipnt], mpc_table[2, ipnt]
+                )
+            )
+        f.write(&#34;&lt;/DataArray&gt;\n&#34;)
+
+        # MPC ratio
+        f.write(
+            &#34;&lt;DataArray NumberOfComponents=&#39;3&#39; type=&#39;Float32&#39; Name=&#39;MPC Ratio&#39; format=&#39;ascii&#39;&gt;\n&#34;
+        )
+        for ipnt in range(self._mesh.n_point):
+            f.write(
+                &#34;{:e} {:e} {:e}\n&#34;.format(
+                    mpc_ratio[0, ipnt], mpc_ratio[1, ipnt], mpc_ratio[2, ipnt]
+                )
+            )
+        f.write(&#34;&lt;/DataArray&gt;\n&#34;)
+
+    def _write_pnt_value(self, f, key: str):
+
+        val = self._values[&#34;point&#34;][key]
+        val = val.astype(&#34;float32&#34;)
+        val[np.abs(val) &lt; self._EPS_MIN] = 0.0
+        if val.ndim == 1:
+            val = val[np.newaxis, :]
+
+        f.write(
+            &#34;&lt;DataArray NumberOfComponents=&#39;&#34;
+            + str(val.shape[0])
+            + &#34;&#39; type=&#39;Float32&#39; Name=&#39;&#34;
+            + key
+            + &#34;&#39; format=&#39;ascii&#39;&gt;\n&#34;
+        )
+
+        for ipnt in range(self._mesh.n_point):
+            f.write(&#34; &#34;.join(map(str, val[:, ipnt])) + &#34;\n&#34;)
+
+        f.write(&#34;&lt;/DataArray&gt;\n&#34;)
+
+    def _write_elm_value(self, f, key: str):
+
+        val = self._values[&#34;element&#34;][key]
+        val = val.astype(&#34;float32&#34;)
+        val[np.abs(val) &lt; self._EPS_MIN] = 0.0
+        if val.ndim == 1:
+            val = val[:, np.newaxis]
+
+        f.write(
+            &#34;&lt;DataArray NumberOfComponents=&#39;&#34;
+            + str(val.shape[1])
+            + &#34;&#39; type=&#39;Float32&#39; Name=&#39;&#34;
+            + key
+            + &#34;&#39; format=&#39;ascii&#39;&gt;\n&#34;
+        )
+
+        for elm in range(self._mesh.n_element):
+            f.write(&#34; &#34;.join(map(str, val[elm])) + &#34;\n&#34;)
+
+        f.write(&#34;&lt;/DataArray&gt;\n&#34;)
+
+    def write(self, file_path: str, **kwargs) -&gt; None:
+        &#34;&#34;&#34;
+        Write .vtu file
+
+        Parameters
+        ----------
+        file_path : str
+            Output file path
+        output_bc : bool
+            Output B.C. or not
+        point : list
+            Output list of node values
+        element : list
+            Output list of element values
+        &#34;&#34;&#34;
+
+        output_bc = kwargs[&#34;output_bc&#34;] if &#34;output_bc&#34; in kwargs else True
+
+        out_pnt_list = []
+        if &#34;point&#34; in kwargs:
+            for key in kwargs[&#34;point&#34;]:
+                if key in self._values[&#34;point&#34;].keys():
+                    out_pnt_list.append(key)
+        else:
+            out_pnt_list = self._values[&#34;point&#34;].keys()
+
+        out_elm_list = []
+        if &#34;element&#34; in kwargs:
+            for key in kwargs[&#34;element&#34;]:
+                if key in self._values[&#34;element&#34;].keys():
+                    out_elm_list.append(key)
+        else:
+            out_elm_list = self._values[&#34;element&#34;].keys()
+
+        with open(file_path, mode=&#34;w&#34;, newline=&#34;\n&#34;) as f:
+
+            # Header
+            f.write(&#34;&lt;?xml version=&#39;1.0&#39; encoding=&#39;utf-8&#39;?&gt;\n&#34;)
+            f.write(
+                &#34;&lt;VTKFile byte_order=&#39;LittleEndian&#39; type=&#39;UnstructuredGrid&#39; version=&#39;0.1&#39; xmlns=&#39;VTK&#39;&gt;\n&#34;
+            )
+            f.write(&#34;&lt;UnstructuredGrid&gt;\n&#34;)
+            f.write(
+                &#34;&lt;Piece NumberOfCells=&#39;&#34;
+                + str(self._mesh.n_element)
+                + &#34;&#39; NumberOfPoints=&#39;&#34;
+                + str(self._mesh.n_point)
+                + &#34;&#39;&gt;\n&#34;
+            )
+
+            # Coordinates
+            coords = np.float32(self._mesh.coords)
+            if coords.shape[0] == 2:
+                coords = np.insert(coords, 2, 0.0, axis=0)
+            f.write(&#34;&lt;Points&gt;\n&#34;)
+            f.write(
+                &#34;&lt;DataArray NumberOfComponents=&#39;3&#39; type=&#39;Float32&#39; Name=&#39;Position&#39; format=&#39;ascii&#39;&gt;\n&#34;
+            )
+            for ipnt in range(self._mesh.n_point):
+                f.write(
+                    &#34;{:e} {:e} {:e}\n&#34;.format(
+                        coords[0, ipnt], coords[1, ipnt], coords[2, ipnt]
+                    )
+                )
+            f.write(&#34;&lt;/DataArray&gt;\n&#34;)
+            f.write(&#34;&lt;/Points&gt;\n&#34;)
+
+            # Begin cell value
+            f.write(&#34;&lt;Cells&gt;\n&#34;)
+
+            # Connectivity
+            f.write(&#34;&lt;DataArray type=&#39;Int32&#39; Name=&#39;connectivity&#39; format=&#39;ascii&#39;&gt;\n&#34;)
+            for ielm, lnd in enumerate(self._mesh.connectivity):
+                lnd = self._rearrange_node_numbers(lnd, self._mesh.element_name[ielm])
+                for l in lnd:
+                    f.write(str(l) + &#34; &#34;)
+                f.write(&#34;\n&#34;)
+            f.write(&#34;&lt;/DataArray&gt;\n&#34;)
+
+            # Cumulative number of nodes
+            f.write(&#34;&lt;DataArray type=&#39;Int32&#39; Name=&#39;offsets&#39; format=&#39;ascii&#39;&gt;\n&#34;)
+            n_totpnt = 0
+            for lnd in self._mesh.connectivity:
+                n_totpnt += len(lnd)
+                f.write(str(n_totpnt) + &#34;\n&#34;)
+            f.write(&#34;&lt;/DataArray&gt;\n&#34;)
+
+            # Cell type
+            f.write(&#34;&lt;DataArray type=&#39;UInt8&#39; Name=&#39;types&#39; format=&#39;ascii&#39;&gt;\n&#34;)
+            for ename in self._mesh.element_name:
+                f.write(self._get_cell_type(ename) + &#34;\n&#34;)
+            f.write(&#34;&lt;/DataArray&gt;\n&#34;)
+
+            # End cell data
+            f.write(&#34;&lt;/Cells&gt;\n&#34;)
+
+            # Write point data
+            if output_bc or len(out_pnt_list) &gt; 0:
+
+                # Start point data
+                f.write(&#34;&lt;PointData&gt;\n&#34;)
+
+                # Write B.C.
+                if output_bc:
+                    self._write_bc(f)
+
+                # Node value
+                for key in out_pnt_list:
+                    self._write_pnt_value(f, key)
+
+                # End point data
+                f.write(&#34;&lt;/PointData&gt;\n&#34;)
+
+            # Start cell data
+            f.write(&#34;&lt;CellData&gt;\n&#34;)
+
+            # Grain number
+            f.write(
+                &#34;&lt;DataArray NumberOfComponents=&#39;1&#39; type=&#39;UInt8&#39; Name=&#39;Cryst&#39; format=&#39;ascii&#39;&gt;\n&#34;
+            )
+            for ielm in range(self._mesh.n_element):
+                f.write(&#34;{}\n&#34;.format(self._mesh.grain_numbers[ielm]))
+            f.write(&#34;&lt;/DataArray&gt;\n&#34;)
+
+            # Material number
+            f.write(
+                &#34;&lt;DataArray NumberOfComponents=&#39;1&#39; type=&#39;UInt8&#39; Name=&#39;Mater&#39; format=&#39;ascii&#39;&gt;\n&#34;
+            )
+            for ielm in range(self._mesh.n_element):
+                f.write(&#34;{}\n&#34;.format(self._mesh.material_numbers[ielm]))
+            f.write(&#34;&lt;/DataArray&gt;\n&#34;)
+
+            # Crystal orientation
+            f.write(
+                &#34;&lt;DataArray NumberOfComponents=&#39;3&#39; type=&#39;Float32&#39; Name=&#39;Crystal Orientation&#39; format=&#39;ascii&#39;&gt;\n&#34;
+            )
+            for ielm in range(self._mesh.n_element):
+                f.write(
+                    &#34;{:e} {:e} {:e}\n&#34;.format(
+                        self._mesh.crystal_orientation[ielm, 0],
+                        self._mesh.crystal_orientation[ielm, 1],
+                        self._mesh.crystal_orientation[ielm, 2],
+                    )
+                )
+            f.write(&#34;&lt;/DataArray&gt;\n&#34;)
+
+            # Element values
+            for key in out_elm_list:
+                self._write_elm_value(f, key)
+
+            # End cell data
+            f.write(&#34;&lt;/CellData&gt;\n&#34;)
+
+            # Footer
+            f.write(&#34;&lt;/Piece&gt;\n&#34;)
+            f.write(&#34;&lt;/UnstructuredGrid&gt;\n&#34;)
+            f.write(&#34;&lt;/VTKFile&gt;\n&#34;)
+            f.close()</code></pre>
+</details>
+<h3>Methods</h3>
+<dl>
+<dt id="nlfepy.io.vtu_writer.VtuWriter.write"><code class="name flex">
+<span>def <span class="ident">write</span></span>(<span>self, file_path: str, **kwargs) ‑> NoneType</span>
+</code></dt>
+<dd>
+<div class="desc"><p>Write .vtu file</p>
+<h2 id="parameters">Parameters</h2>
+<dl>
+<dt><strong><code>file_path</code></strong> :&ensp;<code>str</code></dt>
+<dd>Output file path</dd>
+<dt><strong><code>output_bc</code></strong> :&ensp;<code>bool</code></dt>
+<dd>Output B.C. or not</dd>
+<dt><strong><code>point</code></strong> :&ensp;<code>list</code></dt>
+<dd>Output list of node values</dd>
+<dt><strong><code>element</code></strong> :&ensp;<code>list</code></dt>
+<dd>Output list of element values</dd>
+</dl></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def write(self, file_path: str, **kwargs) -&gt; None:
+    &#34;&#34;&#34;
+    Write .vtu file
+
+    Parameters
+    ----------
+    file_path : str
+        Output file path
+    output_bc : bool
+        Output B.C. or not
+    point : list
+        Output list of node values
+    element : list
+        Output list of element values
+    &#34;&#34;&#34;
+
+    output_bc = kwargs[&#34;output_bc&#34;] if &#34;output_bc&#34; in kwargs else True
+
+    out_pnt_list = []
+    if &#34;point&#34; in kwargs:
+        for key in kwargs[&#34;point&#34;]:
+            if key in self._values[&#34;point&#34;].keys():
+                out_pnt_list.append(key)
+    else:
+        out_pnt_list = self._values[&#34;point&#34;].keys()
+
+    out_elm_list = []
+    if &#34;element&#34; in kwargs:
+        for key in kwargs[&#34;element&#34;]:
+            if key in self._values[&#34;element&#34;].keys():
+                out_elm_list.append(key)
+    else:
+        out_elm_list = self._values[&#34;element&#34;].keys()
+
+    with open(file_path, mode=&#34;w&#34;, newline=&#34;\n&#34;) as f:
+
+        # Header
+        f.write(&#34;&lt;?xml version=&#39;1.0&#39; encoding=&#39;utf-8&#39;?&gt;\n&#34;)
+        f.write(
+            &#34;&lt;VTKFile byte_order=&#39;LittleEndian&#39; type=&#39;UnstructuredGrid&#39; version=&#39;0.1&#39; xmlns=&#39;VTK&#39;&gt;\n&#34;
+        )
+        f.write(&#34;&lt;UnstructuredGrid&gt;\n&#34;)
+        f.write(
+            &#34;&lt;Piece NumberOfCells=&#39;&#34;
+            + str(self._mesh.n_element)
+            + &#34;&#39; NumberOfPoints=&#39;&#34;
+            + str(self._mesh.n_point)
+            + &#34;&#39;&gt;\n&#34;
+        )
+
+        # Coordinates
+        coords = np.float32(self._mesh.coords)
+        if coords.shape[0] == 2:
+            coords = np.insert(coords, 2, 0.0, axis=0)
+        f.write(&#34;&lt;Points&gt;\n&#34;)
+        f.write(
+            &#34;&lt;DataArray NumberOfComponents=&#39;3&#39; type=&#39;Float32&#39; Name=&#39;Position&#39; format=&#39;ascii&#39;&gt;\n&#34;
+        )
+        for ipnt in range(self._mesh.n_point):
+            f.write(
+                &#34;{:e} {:e} {:e}\n&#34;.format(
+                    coords[0, ipnt], coords[1, ipnt], coords[2, ipnt]
+                )
+            )
+        f.write(&#34;&lt;/DataArray&gt;\n&#34;)
+        f.write(&#34;&lt;/Points&gt;\n&#34;)
+
+        # Begin cell value
+        f.write(&#34;&lt;Cells&gt;\n&#34;)
+
+        # Connectivity
+        f.write(&#34;&lt;DataArray type=&#39;Int32&#39; Name=&#39;connectivity&#39; format=&#39;ascii&#39;&gt;\n&#34;)
+        for ielm, lnd in enumerate(self._mesh.connectivity):
+            lnd = self._rearrange_node_numbers(lnd, self._mesh.element_name[ielm])
+            for l in lnd:
+                f.write(str(l) + &#34; &#34;)
+            f.write(&#34;\n&#34;)
+        f.write(&#34;&lt;/DataArray&gt;\n&#34;)
+
+        # Cumulative number of nodes
+        f.write(&#34;&lt;DataArray type=&#39;Int32&#39; Name=&#39;offsets&#39; format=&#39;ascii&#39;&gt;\n&#34;)
+        n_totpnt = 0
+        for lnd in self._mesh.connectivity:
+            n_totpnt += len(lnd)
+            f.write(str(n_totpnt) + &#34;\n&#34;)
+        f.write(&#34;&lt;/DataArray&gt;\n&#34;)
+
+        # Cell type
+        f.write(&#34;&lt;DataArray type=&#39;UInt8&#39; Name=&#39;types&#39; format=&#39;ascii&#39;&gt;\n&#34;)
+        for ename in self._mesh.element_name:
+            f.write(self._get_cell_type(ename) + &#34;\n&#34;)
+        f.write(&#34;&lt;/DataArray&gt;\n&#34;)
+
+        # End cell data
+        f.write(&#34;&lt;/Cells&gt;\n&#34;)
+
+        # Write point data
+        if output_bc or len(out_pnt_list) &gt; 0:
+
+            # Start point data
+            f.write(&#34;&lt;PointData&gt;\n&#34;)
+
+            # Write B.C.
+            if output_bc:
+                self._write_bc(f)
+
+            # Node value
+            for key in out_pnt_list:
+                self._write_pnt_value(f, key)
+
+            # End point data
+            f.write(&#34;&lt;/PointData&gt;\n&#34;)
+
+        # Start cell data
+        f.write(&#34;&lt;CellData&gt;\n&#34;)
+
+        # Grain number
+        f.write(
+            &#34;&lt;DataArray NumberOfComponents=&#39;1&#39; type=&#39;UInt8&#39; Name=&#39;Cryst&#39; format=&#39;ascii&#39;&gt;\n&#34;
+        )
+        for ielm in range(self._mesh.n_element):
+            f.write(&#34;{}\n&#34;.format(self._mesh.grain_numbers[ielm]))
+        f.write(&#34;&lt;/DataArray&gt;\n&#34;)
+
+        # Material number
+        f.write(
+            &#34;&lt;DataArray NumberOfComponents=&#39;1&#39; type=&#39;UInt8&#39; Name=&#39;Mater&#39; format=&#39;ascii&#39;&gt;\n&#34;
+        )
+        for ielm in range(self._mesh.n_element):
+            f.write(&#34;{}\n&#34;.format(self._mesh.material_numbers[ielm]))
+        f.write(&#34;&lt;/DataArray&gt;\n&#34;)
+
+        # Crystal orientation
+        f.write(
+            &#34;&lt;DataArray NumberOfComponents=&#39;3&#39; type=&#39;Float32&#39; Name=&#39;Crystal Orientation&#39; format=&#39;ascii&#39;&gt;\n&#34;
+        )
+        for ielm in range(self._mesh.n_element):
+            f.write(
+                &#34;{:e} {:e} {:e}\n&#34;.format(
+                    self._mesh.crystal_orientation[ielm, 0],
+                    self._mesh.crystal_orientation[ielm, 1],
+                    self._mesh.crystal_orientation[ielm, 2],
+                )
+            )
+        f.write(&#34;&lt;/DataArray&gt;\n&#34;)
+
+        # Element values
+        for key in out_elm_list:
+            self._write_elm_value(f, key)
+
+        # End cell data
+        f.write(&#34;&lt;/CellData&gt;\n&#34;)
+
+        # Footer
+        f.write(&#34;&lt;/Piece&gt;\n&#34;)
+        f.write(&#34;&lt;/UnstructuredGrid&gt;\n&#34;)
+        f.write(&#34;&lt;/VTKFile&gt;\n&#34;)
+        f.close()</code></pre>
+</details>
+</dd>
+</dl>
+</dd>
+</dl>
+</section>
+</article>
+<nav id="sidebar">
+<h1>Index</h1>
+<div class="toc">
+<ul></ul>
+</div>
+<ul id="index">
+<li><h3>Super-module</h3>
+<ul>
+<li><code><a title="nlfepy.io" href="index.html">nlfepy.io</a></code></li>
+</ul>
+</li>
+<li><h3><a href="#header-classes">Classes</a></h3>
+<ul>
+<li>
+<h4><code><a title="nlfepy.io.vtu_writer.VtuWriter" href="#nlfepy.io.vtu_writer.VtuWriter">VtuWriter</a></code></h4>
+<ul class="">
+<li><code><a title="nlfepy.io.vtu_writer.VtuWriter.write" href="#nlfepy.io.vtu_writer.VtuWriter.write">write</a></code></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+</nav>
+</main>
+<footer id="footer">
+<p>Generated by <a href="https://pdoc3.github.io/pdoc"><cite>pdoc</cite> 0.9.2</a>.</p>
+</footer>
+</body>
+</html>

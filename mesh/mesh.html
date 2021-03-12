@@ -1,0 +1,1842 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, minimum-scale=1" />
+<meta name="generator" content="pdoc 0.9.2" />
+<title>nlfepy.mesh.mesh API documentation</title>
+<meta name="description" content="" />
+<link rel="preload stylesheet" as="style" href="https://cdnjs.cloudflare.com/ajax/libs/10up-sanitize.css/11.0.1/sanitize.min.css" integrity="sha256-PK9q560IAAa6WVRRh76LtCaI8pjTJ2z11v0miyNNjrs=" crossorigin>
+<link rel="preload stylesheet" as="style" href="https://cdnjs.cloudflare.com/ajax/libs/10up-sanitize.css/11.0.1/typography.min.css" integrity="sha256-7l/o7C8jubJiy74VsKTidCy1yBkRtiUGbVkYBylBqUg=" crossorigin>
+<link rel="stylesheet preload" as="style" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/10.1.1/styles/github.min.css" crossorigin>
+<style>:root{--highlight-color:#fe9}.flex{display:flex !important}body{line-height:1.5em}#content{padding:20px}#sidebar{padding:30px;overflow:hidden}#sidebar > *:last-child{margin-bottom:2cm}.http-server-breadcrumbs{font-size:130%;margin:0 0 15px 0}#footer{font-size:.75em;padding:5px 30px;border-top:1px solid #ddd;text-align:right}#footer p{margin:0 0 0 1em;display:inline-block}#footer p:last-child{margin-right:30px}h1,h2,h3,h4,h5{font-weight:300}h1{font-size:2.5em;line-height:1.1em}h2{font-size:1.75em;margin:1em 0 .50em 0}h3{font-size:1.4em;margin:25px 0 10px 0}h4{margin:0;font-size:105%}h1:target,h2:target,h3:target,h4:target,h5:target,h6:target{background:var(--highlight-color);padding:.2em 0}a{color:#058;text-decoration:none;transition:color .3s ease-in-out}a:hover{color:#e82}.title code{font-weight:bold}h2[id^="header-"]{margin-top:2em}.ident{color:#900}pre code{background:#f8f8f8;font-size:.8em;line-height:1.4em}code{background:#f2f2f1;padding:1px 4px;overflow-wrap:break-word}h1 code{background:transparent}pre{background:#f8f8f8;border:0;border-top:1px solid #ccc;border-bottom:1px solid #ccc;margin:1em 0;padding:1ex}#http-server-module-list{display:flex;flex-flow:column}#http-server-module-list div{display:flex}#http-server-module-list dt{min-width:10%}#http-server-module-list p{margin-top:0}.toc ul,#index{list-style-type:none;margin:0;padding:0}#index code{background:transparent}#index h3{border-bottom:1px solid #ddd}#index ul{padding:0}#index h4{margin-top:.6em;font-weight:bold}@media (min-width:200ex){#index .two-column{column-count:2}}@media (min-width:300ex){#index .two-column{column-count:3}}dl{margin-bottom:2em}dl dl:last-child{margin-bottom:4em}dd{margin:0 0 1em 3em}#header-classes + dl > dd{margin-bottom:3em}dd dd{margin-left:2em}dd p{margin:10px 0}.name{background:#eee;font-weight:bold;font-size:.85em;padding:5px 10px;display:inline-block;min-width:40%}.name:hover{background:#e0e0e0}dt:target .name{background:var(--highlight-color)}.name > span:first-child{white-space:nowrap}.name.class > span:nth-child(2){margin-left:.4em}.inherited{color:#999;border-left:5px solid #eee;padding-left:1em}.inheritance em{font-style:normal;font-weight:bold}.desc h2{font-weight:400;font-size:1.25em}.desc h3{font-size:1em}.desc dt code{background:inherit}.source summary,.git-link-div{color:#666;text-align:right;font-weight:400;font-size:.8em;text-transform:uppercase}.source summary > *{white-space:nowrap;cursor:pointer}.git-link{color:inherit;margin-left:1em}.source pre{max-height:500px;overflow:auto;margin:0}.source pre code{font-size:12px;overflow:visible}.hlist{list-style:none}.hlist li{display:inline}.hlist li:after{content:',\2002'}.hlist li:last-child:after{content:none}.hlist .hlist{display:inline;padding-left:1em}img{max-width:100%}td{padding:0 .5em}.admonition{padding:.1em .5em;margin-bottom:1em}.admonition-title{font-weight:bold}.admonition.note,.admonition.info,.admonition.important{background:#aef}.admonition.todo,.admonition.versionadded,.admonition.tip,.admonition.hint{background:#dfd}.admonition.warning,.admonition.versionchanged,.admonition.deprecated{background:#fd4}.admonition.error,.admonition.danger,.admonition.caution{background:lightpink}</style>
+<style media="screen and (min-width: 700px)">@media screen and (min-width:700px){#sidebar{width:30%;height:100vh;overflow:auto;position:sticky;top:0}#content{width:70%;max-width:100ch;padding:3em 4em;border-left:1px solid #ddd}pre code{font-size:1em}.item .name{font-size:1em}main{display:flex;flex-direction:row-reverse;justify-content:flex-end}.toc ul ul,#index ul{padding-left:1.5em}.toc > ul > li{margin-top:.5em}}</style>
+<style media="print">@media print{#sidebar h1{page-break-before:always}.source{display:none}}@media print{*{background:transparent !important;color:#000 !important;box-shadow:none !important;text-shadow:none !important}a[href]:after{content:" (" attr(href) ")";font-size:90%}a[href][title]:after{content:none}abbr[title]:after{content:" (" attr(title) ")"}.ir a:after,a[href^="javascript:"]:after,a[href^="#"]:after{content:""}pre,blockquote{border:1px solid #999;page-break-inside:avoid}thead{display:table-header-group}tr,img{page-break-inside:avoid}img{max-width:100% !important}@page{margin:0.5cm}p,h2,h3{orphans:3;widows:3}h1,h2,h3,h4,h5,h6{page-break-after:avoid}}</style>
+<script defer src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/10.1.1/highlight.min.js" integrity="sha256-Uv3H6lx7dJmRfRvH8TH6kJD1TSK1aFcwgx+mdg3epi8=" crossorigin></script>
+<script>window.addEventListener('DOMContentLoaded', () => hljs.initHighlighting())</script>
+</head>
+<body>
+<main>
+<article id="content">
+<header>
+<h1 class="title">Module <code>nlfepy.mesh.mesh</code></h1>
+</header>
+<section id="section-intro">
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">import sys
+import numpy as np
+from logging import getLogger
+from typing import Tuple, Optional, List, Dict, Union, cast
+from ..io.vtu_reader import VtuReader
+from ..shape.shapef_util import get_shape_function, get_element_name
+
+
+class Mesh:
+    &#34;&#34;&#34;
+    Mesh class
+
+    Attributes
+    ----------
+    mesh_type : str
+        Mesh type (&#34;FiniteElement&#34; or &#34;Meshfree&#34;)
+    n_dof : int
+        Number of degrees of freedom
+    n_point : int
+        Number of nodes
+    n_element : int
+        Number of finite elements
+    n_tintgp : int
+        Number of total integral points
+    itg_idx : array-like
+        Index of total integral points
+    coords : ndarray
+        Coordinates [n_dof, n_point]
+    connectivity : list
+        Connectivity of elaments [n_element][n_node] (2D array)
+    element_name : list
+        Name of each finite elemenet [n_element]
+    element_shape : list
+        Shape of each finite elemenet [n_element]
+    material_numbers : array-like
+        Material numbers [n_element]
+    grain_numbers : array-like
+        Grain numbers [n_element]
+    crystal_orientation : ndarray
+        Crystal orientation [3, n_element]
+    shapef : list
+        List of shape functions
+    bc : dict
+        Boundary conditions
+    &#34;&#34;&#34;
+
+    def __init__(self) -&gt; None:
+        self._mesh_type: str = &#34;FiniteElement&#34;
+        self._n_dof: Optional[int] = None
+        self._n_point: Optional[int] = None
+        self._n_element: Optional[int] = None
+        self._n_dfdof: Optional[int] = None
+        self._n_tintgp: Optional[int] = None
+        self._itg_idx: List[int] = []
+        self._coords: np.ndarray = np.empty(shape=(0, 0))
+        self._connectivity: List[List[int]] = []
+        self._element_name: List[str] = []
+        self._element_shape: List[str] = []
+        self._material_numbers: Optional[Union[List[int], np.ndarray]] = None
+        self._grain_numbers: Optional[Union[List[int], np.ndarray]] = None
+        self._crystal_orientation: Optional[np.ndarray] = None
+        self._shapef: Dict[str, dict] = {}
+        self._bc: Optional[dict] = None
+        self._mpc: Optional[dict] = None
+
+        self._logger = getLogger(&#34;LogMesh&#34;)
+
+    @property
+    def mesh_type(self) -&gt; str:
+        return self._mesh_type
+
+    @property
+    def n_dof(self) -&gt; Optional[int]:
+        return self._n_dof
+
+    @property
+    def n_point(self) -&gt; Optional[int]:
+        return self._n_point
+
+    @property
+    def n_element(self) -&gt; Optional[int]:
+        return self._n_element
+
+    @property
+    def n_dfdof(self) -&gt; Optional[int]:
+        return self._n_dfdof
+
+    @property
+    def n_tintgp(self) -&gt; Optional[int]:
+        return self._n_tintgp
+
+    @property
+    def coords(self) -&gt; np.ndarray:
+        return self._coords
+
+    @property
+    def connectivity(self) -&gt; List[List[int]]:
+        return self._connectivity
+
+    @property
+    def element_name(self) -&gt; List[str]:
+        return self._element_name
+
+    @property
+    def element_shape(self) -&gt; List[str]:
+        return self._element_shape
+
+    @property
+    def material_numbers(self) -&gt; Optional[Union[List[int], np.ndarray]]:
+        return self._material_numbers
+
+    @property
+    def grain_numbers(self) -&gt; Optional[Union[List[int], np.ndarray]]:
+        return self._grain_numbers
+
+    @property
+    def crystal_orientation(self) -&gt; Optional[np.ndarray]:
+        return self._crystal_orientation
+
+    @property
+    def bc(self) -&gt; dict:
+        if self._bc is None:
+            self._logger.error(&#34;B.C. object is not set&#34;)
+            sys.exit(1)
+        return self._bc
+
+    @property
+    def mpc(self) -&gt; dict:
+        if self._mpc is None:
+            self._logger.error(&#34;MPC object is not set&#34;)
+            sys.exit(1)
+        return self._mpc
+
+    def itg_idx(self, *, elm: int) -&gt; np.ndarray:
+        return (
+            np.arange(self._itg_idx[elm], self._itg_idx[elm + 1])
+            if elm &lt; self._n_element - 1
+            else np.arange(self._itg_idx[elm], self._n_tintgp)
+        )
+
+    def read(self, mesh_path: str) -&gt; None:
+        &#34;&#34;&#34;
+        Read mesh file and set mesh info
+
+        Parameters
+        ----------
+        mesh_path : str
+            Mesh file path
+        &#34;&#34;&#34;
+
+        reader = VtuReader(mesh_path)
+        self.set_mesh_data(mesh=reader.mesh, bc=reader.bc, mpc=reader.mpc)
+
+    def set_mesh_data(
+        self, *, mesh: dict, bc: Optional[dict], mpc: Optional[dict]
+    ) -&gt; None:
+        self._set_mesh_dict(mesh)
+        self._set_mesh_info()
+        self._set_bc_dict(bc=bc, mpc=mpc)
+
+    def set_shape(self, *, coords: np.ndarray, connectivity) -&gt; None:
+        &#34;&#34;&#34;
+        Set mesh shape from coordinates and connectivity
+
+        Parameters
+        ----------
+        coords : ndarray
+            Coordiantes [n_dof, n_point] (2D array)
+        connectivity : array-like
+            Connectivity of elements [n_element][n_node] (2D array)
+        &#34;&#34;&#34;
+
+        self._coords = coords
+        self._n_dof, self._n_point = coords.shape
+        if self._n_dof == 3:
+            if np.max(np.abs(coords[2])) &lt; 1.0e-30:
+                self._n_dof = 2
+        self._n_dfdof = 3 if self._n_dof == 2 else 6
+        if type(connectivity) is np.ndarray:
+            connectivity = connectivity.tolist()
+        self._connectivity = connectivity
+        self._n_element = len(connectivity)
+        self._material_numbers = np.zeros(self._n_element, dtype=&#34;int&#34;)
+        self._grain_numbers = np.zeros(self._n_element, dtype=&#34;int&#34;)
+        self._crystal_orientation = np.zeros((self._n_element, 3))
+
+        self._set_mesh_info()
+
+    def _set_mesh_dict(self, data: dict) -&gt; None:
+        &#34;&#34;&#34;
+        Set mesh info
+
+        Parameters
+        ----------
+        data : dict
+            Mesh info (keys: &#39;n_dof&#39;, &#39;n_point&#39;, &#39;n_element&#39;, &#39;n_node&#39;, &#39;coords&#39;, &#39;connectivity&#39;)
+        &#34;&#34;&#34;
+
+        self._mesh_type = data[&#34;mesh_type&#34;]
+        self._n_dof = data[&#34;n_dof&#34;]
+        self._n_dfdof = 3 if self._n_dof == 2 else 6
+        self._n_point = data[&#34;n_point&#34;]
+        self._n_element = data[&#34;n_element&#34;]
+        self._coords = data[&#34;coords&#34;][: self._n_dof]
+        self._connectivity = data[&#34;connectivity&#34;]
+        if &#34;material_numbers&#34; in data:
+            self._material_numbers = data[&#34;material_numbers&#34;]
+        else:
+            if self._mesh_type == &#34;FiniteElement&#34;:
+                self._material_numbers = np.zeros(self._n_element)
+            else:
+                self._material_numbers = np.zeros(self._n_point)
+        if &#34;grain_numbers&#34; in data:
+            self._grain_numbers = data[&#34;grain_numbers&#34;]
+        else:
+            if self._mesh_type == &#34;FiniteElement&#34;:
+                self._material_numbers = np.zeros(self._n_element)
+            else:
+                self._material_numbers = np.zeros(self._n_point)
+        if &#34;crystal_orientation&#34; in data:
+            self._crystal_orientation = data[&#34;crystal_orientation&#34;]
+        else:
+            if self._mesh_type == &#34;FiniteElement&#34;:
+                self._crystal_orientation = np.zeros((3, self._n_element))
+            else:
+                self._crystal_orientation = np.zeros((3, self._n_point))
+
+    def _set_mesh_info(self) -&gt; None:
+
+        if self._mesh_type != &#34;FiniteElement&#34;:
+            return
+
+        self._shapef = {}
+        self._element_name = []
+
+        for lnod in self._connectivity:
+            n_nod = len(lnod)
+            self._element_name.append(
+                get_element_name(n_dof=cast(int, self._n_dof), n_node=n_nod)
+            )
+
+        for elm_name in set(self._element_name):
+            self._shapef[elm_name] = get_shape_function(elm_name)
+
+        self._n_tintgp = 0
+        self._element_shape = []
+        self._itg_idx = []
+        for ielm in range(cast(int, self._n_element)):
+            self._itg_idx.append(cast(int, self._n_tintgp))
+            self._n_tintgp += self._shapef[self._element_name[ielm]][&#34;vol&#34;].n_intgp
+            self._element_shape.append(
+                self._shapef[self._element_name[ielm]][&#34;vol&#34;].shape
+            )
+
+    def _set_bc_dict(self, *, bc: Optional[dict], mpc: Optional[dict]) -&gt; None:
+        self._bc = bc
+        self._mpc = mpc
+
+    def set_bc(self, *, constraint=&#34;compression&#34;, model=&#34;full&#34;, value=None) -&gt; None:
+        &#34;&#34;&#34;
+        Set boundary conditions
+
+        Parameters
+        ----------
+        constraint : str
+            B.C. type (&#39;compression&#39;, &#39;tensile&#39;, &#39;shear&#39;, &#39;load&#39;)
+        model : str
+            Type of analysis model (&#39;full&#39;, &#39;quarter&#39;)
+        value : ndarray
+            Magnitude of prescribed displacement or traction
+        &#34;&#34;&#34;
+
+        self._bc = {}
+        self._bc[&#34;type&#34;] = &#34;BC&#34;
+        # if constraint in [&#39;compression&#39;, &#39;tensile&#39;, &#39;shear&#39;]:
+        #     self._bc[&#39;type&#39;] = &#39;displacement&#39;
+        # elif constraint in [&#39;load&#39;]:
+        #     self._bc[&#39;type&#39;] = &#39;load&#39;
+        # else:
+        #     self._logger.error(&#39;Invalid constraint type: {}&#39;.format(constraint))
+        #     sys.exit(1)
+
+        self._bc[&#34;displacement&#34;] = []
+        self._bc[&#34;traction&#34;] = np.zeros((self._n_point, 3))
+
+        cod_min = np.min(self._coords, axis=1)
+        cod_max = np.max(self._coords, axis=1)
+        specimen_size = cod_max - cod_min
+        eps = min(specimen_size) * 1.0e-10
+
+        # bottom
+        self._coords = cast(np.ndarray, self._coords)
+        idx_bottom = np.where(self._coords[1] &lt; cod_min[1] + eps)[0]
+        idx_top = np.where(self._coords[1] &gt; cod_max[1] - eps)[0]
+        idx_left = np.where(self._coords[0] &lt; cod_min[0] + eps)[0]
+        idx_fix = np.intersect1d(idx_bottom, idx_left)
+        if self._n_dof == 3:
+            idx_front = np.where(self._coords[2] &lt; cod_min[2] + eps)[0]
+            idx_fix = np.intersect1d(idx_fix, idx_front)
+
+        idx_tdof_bottom = self._n_dof * idx_bottom + 1
+        idx_tdof_top = self._n_dof * idx_top + 1
+        idx_tdof_left = self._n_dof * idx_left
+        idx_tdof_fix = self._n_dof * idx_fix
+
+        if constraint in [&#34;compression&#34;, &#34;tensile&#34;, &#34;load&#34;]:
+            self._bc[&#34;idx_disp&#34;] = np.sort(idx_tdof_top)
+            self._bc[&#34;idx_fix&#34;] = np.concatenate([idx_tdof_bottom, idx_tdof_top])
+            if model == &#34;quarter&#34;:
+                self._bc[&#34;idx_fix&#34;] = np.sort(
+                    np.concatenate([self._bc[&#34;idx_fix&#34;], idx_tdof_left])
+                )
+            else:
+                self._bc[&#34;idx_fix&#34;] = np.sort(
+                    np.concatenate([self._bc[&#34;idx_fix&#34;], idx_tdof_fix])
+                )
+            if self._n_dof == 3:
+                idx_tdof_fix_3d = self._n_dof * idx_fix + 2
+                self._bc[&#34;idx_fix&#34;] = np.sort(
+                    np.concatenate([self._bc[&#34;idx_fix&#34;], idx_tdof_fix_3d])
+                )
+            self._bc[&#34;n_fix&#34;] = self._bc[&#34;idx_fix&#34;].shape[0]
+            self._bc[&#34;n_disp&#34;] = self._bc[&#34;idx_disp&#34;].shape[0]
+            if constraint in [&#34;compression&#34;, &#34;tensile&#34;]:
+                signv = 1.0 if constraint == &#34;tensile&#34; else -1.0
+                self._bc[&#34;displacement&#34;] = np.full(
+                    self._bc[&#34;n_disp&#34;], signv * abs(value)
+                )
+            elif constraint in [&#34;load&#34;]:
+                self._bc[&#34;traction&#34;][idx_top, 3] = value
+            else:
+                self._logger.error(&#34;Invalid constraint type: {}&#34;.format(constraint))
+                sys.exit(1)
+        else:
+            self._logger.error(&#34;Invalid constraint type: {}&#34;.format(constraint))
+            sys.exit(1)
+
+        # MPC
+        self._mpc = {}
+        self._mpc[&#34;nmpcpt&#34;] = 0
+        self._mpc[&#34;slave&#34;] = self._mpc[&#34;master&#34;] = self._mpc[&#34;ratio&#34;] = []
+
+    def get_shpfnc(self, etype: str, *, elm: int) -&gt; np.ndarray:
+        &#34;&#34;&#34;
+        Get shape function (N-matrix)
+
+        Parameters
+        ----------
+        etype : str
+            Element type (&#39;vol&#39; or &#39;area&#39;)
+        elm : int
+            Index of element
+
+        Returns
+        -------
+        shapef : ndarray
+            N-matrix
+        &#34;&#34;&#34;
+
+        return self._shapef[self._element_name[elm]][etype].Shpfnc
+
+    def get_Nmatrix(
+        self, etype: str, *, elm: int, nds: list = None
+    ) -&gt; Tuple[np.ndarray, np.ndarray]:
+        &#34;&#34;&#34;
+        Get shape function (N-matrix) and w*detJ
+
+        Parameters
+        ----------
+        etype : str
+            Element type (&#39;vol&#39; or &#39;area&#39;)
+        elm : int
+            Index of element
+        nds : list
+            List of nodes index (&#39;area&#39;)
+
+        Returns
+        -------
+        shapef : tuple
+            N-matrix and weigh * determinant of Jacobi matrix
+        &#34;&#34;&#34;
+        if etype == &#34;area&#34;:
+            cod = self._coords[:, np.array(self._connectivity[elm])[nds]][: self._n_dof]
+        else:
+            cod = self._coords[:, self._connectivity[elm]][: self._n_dof]
+
+        return self._shapef[self._element_name[elm]][etype].get_Nmatrix(cod)
+
+    def get_Bmatrix(
+        self, etype: str, *, elm: int, nds: list = None
+    ) -&gt; Tuple[np.ndarray, np.ndarray]:
+        &#34;&#34;&#34;
+        Get 1st derivative of shape function (B-matrix) in global coordinates
+
+        Parameters
+        ----------
+        etype : str
+            Element type (&#39;vol&#39; or &#39;area&#39;)
+        elm : int
+            Index of element
+        nds : list
+            List of nodes index (&#39;area&#39;)
+
+        Returns
+        -------
+        shapef : tuple
+            B-matrix and weigh * determinant of Jacobi matrix
+        &#34;&#34;&#34;
+        if etype == &#34;area&#34;:
+            cod = self._coords[:, np.array(self._connectivity[elm])[nds]][: self._n_dof]
+        else:
+            cod = self._coords[:, self._connectivity[elm]][: self._n_dof]
+
+        return self._shapef[self._element_name[elm]][etype].get_Bmatrix(cod)
+
+    def get_wdetJ(self, etype: str, *, elm: int, nds: list = None) -&gt; np.ndarray:
+        &#34;&#34;&#34;
+        Get 1st derivative of shape function (B-matrix) in global coordinates
+
+        Parameters
+        ----------
+        etype : str
+            Element type (&#39;vol&#39; or &#39;area&#39;)
+        elm : int
+            Index of element
+        nds : list
+            List of nodes index (&#39;area&#39;)
+
+        Returns
+        -------
+        wdetJ : ndarray
+            Weigh * determinant of Jacobi matrix
+        &#34;&#34;&#34;
+        if etype == &#34;area&#34;:
+            cod = self._coords[:, np.array(self._connectivity[elm])[nds]][: self._n_dof]
+        else:
+            cod = self._coords[:, self._connectivity[elm]][: self._n_dof]
+
+        return self._shapef[self._element_name[elm]][etype].get_wdetJ(cod)
+
+    def n_intgp(self, etype: str, *, elm) -&gt; int:
+        &#34;&#34;&#34;
+        Get number of integral points
+
+        Parameters
+        ----------
+        etype : str
+            Element type (&#39;vol&#39; or &#39;area&#39;)
+        elm : int
+            Index of element
+
+        Returns
+        -------
+        n_intgp : int
+            Number of integral point
+        &#34;&#34;&#34;
+
+        return self._shapef[self._element_name[elm]][etype].n_intgp
+
+    def n_node(self, etype: str, *, elm) -&gt; int:
+        &#34;&#34;&#34;
+        Get number of integral points
+
+        Parameters
+        ----------
+        etype : str
+            Element type (&#39;vol&#39; or &#39;area&#39;)
+        elm : int
+            Index of element
+
+        Returns
+        -------
+        n_node : int
+            Number of nodes
+        &#34;&#34;&#34;
+
+        return self._shapef[self._element_name[elm]][etype].n_node
+
+    def idx_face(self, etype: str, *, elm) -&gt; list:
+        &#34;&#34;&#34;
+        Get connectivity between face and nodes
+
+        Parameters
+        ----------
+        etype : str
+            Element type (&#39;vol&#39; or &#39;area&#39;)
+        elm : int
+            Index of element
+
+        Returns
+        -------
+        idx_face : list
+            Connectivity between face and nodes [face][node]
+        &#34;&#34;&#34;
+
+        return self._shapef[self._element_name[elm]][etype].idx_face</code></pre>
+</details>
+</section>
+<section>
+</section>
+<section>
+</section>
+<section>
+</section>
+<section>
+<h2 class="section-title" id="header-classes">Classes</h2>
+<dl>
+<dt id="nlfepy.mesh.mesh.Mesh"><code class="flex name class">
+<span>class <span class="ident">Mesh</span></span>
+</code></dt>
+<dd>
+<div class="desc"><p>Mesh class</p>
+<h2 id="attributes">Attributes</h2>
+<dl>
+<dt><strong><code>mesh_type</code></strong> :&ensp;<code>str</code></dt>
+<dd>Mesh type ("FiniteElement" or "Meshfree")</dd>
+<dt><strong><code>n_dof</code></strong> :&ensp;<code>int</code></dt>
+<dd>Number of degrees of freedom</dd>
+<dt><strong><code>n_point</code></strong> :&ensp;<code>int</code></dt>
+<dd>Number of nodes</dd>
+<dt><strong><code>n_element</code></strong> :&ensp;<code>int</code></dt>
+<dd>Number of finite elements</dd>
+<dt><strong><code>n_tintgp</code></strong> :&ensp;<code>int</code></dt>
+<dd>Number of total integral points</dd>
+<dt><strong><code>itg_idx</code></strong> :&ensp;<code>array-like</code></dt>
+<dd>Index of total integral points</dd>
+<dt><strong><code>coords</code></strong> :&ensp;<code>ndarray</code></dt>
+<dd>Coordinates [n_dof, n_point]</dd>
+<dt><strong><code>connectivity</code></strong> :&ensp;<code>list</code></dt>
+<dd>Connectivity of elaments [n_element][n_node] (2D array)</dd>
+<dt><strong><code>element_name</code></strong> :&ensp;<code>list</code></dt>
+<dd>Name of each finite elemenet [n_element]</dd>
+<dt><strong><code>element_shape</code></strong> :&ensp;<code>list</code></dt>
+<dd>Shape of each finite elemenet [n_element]</dd>
+<dt><strong><code>material_numbers</code></strong> :&ensp;<code>array-like</code></dt>
+<dd>Material numbers [n_element]</dd>
+<dt><strong><code>grain_numbers</code></strong> :&ensp;<code>array-like</code></dt>
+<dd>Grain numbers [n_element]</dd>
+<dt><strong><code>crystal_orientation</code></strong> :&ensp;<code>ndarray</code></dt>
+<dd>Crystal orientation [3, n_element]</dd>
+<dt><strong><code>shapef</code></strong> :&ensp;<code>list</code></dt>
+<dd>List of shape functions</dd>
+<dt><strong><code>bc</code></strong> :&ensp;<code>dict</code></dt>
+<dd>Boundary conditions</dd>
+</dl></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">class Mesh:
+    &#34;&#34;&#34;
+    Mesh class
+
+    Attributes
+    ----------
+    mesh_type : str
+        Mesh type (&#34;FiniteElement&#34; or &#34;Meshfree&#34;)
+    n_dof : int
+        Number of degrees of freedom
+    n_point : int
+        Number of nodes
+    n_element : int
+        Number of finite elements
+    n_tintgp : int
+        Number of total integral points
+    itg_idx : array-like
+        Index of total integral points
+    coords : ndarray
+        Coordinates [n_dof, n_point]
+    connectivity : list
+        Connectivity of elaments [n_element][n_node] (2D array)
+    element_name : list
+        Name of each finite elemenet [n_element]
+    element_shape : list
+        Shape of each finite elemenet [n_element]
+    material_numbers : array-like
+        Material numbers [n_element]
+    grain_numbers : array-like
+        Grain numbers [n_element]
+    crystal_orientation : ndarray
+        Crystal orientation [3, n_element]
+    shapef : list
+        List of shape functions
+    bc : dict
+        Boundary conditions
+    &#34;&#34;&#34;
+
+    def __init__(self) -&gt; None:
+        self._mesh_type: str = &#34;FiniteElement&#34;
+        self._n_dof: Optional[int] = None
+        self._n_point: Optional[int] = None
+        self._n_element: Optional[int] = None
+        self._n_dfdof: Optional[int] = None
+        self._n_tintgp: Optional[int] = None
+        self._itg_idx: List[int] = []
+        self._coords: np.ndarray = np.empty(shape=(0, 0))
+        self._connectivity: List[List[int]] = []
+        self._element_name: List[str] = []
+        self._element_shape: List[str] = []
+        self._material_numbers: Optional[Union[List[int], np.ndarray]] = None
+        self._grain_numbers: Optional[Union[List[int], np.ndarray]] = None
+        self._crystal_orientation: Optional[np.ndarray] = None
+        self._shapef: Dict[str, dict] = {}
+        self._bc: Optional[dict] = None
+        self._mpc: Optional[dict] = None
+
+        self._logger = getLogger(&#34;LogMesh&#34;)
+
+    @property
+    def mesh_type(self) -&gt; str:
+        return self._mesh_type
+
+    @property
+    def n_dof(self) -&gt; Optional[int]:
+        return self._n_dof
+
+    @property
+    def n_point(self) -&gt; Optional[int]:
+        return self._n_point
+
+    @property
+    def n_element(self) -&gt; Optional[int]:
+        return self._n_element
+
+    @property
+    def n_dfdof(self) -&gt; Optional[int]:
+        return self._n_dfdof
+
+    @property
+    def n_tintgp(self) -&gt; Optional[int]:
+        return self._n_tintgp
+
+    @property
+    def coords(self) -&gt; np.ndarray:
+        return self._coords
+
+    @property
+    def connectivity(self) -&gt; List[List[int]]:
+        return self._connectivity
+
+    @property
+    def element_name(self) -&gt; List[str]:
+        return self._element_name
+
+    @property
+    def element_shape(self) -&gt; List[str]:
+        return self._element_shape
+
+    @property
+    def material_numbers(self) -&gt; Optional[Union[List[int], np.ndarray]]:
+        return self._material_numbers
+
+    @property
+    def grain_numbers(self) -&gt; Optional[Union[List[int], np.ndarray]]:
+        return self._grain_numbers
+
+    @property
+    def crystal_orientation(self) -&gt; Optional[np.ndarray]:
+        return self._crystal_orientation
+
+    @property
+    def bc(self) -&gt; dict:
+        if self._bc is None:
+            self._logger.error(&#34;B.C. object is not set&#34;)
+            sys.exit(1)
+        return self._bc
+
+    @property
+    def mpc(self) -&gt; dict:
+        if self._mpc is None:
+            self._logger.error(&#34;MPC object is not set&#34;)
+            sys.exit(1)
+        return self._mpc
+
+    def itg_idx(self, *, elm: int) -&gt; np.ndarray:
+        return (
+            np.arange(self._itg_idx[elm], self._itg_idx[elm + 1])
+            if elm &lt; self._n_element - 1
+            else np.arange(self._itg_idx[elm], self._n_tintgp)
+        )
+
+    def read(self, mesh_path: str) -&gt; None:
+        &#34;&#34;&#34;
+        Read mesh file and set mesh info
+
+        Parameters
+        ----------
+        mesh_path : str
+            Mesh file path
+        &#34;&#34;&#34;
+
+        reader = VtuReader(mesh_path)
+        self.set_mesh_data(mesh=reader.mesh, bc=reader.bc, mpc=reader.mpc)
+
+    def set_mesh_data(
+        self, *, mesh: dict, bc: Optional[dict], mpc: Optional[dict]
+    ) -&gt; None:
+        self._set_mesh_dict(mesh)
+        self._set_mesh_info()
+        self._set_bc_dict(bc=bc, mpc=mpc)
+
+    def set_shape(self, *, coords: np.ndarray, connectivity) -&gt; None:
+        &#34;&#34;&#34;
+        Set mesh shape from coordinates and connectivity
+
+        Parameters
+        ----------
+        coords : ndarray
+            Coordiantes [n_dof, n_point] (2D array)
+        connectivity : array-like
+            Connectivity of elements [n_element][n_node] (2D array)
+        &#34;&#34;&#34;
+
+        self._coords = coords
+        self._n_dof, self._n_point = coords.shape
+        if self._n_dof == 3:
+            if np.max(np.abs(coords[2])) &lt; 1.0e-30:
+                self._n_dof = 2
+        self._n_dfdof = 3 if self._n_dof == 2 else 6
+        if type(connectivity) is np.ndarray:
+            connectivity = connectivity.tolist()
+        self._connectivity = connectivity
+        self._n_element = len(connectivity)
+        self._material_numbers = np.zeros(self._n_element, dtype=&#34;int&#34;)
+        self._grain_numbers = np.zeros(self._n_element, dtype=&#34;int&#34;)
+        self._crystal_orientation = np.zeros((self._n_element, 3))
+
+        self._set_mesh_info()
+
+    def _set_mesh_dict(self, data: dict) -&gt; None:
+        &#34;&#34;&#34;
+        Set mesh info
+
+        Parameters
+        ----------
+        data : dict
+            Mesh info (keys: &#39;n_dof&#39;, &#39;n_point&#39;, &#39;n_element&#39;, &#39;n_node&#39;, &#39;coords&#39;, &#39;connectivity&#39;)
+        &#34;&#34;&#34;
+
+        self._mesh_type = data[&#34;mesh_type&#34;]
+        self._n_dof = data[&#34;n_dof&#34;]
+        self._n_dfdof = 3 if self._n_dof == 2 else 6
+        self._n_point = data[&#34;n_point&#34;]
+        self._n_element = data[&#34;n_element&#34;]
+        self._coords = data[&#34;coords&#34;][: self._n_dof]
+        self._connectivity = data[&#34;connectivity&#34;]
+        if &#34;material_numbers&#34; in data:
+            self._material_numbers = data[&#34;material_numbers&#34;]
+        else:
+            if self._mesh_type == &#34;FiniteElement&#34;:
+                self._material_numbers = np.zeros(self._n_element)
+            else:
+                self._material_numbers = np.zeros(self._n_point)
+        if &#34;grain_numbers&#34; in data:
+            self._grain_numbers = data[&#34;grain_numbers&#34;]
+        else:
+            if self._mesh_type == &#34;FiniteElement&#34;:
+                self._material_numbers = np.zeros(self._n_element)
+            else:
+                self._material_numbers = np.zeros(self._n_point)
+        if &#34;crystal_orientation&#34; in data:
+            self._crystal_orientation = data[&#34;crystal_orientation&#34;]
+        else:
+            if self._mesh_type == &#34;FiniteElement&#34;:
+                self._crystal_orientation = np.zeros((3, self._n_element))
+            else:
+                self._crystal_orientation = np.zeros((3, self._n_point))
+
+    def _set_mesh_info(self) -&gt; None:
+
+        if self._mesh_type != &#34;FiniteElement&#34;:
+            return
+
+        self._shapef = {}
+        self._element_name = []
+
+        for lnod in self._connectivity:
+            n_nod = len(lnod)
+            self._element_name.append(
+                get_element_name(n_dof=cast(int, self._n_dof), n_node=n_nod)
+            )
+
+        for elm_name in set(self._element_name):
+            self._shapef[elm_name] = get_shape_function(elm_name)
+
+        self._n_tintgp = 0
+        self._element_shape = []
+        self._itg_idx = []
+        for ielm in range(cast(int, self._n_element)):
+            self._itg_idx.append(cast(int, self._n_tintgp))
+            self._n_tintgp += self._shapef[self._element_name[ielm]][&#34;vol&#34;].n_intgp
+            self._element_shape.append(
+                self._shapef[self._element_name[ielm]][&#34;vol&#34;].shape
+            )
+
+    def _set_bc_dict(self, *, bc: Optional[dict], mpc: Optional[dict]) -&gt; None:
+        self._bc = bc
+        self._mpc = mpc
+
+    def set_bc(self, *, constraint=&#34;compression&#34;, model=&#34;full&#34;, value=None) -&gt; None:
+        &#34;&#34;&#34;
+        Set boundary conditions
+
+        Parameters
+        ----------
+        constraint : str
+            B.C. type (&#39;compression&#39;, &#39;tensile&#39;, &#39;shear&#39;, &#39;load&#39;)
+        model : str
+            Type of analysis model (&#39;full&#39;, &#39;quarter&#39;)
+        value : ndarray
+            Magnitude of prescribed displacement or traction
+        &#34;&#34;&#34;
+
+        self._bc = {}
+        self._bc[&#34;type&#34;] = &#34;BC&#34;
+        # if constraint in [&#39;compression&#39;, &#39;tensile&#39;, &#39;shear&#39;]:
+        #     self._bc[&#39;type&#39;] = &#39;displacement&#39;
+        # elif constraint in [&#39;load&#39;]:
+        #     self._bc[&#39;type&#39;] = &#39;load&#39;
+        # else:
+        #     self._logger.error(&#39;Invalid constraint type: {}&#39;.format(constraint))
+        #     sys.exit(1)
+
+        self._bc[&#34;displacement&#34;] = []
+        self._bc[&#34;traction&#34;] = np.zeros((self._n_point, 3))
+
+        cod_min = np.min(self._coords, axis=1)
+        cod_max = np.max(self._coords, axis=1)
+        specimen_size = cod_max - cod_min
+        eps = min(specimen_size) * 1.0e-10
+
+        # bottom
+        self._coords = cast(np.ndarray, self._coords)
+        idx_bottom = np.where(self._coords[1] &lt; cod_min[1] + eps)[0]
+        idx_top = np.where(self._coords[1] &gt; cod_max[1] - eps)[0]
+        idx_left = np.where(self._coords[0] &lt; cod_min[0] + eps)[0]
+        idx_fix = np.intersect1d(idx_bottom, idx_left)
+        if self._n_dof == 3:
+            idx_front = np.where(self._coords[2] &lt; cod_min[2] + eps)[0]
+            idx_fix = np.intersect1d(idx_fix, idx_front)
+
+        idx_tdof_bottom = self._n_dof * idx_bottom + 1
+        idx_tdof_top = self._n_dof * idx_top + 1
+        idx_tdof_left = self._n_dof * idx_left
+        idx_tdof_fix = self._n_dof * idx_fix
+
+        if constraint in [&#34;compression&#34;, &#34;tensile&#34;, &#34;load&#34;]:
+            self._bc[&#34;idx_disp&#34;] = np.sort(idx_tdof_top)
+            self._bc[&#34;idx_fix&#34;] = np.concatenate([idx_tdof_bottom, idx_tdof_top])
+            if model == &#34;quarter&#34;:
+                self._bc[&#34;idx_fix&#34;] = np.sort(
+                    np.concatenate([self._bc[&#34;idx_fix&#34;], idx_tdof_left])
+                )
+            else:
+                self._bc[&#34;idx_fix&#34;] = np.sort(
+                    np.concatenate([self._bc[&#34;idx_fix&#34;], idx_tdof_fix])
+                )
+            if self._n_dof == 3:
+                idx_tdof_fix_3d = self._n_dof * idx_fix + 2
+                self._bc[&#34;idx_fix&#34;] = np.sort(
+                    np.concatenate([self._bc[&#34;idx_fix&#34;], idx_tdof_fix_3d])
+                )
+            self._bc[&#34;n_fix&#34;] = self._bc[&#34;idx_fix&#34;].shape[0]
+            self._bc[&#34;n_disp&#34;] = self._bc[&#34;idx_disp&#34;].shape[0]
+            if constraint in [&#34;compression&#34;, &#34;tensile&#34;]:
+                signv = 1.0 if constraint == &#34;tensile&#34; else -1.0
+                self._bc[&#34;displacement&#34;] = np.full(
+                    self._bc[&#34;n_disp&#34;], signv * abs(value)
+                )
+            elif constraint in [&#34;load&#34;]:
+                self._bc[&#34;traction&#34;][idx_top, 3] = value
+            else:
+                self._logger.error(&#34;Invalid constraint type: {}&#34;.format(constraint))
+                sys.exit(1)
+        else:
+            self._logger.error(&#34;Invalid constraint type: {}&#34;.format(constraint))
+            sys.exit(1)
+
+        # MPC
+        self._mpc = {}
+        self._mpc[&#34;nmpcpt&#34;] = 0
+        self._mpc[&#34;slave&#34;] = self._mpc[&#34;master&#34;] = self._mpc[&#34;ratio&#34;] = []
+
+    def get_shpfnc(self, etype: str, *, elm: int) -&gt; np.ndarray:
+        &#34;&#34;&#34;
+        Get shape function (N-matrix)
+
+        Parameters
+        ----------
+        etype : str
+            Element type (&#39;vol&#39; or &#39;area&#39;)
+        elm : int
+            Index of element
+
+        Returns
+        -------
+        shapef : ndarray
+            N-matrix
+        &#34;&#34;&#34;
+
+        return self._shapef[self._element_name[elm]][etype].Shpfnc
+
+    def get_Nmatrix(
+        self, etype: str, *, elm: int, nds: list = None
+    ) -&gt; Tuple[np.ndarray, np.ndarray]:
+        &#34;&#34;&#34;
+        Get shape function (N-matrix) and w*detJ
+
+        Parameters
+        ----------
+        etype : str
+            Element type (&#39;vol&#39; or &#39;area&#39;)
+        elm : int
+            Index of element
+        nds : list
+            List of nodes index (&#39;area&#39;)
+
+        Returns
+        -------
+        shapef : tuple
+            N-matrix and weigh * determinant of Jacobi matrix
+        &#34;&#34;&#34;
+        if etype == &#34;area&#34;:
+            cod = self._coords[:, np.array(self._connectivity[elm])[nds]][: self._n_dof]
+        else:
+            cod = self._coords[:, self._connectivity[elm]][: self._n_dof]
+
+        return self._shapef[self._element_name[elm]][etype].get_Nmatrix(cod)
+
+    def get_Bmatrix(
+        self, etype: str, *, elm: int, nds: list = None
+    ) -&gt; Tuple[np.ndarray, np.ndarray]:
+        &#34;&#34;&#34;
+        Get 1st derivative of shape function (B-matrix) in global coordinates
+
+        Parameters
+        ----------
+        etype : str
+            Element type (&#39;vol&#39; or &#39;area&#39;)
+        elm : int
+            Index of element
+        nds : list
+            List of nodes index (&#39;area&#39;)
+
+        Returns
+        -------
+        shapef : tuple
+            B-matrix and weigh * determinant of Jacobi matrix
+        &#34;&#34;&#34;
+        if etype == &#34;area&#34;:
+            cod = self._coords[:, np.array(self._connectivity[elm])[nds]][: self._n_dof]
+        else:
+            cod = self._coords[:, self._connectivity[elm]][: self._n_dof]
+
+        return self._shapef[self._element_name[elm]][etype].get_Bmatrix(cod)
+
+    def get_wdetJ(self, etype: str, *, elm: int, nds: list = None) -&gt; np.ndarray:
+        &#34;&#34;&#34;
+        Get 1st derivative of shape function (B-matrix) in global coordinates
+
+        Parameters
+        ----------
+        etype : str
+            Element type (&#39;vol&#39; or &#39;area&#39;)
+        elm : int
+            Index of element
+        nds : list
+            List of nodes index (&#39;area&#39;)
+
+        Returns
+        -------
+        wdetJ : ndarray
+            Weigh * determinant of Jacobi matrix
+        &#34;&#34;&#34;
+        if etype == &#34;area&#34;:
+            cod = self._coords[:, np.array(self._connectivity[elm])[nds]][: self._n_dof]
+        else:
+            cod = self._coords[:, self._connectivity[elm]][: self._n_dof]
+
+        return self._shapef[self._element_name[elm]][etype].get_wdetJ(cod)
+
+    def n_intgp(self, etype: str, *, elm) -&gt; int:
+        &#34;&#34;&#34;
+        Get number of integral points
+
+        Parameters
+        ----------
+        etype : str
+            Element type (&#39;vol&#39; or &#39;area&#39;)
+        elm : int
+            Index of element
+
+        Returns
+        -------
+        n_intgp : int
+            Number of integral point
+        &#34;&#34;&#34;
+
+        return self._shapef[self._element_name[elm]][etype].n_intgp
+
+    def n_node(self, etype: str, *, elm) -&gt; int:
+        &#34;&#34;&#34;
+        Get number of integral points
+
+        Parameters
+        ----------
+        etype : str
+            Element type (&#39;vol&#39; or &#39;area&#39;)
+        elm : int
+            Index of element
+
+        Returns
+        -------
+        n_node : int
+            Number of nodes
+        &#34;&#34;&#34;
+
+        return self._shapef[self._element_name[elm]][etype].n_node
+
+    def idx_face(self, etype: str, *, elm) -&gt; list:
+        &#34;&#34;&#34;
+        Get connectivity between face and nodes
+
+        Parameters
+        ----------
+        etype : str
+            Element type (&#39;vol&#39; or &#39;area&#39;)
+        elm : int
+            Index of element
+
+        Returns
+        -------
+        idx_face : list
+            Connectivity between face and nodes [face][node]
+        &#34;&#34;&#34;
+
+        return self._shapef[self._element_name[elm]][etype].idx_face</code></pre>
+</details>
+<h3>Instance variables</h3>
+<dl>
+<dt id="nlfepy.mesh.mesh.Mesh.bc"><code class="name">var <span class="ident">bc</span> : dict</code></dt>
+<dd>
+<div class="desc"></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">@property
+def bc(self) -&gt; dict:
+    if self._bc is None:
+        self._logger.error(&#34;B.C. object is not set&#34;)
+        sys.exit(1)
+    return self._bc</code></pre>
+</details>
+</dd>
+<dt id="nlfepy.mesh.mesh.Mesh.connectivity"><code class="name">var <span class="ident">connectivity</span> : List[List[int]]</code></dt>
+<dd>
+<div class="desc"></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">@property
+def connectivity(self) -&gt; List[List[int]]:
+    return self._connectivity</code></pre>
+</details>
+</dd>
+<dt id="nlfepy.mesh.mesh.Mesh.coords"><code class="name">var <span class="ident">coords</span> : numpy.ndarray</code></dt>
+<dd>
+<div class="desc"></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">@property
+def coords(self) -&gt; np.ndarray:
+    return self._coords</code></pre>
+</details>
+</dd>
+<dt id="nlfepy.mesh.mesh.Mesh.crystal_orientation"><code class="name">var <span class="ident">crystal_orientation</span> : Optional[numpy.ndarray]</code></dt>
+<dd>
+<div class="desc"></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">@property
+def crystal_orientation(self) -&gt; Optional[np.ndarray]:
+    return self._crystal_orientation</code></pre>
+</details>
+</dd>
+<dt id="nlfepy.mesh.mesh.Mesh.element_name"><code class="name">var <span class="ident">element_name</span> : List[str]</code></dt>
+<dd>
+<div class="desc"></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">@property
+def element_name(self) -&gt; List[str]:
+    return self._element_name</code></pre>
+</details>
+</dd>
+<dt id="nlfepy.mesh.mesh.Mesh.element_shape"><code class="name">var <span class="ident">element_shape</span> : List[str]</code></dt>
+<dd>
+<div class="desc"></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">@property
+def element_shape(self) -&gt; List[str]:
+    return self._element_shape</code></pre>
+</details>
+</dd>
+<dt id="nlfepy.mesh.mesh.Mesh.grain_numbers"><code class="name">var <span class="ident">grain_numbers</span> : Union[List[int], numpy.ndarray, NoneType]</code></dt>
+<dd>
+<div class="desc"></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">@property
+def grain_numbers(self) -&gt; Optional[Union[List[int], np.ndarray]]:
+    return self._grain_numbers</code></pre>
+</details>
+</dd>
+<dt id="nlfepy.mesh.mesh.Mesh.material_numbers"><code class="name">var <span class="ident">material_numbers</span> : Union[List[int], numpy.ndarray, NoneType]</code></dt>
+<dd>
+<div class="desc"></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">@property
+def material_numbers(self) -&gt; Optional[Union[List[int], np.ndarray]]:
+    return self._material_numbers</code></pre>
+</details>
+</dd>
+<dt id="nlfepy.mesh.mesh.Mesh.mesh_type"><code class="name">var <span class="ident">mesh_type</span> : str</code></dt>
+<dd>
+<div class="desc"></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">@property
+def mesh_type(self) -&gt; str:
+    return self._mesh_type</code></pre>
+</details>
+</dd>
+<dt id="nlfepy.mesh.mesh.Mesh.mpc"><code class="name">var <span class="ident">mpc</span> : dict</code></dt>
+<dd>
+<div class="desc"></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">@property
+def mpc(self) -&gt; dict:
+    if self._mpc is None:
+        self._logger.error(&#34;MPC object is not set&#34;)
+        sys.exit(1)
+    return self._mpc</code></pre>
+</details>
+</dd>
+<dt id="nlfepy.mesh.mesh.Mesh.n_dfdof"><code class="name">var <span class="ident">n_dfdof</span> : Optional[int]</code></dt>
+<dd>
+<div class="desc"></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">@property
+def n_dfdof(self) -&gt; Optional[int]:
+    return self._n_dfdof</code></pre>
+</details>
+</dd>
+<dt id="nlfepy.mesh.mesh.Mesh.n_dof"><code class="name">var <span class="ident">n_dof</span> : Optional[int]</code></dt>
+<dd>
+<div class="desc"></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">@property
+def n_dof(self) -&gt; Optional[int]:
+    return self._n_dof</code></pre>
+</details>
+</dd>
+<dt id="nlfepy.mesh.mesh.Mesh.n_element"><code class="name">var <span class="ident">n_element</span> : Optional[int]</code></dt>
+<dd>
+<div class="desc"></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">@property
+def n_element(self) -&gt; Optional[int]:
+    return self._n_element</code></pre>
+</details>
+</dd>
+<dt id="nlfepy.mesh.mesh.Mesh.n_point"><code class="name">var <span class="ident">n_point</span> : Optional[int]</code></dt>
+<dd>
+<div class="desc"></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">@property
+def n_point(self) -&gt; Optional[int]:
+    return self._n_point</code></pre>
+</details>
+</dd>
+<dt id="nlfepy.mesh.mesh.Mesh.n_tintgp"><code class="name">var <span class="ident">n_tintgp</span> : Optional[int]</code></dt>
+<dd>
+<div class="desc"></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">@property
+def n_tintgp(self) -&gt; Optional[int]:
+    return self._n_tintgp</code></pre>
+</details>
+</dd>
+</dl>
+<h3>Methods</h3>
+<dl>
+<dt id="nlfepy.mesh.mesh.Mesh.get_Bmatrix"><code class="name flex">
+<span>def <span class="ident">get_Bmatrix</span></span>(<span>self, etype: str, *, elm: int, nds: list = None) ‑> Tuple[numpy.ndarray, numpy.ndarray]</span>
+</code></dt>
+<dd>
+<div class="desc"><p>Get 1st derivative of shape function (B-matrix) in global coordinates</p>
+<h2 id="parameters">Parameters</h2>
+<dl>
+<dt><strong><code>etype</code></strong> :&ensp;<code>str</code></dt>
+<dd>Element type ('vol' or 'area')</dd>
+<dt><strong><code>elm</code></strong> :&ensp;<code>int</code></dt>
+<dd>Index of element</dd>
+<dt><strong><code>nds</code></strong> :&ensp;<code>list</code></dt>
+<dd>List of nodes index ('area')</dd>
+</dl>
+<h2 id="returns">Returns</h2>
+<dl>
+<dt><strong><code>shapef</code></strong> :&ensp;<code>tuple</code></dt>
+<dd>B-matrix and weigh * determinant of Jacobi matrix</dd>
+</dl></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def get_Bmatrix(
+    self, etype: str, *, elm: int, nds: list = None
+) -&gt; Tuple[np.ndarray, np.ndarray]:
+    &#34;&#34;&#34;
+    Get 1st derivative of shape function (B-matrix) in global coordinates
+
+    Parameters
+    ----------
+    etype : str
+        Element type (&#39;vol&#39; or &#39;area&#39;)
+    elm : int
+        Index of element
+    nds : list
+        List of nodes index (&#39;area&#39;)
+
+    Returns
+    -------
+    shapef : tuple
+        B-matrix and weigh * determinant of Jacobi matrix
+    &#34;&#34;&#34;
+    if etype == &#34;area&#34;:
+        cod = self._coords[:, np.array(self._connectivity[elm])[nds]][: self._n_dof]
+    else:
+        cod = self._coords[:, self._connectivity[elm]][: self._n_dof]
+
+    return self._shapef[self._element_name[elm]][etype].get_Bmatrix(cod)</code></pre>
+</details>
+</dd>
+<dt id="nlfepy.mesh.mesh.Mesh.get_Nmatrix"><code class="name flex">
+<span>def <span class="ident">get_Nmatrix</span></span>(<span>self, etype: str, *, elm: int, nds: list = None) ‑> Tuple[numpy.ndarray, numpy.ndarray]</span>
+</code></dt>
+<dd>
+<div class="desc"><p>Get shape function (N-matrix) and w*detJ</p>
+<h2 id="parameters">Parameters</h2>
+<dl>
+<dt><strong><code>etype</code></strong> :&ensp;<code>str</code></dt>
+<dd>Element type ('vol' or 'area')</dd>
+<dt><strong><code>elm</code></strong> :&ensp;<code>int</code></dt>
+<dd>Index of element</dd>
+<dt><strong><code>nds</code></strong> :&ensp;<code>list</code></dt>
+<dd>List of nodes index ('area')</dd>
+</dl>
+<h2 id="returns">Returns</h2>
+<dl>
+<dt><strong><code>shapef</code></strong> :&ensp;<code>tuple</code></dt>
+<dd>N-matrix and weigh * determinant of Jacobi matrix</dd>
+</dl></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def get_Nmatrix(
+    self, etype: str, *, elm: int, nds: list = None
+) -&gt; Tuple[np.ndarray, np.ndarray]:
+    &#34;&#34;&#34;
+    Get shape function (N-matrix) and w*detJ
+
+    Parameters
+    ----------
+    etype : str
+        Element type (&#39;vol&#39; or &#39;area&#39;)
+    elm : int
+        Index of element
+    nds : list
+        List of nodes index (&#39;area&#39;)
+
+    Returns
+    -------
+    shapef : tuple
+        N-matrix and weigh * determinant of Jacobi matrix
+    &#34;&#34;&#34;
+    if etype == &#34;area&#34;:
+        cod = self._coords[:, np.array(self._connectivity[elm])[nds]][: self._n_dof]
+    else:
+        cod = self._coords[:, self._connectivity[elm]][: self._n_dof]
+
+    return self._shapef[self._element_name[elm]][etype].get_Nmatrix(cod)</code></pre>
+</details>
+</dd>
+<dt id="nlfepy.mesh.mesh.Mesh.get_shpfnc"><code class="name flex">
+<span>def <span class="ident">get_shpfnc</span></span>(<span>self, etype: str, *, elm: int) ‑> numpy.ndarray</span>
+</code></dt>
+<dd>
+<div class="desc"><p>Get shape function (N-matrix)</p>
+<h2 id="parameters">Parameters</h2>
+<dl>
+<dt><strong><code>etype</code></strong> :&ensp;<code>str</code></dt>
+<dd>Element type ('vol' or 'area')</dd>
+<dt><strong><code>elm</code></strong> :&ensp;<code>int</code></dt>
+<dd>Index of element</dd>
+</dl>
+<h2 id="returns">Returns</h2>
+<dl>
+<dt><strong><code>shapef</code></strong> :&ensp;<code>ndarray</code></dt>
+<dd>N-matrix</dd>
+</dl></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def get_shpfnc(self, etype: str, *, elm: int) -&gt; np.ndarray:
+    &#34;&#34;&#34;
+    Get shape function (N-matrix)
+
+    Parameters
+    ----------
+    etype : str
+        Element type (&#39;vol&#39; or &#39;area&#39;)
+    elm : int
+        Index of element
+
+    Returns
+    -------
+    shapef : ndarray
+        N-matrix
+    &#34;&#34;&#34;
+
+    return self._shapef[self._element_name[elm]][etype].Shpfnc</code></pre>
+</details>
+</dd>
+<dt id="nlfepy.mesh.mesh.Mesh.get_wdetJ"><code class="name flex">
+<span>def <span class="ident">get_wdetJ</span></span>(<span>self, etype: str, *, elm: int, nds: list = None) ‑> numpy.ndarray</span>
+</code></dt>
+<dd>
+<div class="desc"><p>Get 1st derivative of shape function (B-matrix) in global coordinates</p>
+<h2 id="parameters">Parameters</h2>
+<dl>
+<dt><strong><code>etype</code></strong> :&ensp;<code>str</code></dt>
+<dd>Element type ('vol' or 'area')</dd>
+<dt><strong><code>elm</code></strong> :&ensp;<code>int</code></dt>
+<dd>Index of element</dd>
+<dt><strong><code>nds</code></strong> :&ensp;<code>list</code></dt>
+<dd>List of nodes index ('area')</dd>
+</dl>
+<h2 id="returns">Returns</h2>
+<dl>
+<dt><strong><code>wdetJ</code></strong> :&ensp;<code>ndarray</code></dt>
+<dd>Weigh * determinant of Jacobi matrix</dd>
+</dl></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def get_wdetJ(self, etype: str, *, elm: int, nds: list = None) -&gt; np.ndarray:
+    &#34;&#34;&#34;
+    Get 1st derivative of shape function (B-matrix) in global coordinates
+
+    Parameters
+    ----------
+    etype : str
+        Element type (&#39;vol&#39; or &#39;area&#39;)
+    elm : int
+        Index of element
+    nds : list
+        List of nodes index (&#39;area&#39;)
+
+    Returns
+    -------
+    wdetJ : ndarray
+        Weigh * determinant of Jacobi matrix
+    &#34;&#34;&#34;
+    if etype == &#34;area&#34;:
+        cod = self._coords[:, np.array(self._connectivity[elm])[nds]][: self._n_dof]
+    else:
+        cod = self._coords[:, self._connectivity[elm]][: self._n_dof]
+
+    return self._shapef[self._element_name[elm]][etype].get_wdetJ(cod)</code></pre>
+</details>
+</dd>
+<dt id="nlfepy.mesh.mesh.Mesh.idx_face"><code class="name flex">
+<span>def <span class="ident">idx_face</span></span>(<span>self, etype: str, *, elm) ‑> list</span>
+</code></dt>
+<dd>
+<div class="desc"><p>Get connectivity between face and nodes</p>
+<h2 id="parameters">Parameters</h2>
+<dl>
+<dt><strong><code>etype</code></strong> :&ensp;<code>str</code></dt>
+<dd>Element type ('vol' or 'area')</dd>
+<dt><strong><code>elm</code></strong> :&ensp;<code>int</code></dt>
+<dd>Index of element</dd>
+</dl>
+<h2 id="returns">Returns</h2>
+<dl>
+<dt><strong><code>idx_face</code></strong> :&ensp;<code>list</code></dt>
+<dd>Connectivity between face and nodes [face][node]</dd>
+</dl></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def idx_face(self, etype: str, *, elm) -&gt; list:
+    &#34;&#34;&#34;
+    Get connectivity between face and nodes
+
+    Parameters
+    ----------
+    etype : str
+        Element type (&#39;vol&#39; or &#39;area&#39;)
+    elm : int
+        Index of element
+
+    Returns
+    -------
+    idx_face : list
+        Connectivity between face and nodes [face][node]
+    &#34;&#34;&#34;
+
+    return self._shapef[self._element_name[elm]][etype].idx_face</code></pre>
+</details>
+</dd>
+<dt id="nlfepy.mesh.mesh.Mesh.itg_idx"><code class="name flex">
+<span>def <span class="ident">itg_idx</span></span>(<span>self, *, elm: int) ‑> numpy.ndarray</span>
+</code></dt>
+<dd>
+<div class="desc"></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def itg_idx(self, *, elm: int) -&gt; np.ndarray:
+    return (
+        np.arange(self._itg_idx[elm], self._itg_idx[elm + 1])
+        if elm &lt; self._n_element - 1
+        else np.arange(self._itg_idx[elm], self._n_tintgp)
+    )</code></pre>
+</details>
+</dd>
+<dt id="nlfepy.mesh.mesh.Mesh.n_intgp"><code class="name flex">
+<span>def <span class="ident">n_intgp</span></span>(<span>self, etype: str, *, elm) ‑> int</span>
+</code></dt>
+<dd>
+<div class="desc"><p>Get number of integral points</p>
+<h2 id="parameters">Parameters</h2>
+<dl>
+<dt><strong><code>etype</code></strong> :&ensp;<code>str</code></dt>
+<dd>Element type ('vol' or 'area')</dd>
+<dt><strong><code>elm</code></strong> :&ensp;<code>int</code></dt>
+<dd>Index of element</dd>
+</dl>
+<h2 id="returns">Returns</h2>
+<dl>
+<dt><strong><code>n_intgp</code></strong> :&ensp;<code>int</code></dt>
+<dd>Number of integral point</dd>
+</dl></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def n_intgp(self, etype: str, *, elm) -&gt; int:
+    &#34;&#34;&#34;
+    Get number of integral points
+
+    Parameters
+    ----------
+    etype : str
+        Element type (&#39;vol&#39; or &#39;area&#39;)
+    elm : int
+        Index of element
+
+    Returns
+    -------
+    n_intgp : int
+        Number of integral point
+    &#34;&#34;&#34;
+
+    return self._shapef[self._element_name[elm]][etype].n_intgp</code></pre>
+</details>
+</dd>
+<dt id="nlfepy.mesh.mesh.Mesh.n_node"><code class="name flex">
+<span>def <span class="ident">n_node</span></span>(<span>self, etype: str, *, elm) ‑> int</span>
+</code></dt>
+<dd>
+<div class="desc"><p>Get number of integral points</p>
+<h2 id="parameters">Parameters</h2>
+<dl>
+<dt><strong><code>etype</code></strong> :&ensp;<code>str</code></dt>
+<dd>Element type ('vol' or 'area')</dd>
+<dt><strong><code>elm</code></strong> :&ensp;<code>int</code></dt>
+<dd>Index of element</dd>
+</dl>
+<h2 id="returns">Returns</h2>
+<dl>
+<dt><strong><code>n_node</code></strong> :&ensp;<code>int</code></dt>
+<dd>Number of nodes</dd>
+</dl></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def n_node(self, etype: str, *, elm) -&gt; int:
+    &#34;&#34;&#34;
+    Get number of integral points
+
+    Parameters
+    ----------
+    etype : str
+        Element type (&#39;vol&#39; or &#39;area&#39;)
+    elm : int
+        Index of element
+
+    Returns
+    -------
+    n_node : int
+        Number of nodes
+    &#34;&#34;&#34;
+
+    return self._shapef[self._element_name[elm]][etype].n_node</code></pre>
+</details>
+</dd>
+<dt id="nlfepy.mesh.mesh.Mesh.read"><code class="name flex">
+<span>def <span class="ident">read</span></span>(<span>self, mesh_path: str) ‑> NoneType</span>
+</code></dt>
+<dd>
+<div class="desc"><p>Read mesh file and set mesh info</p>
+<h2 id="parameters">Parameters</h2>
+<dl>
+<dt><strong><code>mesh_path</code></strong> :&ensp;<code>str</code></dt>
+<dd>Mesh file path</dd>
+</dl></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def read(self, mesh_path: str) -&gt; None:
+    &#34;&#34;&#34;
+    Read mesh file and set mesh info
+
+    Parameters
+    ----------
+    mesh_path : str
+        Mesh file path
+    &#34;&#34;&#34;
+
+    reader = VtuReader(mesh_path)
+    self.set_mesh_data(mesh=reader.mesh, bc=reader.bc, mpc=reader.mpc)</code></pre>
+</details>
+</dd>
+<dt id="nlfepy.mesh.mesh.Mesh.set_bc"><code class="name flex">
+<span>def <span class="ident">set_bc</span></span>(<span>self, *, constraint='compression', model='full', value=None) ‑> NoneType</span>
+</code></dt>
+<dd>
+<div class="desc"><p>Set boundary conditions</p>
+<h2 id="parameters">Parameters</h2>
+<dl>
+<dt><strong><code>constraint</code></strong> :&ensp;<code>str</code></dt>
+<dd>B.C. type ('compression', 'tensile', 'shear', 'load')</dd>
+<dt><strong><code>model</code></strong> :&ensp;<code>str</code></dt>
+<dd>Type of analysis model ('full', 'quarter')</dd>
+<dt><strong><code>value</code></strong> :&ensp;<code>ndarray</code></dt>
+<dd>Magnitude of prescribed displacement or traction</dd>
+</dl></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def set_bc(self, *, constraint=&#34;compression&#34;, model=&#34;full&#34;, value=None) -&gt; None:
+    &#34;&#34;&#34;
+    Set boundary conditions
+
+    Parameters
+    ----------
+    constraint : str
+        B.C. type (&#39;compression&#39;, &#39;tensile&#39;, &#39;shear&#39;, &#39;load&#39;)
+    model : str
+        Type of analysis model (&#39;full&#39;, &#39;quarter&#39;)
+    value : ndarray
+        Magnitude of prescribed displacement or traction
+    &#34;&#34;&#34;
+
+    self._bc = {}
+    self._bc[&#34;type&#34;] = &#34;BC&#34;
+    # if constraint in [&#39;compression&#39;, &#39;tensile&#39;, &#39;shear&#39;]:
+    #     self._bc[&#39;type&#39;] = &#39;displacement&#39;
+    # elif constraint in [&#39;load&#39;]:
+    #     self._bc[&#39;type&#39;] = &#39;load&#39;
+    # else:
+    #     self._logger.error(&#39;Invalid constraint type: {}&#39;.format(constraint))
+    #     sys.exit(1)
+
+    self._bc[&#34;displacement&#34;] = []
+    self._bc[&#34;traction&#34;] = np.zeros((self._n_point, 3))
+
+    cod_min = np.min(self._coords, axis=1)
+    cod_max = np.max(self._coords, axis=1)
+    specimen_size = cod_max - cod_min
+    eps = min(specimen_size) * 1.0e-10
+
+    # bottom
+    self._coords = cast(np.ndarray, self._coords)
+    idx_bottom = np.where(self._coords[1] &lt; cod_min[1] + eps)[0]
+    idx_top = np.where(self._coords[1] &gt; cod_max[1] - eps)[0]
+    idx_left = np.where(self._coords[0] &lt; cod_min[0] + eps)[0]
+    idx_fix = np.intersect1d(idx_bottom, idx_left)
+    if self._n_dof == 3:
+        idx_front = np.where(self._coords[2] &lt; cod_min[2] + eps)[0]
+        idx_fix = np.intersect1d(idx_fix, idx_front)
+
+    idx_tdof_bottom = self._n_dof * idx_bottom + 1
+    idx_tdof_top = self._n_dof * idx_top + 1
+    idx_tdof_left = self._n_dof * idx_left
+    idx_tdof_fix = self._n_dof * idx_fix
+
+    if constraint in [&#34;compression&#34;, &#34;tensile&#34;, &#34;load&#34;]:
+        self._bc[&#34;idx_disp&#34;] = np.sort(idx_tdof_top)
+        self._bc[&#34;idx_fix&#34;] = np.concatenate([idx_tdof_bottom, idx_tdof_top])
+        if model == &#34;quarter&#34;:
+            self._bc[&#34;idx_fix&#34;] = np.sort(
+                np.concatenate([self._bc[&#34;idx_fix&#34;], idx_tdof_left])
+            )
+        else:
+            self._bc[&#34;idx_fix&#34;] = np.sort(
+                np.concatenate([self._bc[&#34;idx_fix&#34;], idx_tdof_fix])
+            )
+        if self._n_dof == 3:
+            idx_tdof_fix_3d = self._n_dof * idx_fix + 2
+            self._bc[&#34;idx_fix&#34;] = np.sort(
+                np.concatenate([self._bc[&#34;idx_fix&#34;], idx_tdof_fix_3d])
+            )
+        self._bc[&#34;n_fix&#34;] = self._bc[&#34;idx_fix&#34;].shape[0]
+        self._bc[&#34;n_disp&#34;] = self._bc[&#34;idx_disp&#34;].shape[0]
+        if constraint in [&#34;compression&#34;, &#34;tensile&#34;]:
+            signv = 1.0 if constraint == &#34;tensile&#34; else -1.0
+            self._bc[&#34;displacement&#34;] = np.full(
+                self._bc[&#34;n_disp&#34;], signv * abs(value)
+            )
+        elif constraint in [&#34;load&#34;]:
+            self._bc[&#34;traction&#34;][idx_top, 3] = value
+        else:
+            self._logger.error(&#34;Invalid constraint type: {}&#34;.format(constraint))
+            sys.exit(1)
+    else:
+        self._logger.error(&#34;Invalid constraint type: {}&#34;.format(constraint))
+        sys.exit(1)
+
+    # MPC
+    self._mpc = {}
+    self._mpc[&#34;nmpcpt&#34;] = 0
+    self._mpc[&#34;slave&#34;] = self._mpc[&#34;master&#34;] = self._mpc[&#34;ratio&#34;] = []</code></pre>
+</details>
+</dd>
+<dt id="nlfepy.mesh.mesh.Mesh.set_mesh_data"><code class="name flex">
+<span>def <span class="ident">set_mesh_data</span></span>(<span>self, *, mesh: dict, bc: Optional[dict], mpc: Optional[dict]) ‑> NoneType</span>
+</code></dt>
+<dd>
+<div class="desc"></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def set_mesh_data(
+    self, *, mesh: dict, bc: Optional[dict], mpc: Optional[dict]
+) -&gt; None:
+    self._set_mesh_dict(mesh)
+    self._set_mesh_info()
+    self._set_bc_dict(bc=bc, mpc=mpc)</code></pre>
+</details>
+</dd>
+<dt id="nlfepy.mesh.mesh.Mesh.set_shape"><code class="name flex">
+<span>def <span class="ident">set_shape</span></span>(<span>self, *, coords: numpy.ndarray, connectivity) ‑> NoneType</span>
+</code></dt>
+<dd>
+<div class="desc"><p>Set mesh shape from coordinates and connectivity</p>
+<h2 id="parameters">Parameters</h2>
+<dl>
+<dt><strong><code>coords</code></strong> :&ensp;<code>ndarray</code></dt>
+<dd>Coordiantes [n_dof, n_point] (2D array)</dd>
+<dt><strong><code>connectivity</code></strong> :&ensp;<code>array-like</code></dt>
+<dd>Connectivity of elements [n_element][n_node] (2D array)</dd>
+</dl></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def set_shape(self, *, coords: np.ndarray, connectivity) -&gt; None:
+    &#34;&#34;&#34;
+    Set mesh shape from coordinates and connectivity
+
+    Parameters
+    ----------
+    coords : ndarray
+        Coordiantes [n_dof, n_point] (2D array)
+    connectivity : array-like
+        Connectivity of elements [n_element][n_node] (2D array)
+    &#34;&#34;&#34;
+
+    self._coords = coords
+    self._n_dof, self._n_point = coords.shape
+    if self._n_dof == 3:
+        if np.max(np.abs(coords[2])) &lt; 1.0e-30:
+            self._n_dof = 2
+    self._n_dfdof = 3 if self._n_dof == 2 else 6
+    if type(connectivity) is np.ndarray:
+        connectivity = connectivity.tolist()
+    self._connectivity = connectivity
+    self._n_element = len(connectivity)
+    self._material_numbers = np.zeros(self._n_element, dtype=&#34;int&#34;)
+    self._grain_numbers = np.zeros(self._n_element, dtype=&#34;int&#34;)
+    self._crystal_orientation = np.zeros((self._n_element, 3))
+
+    self._set_mesh_info()</code></pre>
+</details>
+</dd>
+</dl>
+</dd>
+</dl>
+</section>
+</article>
+<nav id="sidebar">
+<h1>Index</h1>
+<div class="toc">
+<ul></ul>
+</div>
+<ul id="index">
+<li><h3>Super-module</h3>
+<ul>
+<li><code><a title="nlfepy.mesh" href="index.html">nlfepy.mesh</a></code></li>
+</ul>
+</li>
+<li><h3><a href="#header-classes">Classes</a></h3>
+<ul>
+<li>
+<h4><code><a title="nlfepy.mesh.mesh.Mesh" href="#nlfepy.mesh.mesh.Mesh">Mesh</a></code></h4>
+<ul class="two-column">
+<li><code><a title="nlfepy.mesh.mesh.Mesh.bc" href="#nlfepy.mesh.mesh.Mesh.bc">bc</a></code></li>
+<li><code><a title="nlfepy.mesh.mesh.Mesh.connectivity" href="#nlfepy.mesh.mesh.Mesh.connectivity">connectivity</a></code></li>
+<li><code><a title="nlfepy.mesh.mesh.Mesh.coords" href="#nlfepy.mesh.mesh.Mesh.coords">coords</a></code></li>
+<li><code><a title="nlfepy.mesh.mesh.Mesh.crystal_orientation" href="#nlfepy.mesh.mesh.Mesh.crystal_orientation">crystal_orientation</a></code></li>
+<li><code><a title="nlfepy.mesh.mesh.Mesh.element_name" href="#nlfepy.mesh.mesh.Mesh.element_name">element_name</a></code></li>
+<li><code><a title="nlfepy.mesh.mesh.Mesh.element_shape" href="#nlfepy.mesh.mesh.Mesh.element_shape">element_shape</a></code></li>
+<li><code><a title="nlfepy.mesh.mesh.Mesh.get_Bmatrix" href="#nlfepy.mesh.mesh.Mesh.get_Bmatrix">get_Bmatrix</a></code></li>
+<li><code><a title="nlfepy.mesh.mesh.Mesh.get_Nmatrix" href="#nlfepy.mesh.mesh.Mesh.get_Nmatrix">get_Nmatrix</a></code></li>
+<li><code><a title="nlfepy.mesh.mesh.Mesh.get_shpfnc" href="#nlfepy.mesh.mesh.Mesh.get_shpfnc">get_shpfnc</a></code></li>
+<li><code><a title="nlfepy.mesh.mesh.Mesh.get_wdetJ" href="#nlfepy.mesh.mesh.Mesh.get_wdetJ">get_wdetJ</a></code></li>
+<li><code><a title="nlfepy.mesh.mesh.Mesh.grain_numbers" href="#nlfepy.mesh.mesh.Mesh.grain_numbers">grain_numbers</a></code></li>
+<li><code><a title="nlfepy.mesh.mesh.Mesh.idx_face" href="#nlfepy.mesh.mesh.Mesh.idx_face">idx_face</a></code></li>
+<li><code><a title="nlfepy.mesh.mesh.Mesh.itg_idx" href="#nlfepy.mesh.mesh.Mesh.itg_idx">itg_idx</a></code></li>
+<li><code><a title="nlfepy.mesh.mesh.Mesh.material_numbers" href="#nlfepy.mesh.mesh.Mesh.material_numbers">material_numbers</a></code></li>
+<li><code><a title="nlfepy.mesh.mesh.Mesh.mesh_type" href="#nlfepy.mesh.mesh.Mesh.mesh_type">mesh_type</a></code></li>
+<li><code><a title="nlfepy.mesh.mesh.Mesh.mpc" href="#nlfepy.mesh.mesh.Mesh.mpc">mpc</a></code></li>
+<li><code><a title="nlfepy.mesh.mesh.Mesh.n_dfdof" href="#nlfepy.mesh.mesh.Mesh.n_dfdof">n_dfdof</a></code></li>
+<li><code><a title="nlfepy.mesh.mesh.Mesh.n_dof" href="#nlfepy.mesh.mesh.Mesh.n_dof">n_dof</a></code></li>
+<li><code><a title="nlfepy.mesh.mesh.Mesh.n_element" href="#nlfepy.mesh.mesh.Mesh.n_element">n_element</a></code></li>
+<li><code><a title="nlfepy.mesh.mesh.Mesh.n_intgp" href="#nlfepy.mesh.mesh.Mesh.n_intgp">n_intgp</a></code></li>
+<li><code><a title="nlfepy.mesh.mesh.Mesh.n_node" href="#nlfepy.mesh.mesh.Mesh.n_node">n_node</a></code></li>
+<li><code><a title="nlfepy.mesh.mesh.Mesh.n_point" href="#nlfepy.mesh.mesh.Mesh.n_point">n_point</a></code></li>
+<li><code><a title="nlfepy.mesh.mesh.Mesh.n_tintgp" href="#nlfepy.mesh.mesh.Mesh.n_tintgp">n_tintgp</a></code></li>
+<li><code><a title="nlfepy.mesh.mesh.Mesh.read" href="#nlfepy.mesh.mesh.Mesh.read">read</a></code></li>
+<li><code><a title="nlfepy.mesh.mesh.Mesh.set_bc" href="#nlfepy.mesh.mesh.Mesh.set_bc">set_bc</a></code></li>
+<li><code><a title="nlfepy.mesh.mesh.Mesh.set_mesh_data" href="#nlfepy.mesh.mesh.Mesh.set_mesh_data">set_mesh_data</a></code></li>
+<li><code><a title="nlfepy.mesh.mesh.Mesh.set_shape" href="#nlfepy.mesh.mesh.Mesh.set_shape">set_shape</a></code></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+</nav>
+</main>
+<footer id="footer">
+<p>Generated by <a href="https://pdoc3.github.io/pdoc"><cite>pdoc</cite> 0.9.2</a>.</p>
+</footer>
+</body>
+</html>

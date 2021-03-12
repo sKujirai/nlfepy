@@ -1,0 +1,1954 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, minimum-scale=1" />
+<meta name="generator" content="pdoc 0.9.2" />
+<title>nlfepy.viewer API documentation</title>
+<meta name="description" content="" />
+<link rel="preload stylesheet" as="style" href="https://cdnjs.cloudflare.com/ajax/libs/10up-sanitize.css/11.0.1/sanitize.min.css" integrity="sha256-PK9q560IAAa6WVRRh76LtCaI8pjTJ2z11v0miyNNjrs=" crossorigin>
+<link rel="preload stylesheet" as="style" href="https://cdnjs.cloudflare.com/ajax/libs/10up-sanitize.css/11.0.1/typography.min.css" integrity="sha256-7l/o7C8jubJiy74VsKTidCy1yBkRtiUGbVkYBylBqUg=" crossorigin>
+<link rel="stylesheet preload" as="style" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/10.1.1/styles/github.min.css" crossorigin>
+<style>:root{--highlight-color:#fe9}.flex{display:flex !important}body{line-height:1.5em}#content{padding:20px}#sidebar{padding:30px;overflow:hidden}#sidebar > *:last-child{margin-bottom:2cm}.http-server-breadcrumbs{font-size:130%;margin:0 0 15px 0}#footer{font-size:.75em;padding:5px 30px;border-top:1px solid #ddd;text-align:right}#footer p{margin:0 0 0 1em;display:inline-block}#footer p:last-child{margin-right:30px}h1,h2,h3,h4,h5{font-weight:300}h1{font-size:2.5em;line-height:1.1em}h2{font-size:1.75em;margin:1em 0 .50em 0}h3{font-size:1.4em;margin:25px 0 10px 0}h4{margin:0;font-size:105%}h1:target,h2:target,h3:target,h4:target,h5:target,h6:target{background:var(--highlight-color);padding:.2em 0}a{color:#058;text-decoration:none;transition:color .3s ease-in-out}a:hover{color:#e82}.title code{font-weight:bold}h2[id^="header-"]{margin-top:2em}.ident{color:#900}pre code{background:#f8f8f8;font-size:.8em;line-height:1.4em}code{background:#f2f2f1;padding:1px 4px;overflow-wrap:break-word}h1 code{background:transparent}pre{background:#f8f8f8;border:0;border-top:1px solid #ccc;border-bottom:1px solid #ccc;margin:1em 0;padding:1ex}#http-server-module-list{display:flex;flex-flow:column}#http-server-module-list div{display:flex}#http-server-module-list dt{min-width:10%}#http-server-module-list p{margin-top:0}.toc ul,#index{list-style-type:none;margin:0;padding:0}#index code{background:transparent}#index h3{border-bottom:1px solid #ddd}#index ul{padding:0}#index h4{margin-top:.6em;font-weight:bold}@media (min-width:200ex){#index .two-column{column-count:2}}@media (min-width:300ex){#index .two-column{column-count:3}}dl{margin-bottom:2em}dl dl:last-child{margin-bottom:4em}dd{margin:0 0 1em 3em}#header-classes + dl > dd{margin-bottom:3em}dd dd{margin-left:2em}dd p{margin:10px 0}.name{background:#eee;font-weight:bold;font-size:.85em;padding:5px 10px;display:inline-block;min-width:40%}.name:hover{background:#e0e0e0}dt:target .name{background:var(--highlight-color)}.name > span:first-child{white-space:nowrap}.name.class > span:nth-child(2){margin-left:.4em}.inherited{color:#999;border-left:5px solid #eee;padding-left:1em}.inheritance em{font-style:normal;font-weight:bold}.desc h2{font-weight:400;font-size:1.25em}.desc h3{font-size:1em}.desc dt code{background:inherit}.source summary,.git-link-div{color:#666;text-align:right;font-weight:400;font-size:.8em;text-transform:uppercase}.source summary > *{white-space:nowrap;cursor:pointer}.git-link{color:inherit;margin-left:1em}.source pre{max-height:500px;overflow:auto;margin:0}.source pre code{font-size:12px;overflow:visible}.hlist{list-style:none}.hlist li{display:inline}.hlist li:after{content:',\2002'}.hlist li:last-child:after{content:none}.hlist .hlist{display:inline;padding-left:1em}img{max-width:100%}td{padding:0 .5em}.admonition{padding:.1em .5em;margin-bottom:1em}.admonition-title{font-weight:bold}.admonition.note,.admonition.info,.admonition.important{background:#aef}.admonition.todo,.admonition.versionadded,.admonition.tip,.admonition.hint{background:#dfd}.admonition.warning,.admonition.versionchanged,.admonition.deprecated{background:#fd4}.admonition.error,.admonition.danger,.admonition.caution{background:lightpink}</style>
+<style media="screen and (min-width: 700px)">@media screen and (min-width:700px){#sidebar{width:30%;height:100vh;overflow:auto;position:sticky;top:0}#content{width:70%;max-width:100ch;padding:3em 4em;border-left:1px solid #ddd}pre code{font-size:1em}.item .name{font-size:1em}main{display:flex;flex-direction:row-reverse;justify-content:flex-end}.toc ul ul,#index ul{padding-left:1.5em}.toc > ul > li{margin-top:.5em}}</style>
+<style media="print">@media print{#sidebar h1{page-break-before:always}.source{display:none}}@media print{*{background:transparent !important;color:#000 !important;box-shadow:none !important;text-shadow:none !important}a[href]:after{content:" (" attr(href) ")";font-size:90%}a[href][title]:after{content:none}abbr[title]:after{content:" (" attr(title) ")"}.ir a:after,a[href^="javascript:"]:after,a[href^="#"]:after{content:""}pre,blockquote{border:1px solid #999;page-break-inside:avoid}thead{display:table-header-group}tr,img{page-break-inside:avoid}img{max-width:100% !important}@page{margin:0.5cm}p,h2,h3{orphans:3;widows:3}h1,h2,h3,h4,h5,h6{page-break-after:avoid}}</style>
+<script defer src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/10.1.1/highlight.min.js" integrity="sha256-Uv3H6lx7dJmRfRvH8TH6kJD1TSK1aFcwgx+mdg3epi8=" crossorigin></script>
+<script>window.addEventListener('DOMContentLoaded', () => hljs.initHighlighting())</script>
+</head>
+<body>
+<main>
+<article id="content">
+<header>
+<h1 class="title">Module <code>nlfepy.viewer</code></h1>
+</header>
+<section id="section-intro">
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">from .viewer2d import Viewer2d
+from .viewer3d import Viewer3d
+from .viewer import Viewer
+
+__all__ = [
+    &#34;Viewer2d&#34;,
+    &#34;Viewer3d&#34;,
+    &#34;Viewer&#34;,
+]</code></pre>
+</details>
+</section>
+<section>
+<h2 class="section-title" id="header-submodules">Sub-modules</h2>
+<dl>
+<dt><code class="name"><a title="nlfepy.viewer.viewer" href="viewer.html">nlfepy.viewer.viewer</a></code></dt>
+<dd>
+<div class="desc"></div>
+</dd>
+<dt><code class="name"><a title="nlfepy.viewer.viewer2d" href="viewer2d.html">nlfepy.viewer.viewer2d</a></code></dt>
+<dd>
+<div class="desc"></div>
+</dd>
+<dt><code class="name"><a title="nlfepy.viewer.viewer3d" href="viewer3d.html">nlfepy.viewer.viewer3d</a></code></dt>
+<dd>
+<div class="desc"></div>
+</dd>
+<dt><code class="name"><a title="nlfepy.viewer.viewer_base" href="viewer_base.html">nlfepy.viewer.viewer_base</a></code></dt>
+<dd>
+<div class="desc"></div>
+</dd>
+</dl>
+</section>
+<section>
+</section>
+<section>
+</section>
+<section>
+<h2 class="section-title" id="header-classes">Classes</h2>
+<dl>
+<dt id="nlfepy.viewer.Viewer"><code class="flex name class">
+<span>class <span class="ident">Viewer</span></span>
+<span>(</span><span>projection: str = None)</span>
+</code></dt>
+<dd>
+<div class="desc"><p>Viewer interface</p></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">class Viewer:
+    &#34;&#34;&#34;
+    Viewer interface
+    &#34;&#34;&#34;
+
+    def __init__(self, projection: str = None) -&gt; None:
+
+        self._viewer: ViewerBase
+        if projection == &#34;3d&#34;:
+            self._viewer = Viewer3d()
+        else:
+            self._viewer = Viewer2d()
+
+    def plot(self, *, mesh, val: np.ndarray = None, **kwargs) -&gt; None:
+        self._viewer.plot(mesh=mesh, val=val, **kwargs)
+
+    def plot_bc(self, mesh, **kwargs) -&gt; None:
+        self._viewer.plot_bc(mesh=mesh, **kwargs)
+
+    def contour(self, *, mesh, val: np.ndarray, **kwargs) -&gt; None:
+        self._viewer.contour(mesh=mesh, val=val, **kwargs)
+
+    def scatter(self, *, mesh, val: np.ndarray, **kwargs) -&gt; None:
+        self._viewer.scatter(mesh=mesh, val=val, **kwargs)
+
+    def multi_plot(self, file, cnfs: list, **kwargs) -&gt; None:
+        &#34;&#34;&#34;
+        Plot multile figures
+        &#34;&#34;&#34;
+
+        mesh, val_list = self._get_vtk_values(file, cnfs)
+
+        self._viewer.multi_plot(mesh=mesh, vlist=val_list, **kwargs)
+
+    def _get_vtk_values(self, file, cnfs: list):
+
+        reader = VtuReader()
+        reader.read(file)
+        mesh = Mesh()
+        mesh.set_mesh_data(mesh=reader.mesh, bc=reader.bc, mpc=reader.mpc)
+
+        val_list = []
+        for cnf in cnfs:
+            if &#34;val&#34; not in cnf.keys() or cnf[&#34;val&#34;] is None:
+                val_list.append(
+                    {
+                        &#34;val&#34;: None,
+                        &#34;figname&#34;: &#34;wireframe&#34;,
+                        &#34;plot&#34;: &#34;fill&#34;,
+                    }
+                )
+            else:
+                sys = cnf[&#34;sys&#34;] if &#34;sys&#34; in cnf.keys() else None
+                plot_mode = cnf[&#34;plot&#34;] if &#34;plot&#34; in cnf.keys() else &#34;fill&#34;
+                if plot_mode in [&#34;contour&#34;, &#34;scatter&#34;]:
+                    val = reader.get_point_value(cnf[&#34;val&#34;], systems=sys).astype(np.float)
+                else:
+                    val = reader.get_elm_value(cnf[&#34;val&#34;], systems=sys).astype(np.float)
+                if sys is None:
+                    sys = [i for i in range(val.shape[1])]
+                for i, isys in enumerate(sys):
+                    val_list.append(
+                        {
+                            &#34;val&#34;: val[:, i],
+                            &#34;figname&#34;: cnf[&#34;val&#34;] + &#34; &#34; + str(isys),
+                            &#34;plot&#34;: plot_mode,
+                        }
+                    )
+
+        return mesh, val_list
+
+    def get_frame_imgs(self, *, fig_cnfs: list, vtk_cnf: dict = {}, **kwargs) -&gt; list:
+        &#34;&#34;&#34;
+        Get image of each frame
+        &#34;&#34;&#34;
+
+        vtk_num_list = self._get_vtk_num_list(vtk_cnf=vtk_cnf)
+
+        imgs = []
+        for inum in vtk_num_list:
+            self.multi_plot(
+                os.path.join(
+                    vtk_cnf[&#34;dir&#34;], vtk_cnf[&#34;header&#34;] + str(inum) + vtk_cnf[&#34;ext&#34;]
+                ),
+                fig_cnfs,
+                **kwargs
+            )
+            im = self._viewer.get_fig_array()
+            # self.save(&#39;tmp.png&#39;, dpi=300)
+            # im = np.array(Image.open(&#39;tmp.png&#39;))
+            imgs.append(im)
+
+        return imgs
+
+    def save_figs(self, *, fig_cnfs: list, vtk_cnf: dict = {}, **kwargs) -&gt; None:
+        &#34;&#34;&#34;
+        Save images of each frame
+        &#34;&#34;&#34;
+
+        vtk_num_list = self._get_vtk_num_list(vtk_cnf=vtk_cnf)
+
+        # Set output file name
+        if &#34;out_dir&#34; not in vtk_cnf:
+            vtk_cnf[&#34;out_dir&#34;] = vtk_cnf[&#34;dir&#34;]
+        if &#34;out_header&#34; not in vtk_cnf:
+            vtk_cnf[&#34;out_header&#34;] = vtk_cnf[&#34;header&#34;]
+        if &#34;out_ext&#34; not in vtk_cnf:
+            vtk_cnf[&#34;out_ext&#34;] = &#34;.png&#34;
+
+        save_cnf = {}
+        if &#34;dpi&#34; in kwargs:
+            save_cnf[&#34;dpi&#34;] = kwargs[&#34;dpi&#34;]
+            del kwargs[&#34;dpi&#34;]
+        if &#34;transparent&#34; in kwargs:
+            save_cnf[&#34;transparent&#34;] = kwargs[&#34;transparent&#34;]
+            del kwargs[&#34;transparent&#34;]
+
+        if not os.path.exists(vtk_cnf[&#34;out_dir&#34;]):
+            logger = getLogger(&#34;viewer interface&#34;)
+            try:
+                os.mkdir(vtk_cnf[&#34;out_dir&#34;])
+            except PermissionError:
+                logger.error(&#34;Permission error&#34;)
+            except Exception:
+                logger.error(&#34;Failed to create output directory&#34;)
+                sys.exit(1)
+
+        for inum in vtk_num_list:
+            vtk_path = os.path.join(
+                vtk_cnf[&#34;dir&#34;], vtk_cnf[&#34;header&#34;] + str(inum) + vtk_cnf[&#34;ext&#34;]
+            )
+            mesh, val_list = self._get_vtk_values(vtk_path, fig_cnfs)
+            for vl in val_list:
+                if vl[&#34;plot&#34;] == &#34;contour&#34;:
+                    self.contour(
+                        mesh=mesh, val=vl[&#34;val&#34;], title=vl[&#34;figname&#34;], **kwargs
+                    )
+                elif vl[&#34;plot&#34;] == &#34;scatter&#34;:
+                    self.scatter(
+                        mesh=mesh, val=vl[&#34;val&#34;], title=vl[&#34;figname&#34;], **kwargs
+                    )
+                else:
+                    self.plot(mesh=mesh, val=vl[&#34;val&#34;], title=vl[&#34;figname&#34;], **kwargs)
+                self.save(
+                    os.path.join(
+                        vtk_cnf[&#34;out_dir&#34;],
+                        vtk_cnf[&#34;out_header&#34;]
+                        + vl[&#34;figname&#34;]
+                        + &#34;_&#34;
+                        + str(inum)
+                        + vtk_cnf[&#34;out_ext&#34;],
+                    ),
+                    **save_cnf
+                )
+
+    def _get_vtk_num_list(self, *, vtk_cnf: dict = {}):
+
+        # Get VTK file list
+        if &#34;dir&#34; not in vtk_cnf:
+            vtk_cnf[&#34;dir&#34;] = r&#34;./out&#34;
+        if &#34;header&#34; not in vtk_cnf:
+            vtk_cnf[&#34;header&#34;] = r&#34;result_&#34;
+        if &#34;ext&#34; not in vtk_cnf:
+            vtk_cnf[&#34;ext&#34;] = r&#34;.vtu&#34;
+
+        vtk_list = glob.glob(
+            os.path.join(vtk_cnf[&#34;dir&#34;], vtk_cnf[&#34;header&#34;]) + &#34;*&#34; + vtk_cnf[&#34;ext&#34;]
+        )
+        # vtk_match_list = []
+        vtk_num_list = []
+        regex = re.compile(&#34;\d+&#34;)
+        for vtk in vtk_list:
+            if re.match(vtk_cnf[&#34;header&#34;] + &#34;[0-9]+.vtu&#34;, os.path.basename(vtk)):
+                # vtk_match_list.append(vtk)
+                vtk_num_list.append(int(regex.findall(vtk)[-1]))
+
+        # vtk_list = vtk_match_list
+        vtk_num_list.sort()
+
+        return vtk_num_list
+
+    def show(self) -&gt; None:
+        self._viewer.show()
+
+    def save(self, file_name, **kwargs) -&gt; None:
+        self._viewer.save(file_name, **kwargs)</code></pre>
+</details>
+<h3>Methods</h3>
+<dl>
+<dt id="nlfepy.viewer.Viewer.contour"><code class="name flex">
+<span>def <span class="ident">contour</span></span>(<span>self, *, mesh, val: numpy.ndarray, **kwargs) ‑> NoneType</span>
+</code></dt>
+<dd>
+<div class="desc"></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def contour(self, *, mesh, val: np.ndarray, **kwargs) -&gt; None:
+    self._viewer.contour(mesh=mesh, val=val, **kwargs)</code></pre>
+</details>
+</dd>
+<dt id="nlfepy.viewer.Viewer.get_frame_imgs"><code class="name flex">
+<span>def <span class="ident">get_frame_imgs</span></span>(<span>self, *, fig_cnfs: list, vtk_cnf: dict = {}, **kwargs) ‑> list</span>
+</code></dt>
+<dd>
+<div class="desc"><p>Get image of each frame</p></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def get_frame_imgs(self, *, fig_cnfs: list, vtk_cnf: dict = {}, **kwargs) -&gt; list:
+    &#34;&#34;&#34;
+    Get image of each frame
+    &#34;&#34;&#34;
+
+    vtk_num_list = self._get_vtk_num_list(vtk_cnf=vtk_cnf)
+
+    imgs = []
+    for inum in vtk_num_list:
+        self.multi_plot(
+            os.path.join(
+                vtk_cnf[&#34;dir&#34;], vtk_cnf[&#34;header&#34;] + str(inum) + vtk_cnf[&#34;ext&#34;]
+            ),
+            fig_cnfs,
+            **kwargs
+        )
+        im = self._viewer.get_fig_array()
+        # self.save(&#39;tmp.png&#39;, dpi=300)
+        # im = np.array(Image.open(&#39;tmp.png&#39;))
+        imgs.append(im)
+
+    return imgs</code></pre>
+</details>
+</dd>
+<dt id="nlfepy.viewer.Viewer.multi_plot"><code class="name flex">
+<span>def <span class="ident">multi_plot</span></span>(<span>self, file, cnfs: list, **kwargs) ‑> NoneType</span>
+</code></dt>
+<dd>
+<div class="desc"><p>Plot multile figures</p></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def multi_plot(self, file, cnfs: list, **kwargs) -&gt; None:
+    &#34;&#34;&#34;
+    Plot multile figures
+    &#34;&#34;&#34;
+
+    mesh, val_list = self._get_vtk_values(file, cnfs)
+
+    self._viewer.multi_plot(mesh=mesh, vlist=val_list, **kwargs)</code></pre>
+</details>
+</dd>
+<dt id="nlfepy.viewer.Viewer.plot"><code class="name flex">
+<span>def <span class="ident">plot</span></span>(<span>self, *, mesh, val: numpy.ndarray = None, **kwargs) ‑> NoneType</span>
+</code></dt>
+<dd>
+<div class="desc"></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def plot(self, *, mesh, val: np.ndarray = None, **kwargs) -&gt; None:
+    self._viewer.plot(mesh=mesh, val=val, **kwargs)</code></pre>
+</details>
+</dd>
+<dt id="nlfepy.viewer.Viewer.plot_bc"><code class="name flex">
+<span>def <span class="ident">plot_bc</span></span>(<span>self, mesh, **kwargs) ‑> NoneType</span>
+</code></dt>
+<dd>
+<div class="desc"></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def plot_bc(self, mesh, **kwargs) -&gt; None:
+    self._viewer.plot_bc(mesh=mesh, **kwargs)</code></pre>
+</details>
+</dd>
+<dt id="nlfepy.viewer.Viewer.save"><code class="name flex">
+<span>def <span class="ident">save</span></span>(<span>self, file_name, **kwargs) ‑> NoneType</span>
+</code></dt>
+<dd>
+<div class="desc"></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def save(self, file_name, **kwargs) -&gt; None:
+    self._viewer.save(file_name, **kwargs)</code></pre>
+</details>
+</dd>
+<dt id="nlfepy.viewer.Viewer.save_figs"><code class="name flex">
+<span>def <span class="ident">save_figs</span></span>(<span>self, *, fig_cnfs: list, vtk_cnf: dict = {}, **kwargs) ‑> NoneType</span>
+</code></dt>
+<dd>
+<div class="desc"><p>Save images of each frame</p></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def save_figs(self, *, fig_cnfs: list, vtk_cnf: dict = {}, **kwargs) -&gt; None:
+    &#34;&#34;&#34;
+    Save images of each frame
+    &#34;&#34;&#34;
+
+    vtk_num_list = self._get_vtk_num_list(vtk_cnf=vtk_cnf)
+
+    # Set output file name
+    if &#34;out_dir&#34; not in vtk_cnf:
+        vtk_cnf[&#34;out_dir&#34;] = vtk_cnf[&#34;dir&#34;]
+    if &#34;out_header&#34; not in vtk_cnf:
+        vtk_cnf[&#34;out_header&#34;] = vtk_cnf[&#34;header&#34;]
+    if &#34;out_ext&#34; not in vtk_cnf:
+        vtk_cnf[&#34;out_ext&#34;] = &#34;.png&#34;
+
+    save_cnf = {}
+    if &#34;dpi&#34; in kwargs:
+        save_cnf[&#34;dpi&#34;] = kwargs[&#34;dpi&#34;]
+        del kwargs[&#34;dpi&#34;]
+    if &#34;transparent&#34; in kwargs:
+        save_cnf[&#34;transparent&#34;] = kwargs[&#34;transparent&#34;]
+        del kwargs[&#34;transparent&#34;]
+
+    if not os.path.exists(vtk_cnf[&#34;out_dir&#34;]):
+        logger = getLogger(&#34;viewer interface&#34;)
+        try:
+            os.mkdir(vtk_cnf[&#34;out_dir&#34;])
+        except PermissionError:
+            logger.error(&#34;Permission error&#34;)
+        except Exception:
+            logger.error(&#34;Failed to create output directory&#34;)
+            sys.exit(1)
+
+    for inum in vtk_num_list:
+        vtk_path = os.path.join(
+            vtk_cnf[&#34;dir&#34;], vtk_cnf[&#34;header&#34;] + str(inum) + vtk_cnf[&#34;ext&#34;]
+        )
+        mesh, val_list = self._get_vtk_values(vtk_path, fig_cnfs)
+        for vl in val_list:
+            if vl[&#34;plot&#34;] == &#34;contour&#34;:
+                self.contour(
+                    mesh=mesh, val=vl[&#34;val&#34;], title=vl[&#34;figname&#34;], **kwargs
+                )
+            elif vl[&#34;plot&#34;] == &#34;scatter&#34;:
+                self.scatter(
+                    mesh=mesh, val=vl[&#34;val&#34;], title=vl[&#34;figname&#34;], **kwargs
+                )
+            else:
+                self.plot(mesh=mesh, val=vl[&#34;val&#34;], title=vl[&#34;figname&#34;], **kwargs)
+            self.save(
+                os.path.join(
+                    vtk_cnf[&#34;out_dir&#34;],
+                    vtk_cnf[&#34;out_header&#34;]
+                    + vl[&#34;figname&#34;]
+                    + &#34;_&#34;
+                    + str(inum)
+                    + vtk_cnf[&#34;out_ext&#34;],
+                ),
+                **save_cnf
+            )</code></pre>
+</details>
+</dd>
+<dt id="nlfepy.viewer.Viewer.scatter"><code class="name flex">
+<span>def <span class="ident">scatter</span></span>(<span>self, *, mesh, val: numpy.ndarray, **kwargs) ‑> NoneType</span>
+</code></dt>
+<dd>
+<div class="desc"></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def scatter(self, *, mesh, val: np.ndarray, **kwargs) -&gt; None:
+    self._viewer.scatter(mesh=mesh, val=val, **kwargs)</code></pre>
+</details>
+</dd>
+<dt id="nlfepy.viewer.Viewer.show"><code class="name flex">
+<span>def <span class="ident">show</span></span>(<span>self) ‑> NoneType</span>
+</code></dt>
+<dd>
+<div class="desc"></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def show(self) -&gt; None:
+    self._viewer.show()</code></pre>
+</details>
+</dd>
+</dl>
+</dd>
+<dt id="nlfepy.viewer.Viewer2d"><code class="flex name class">
+<span>class <span class="ident">Viewer2d</span></span>
+</code></dt>
+<dd>
+<div class="desc"><p>Viewer class for 2D stuructures inheriting class: ViewerBase</p></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">class Viewer2d(ViewerBase):
+    &#34;&#34;&#34;
+    Viewer class for 2D stuructures inheriting class: ViewerBase
+    &#34;&#34;&#34;
+
+    def __init__(self) -&gt; None:
+        super().__init__()
+
+    def _set_window(self, ax, coords: np.ndarray, **kwargs):
+        &#34;&#34;&#34;
+        Set window
+
+        Parameters
+        ----------
+        coords : ndarray
+            Coordinates [n_dof, n_point]
+        xlim : array-like
+            Range of x-axis
+        ylim : array-like
+            Range of y-axis
+
+        Returns
+        -------
+        ax :
+            Axis
+        &#34;&#34;&#34;
+
+        # ax.axis(&#39;off&#39;)
+        ax.tick_params(
+            labelbottom=False,
+            labelleft=False,
+            labelright=False,
+            labeltop=False,
+            bottom=False,
+            left=False,
+            right=False,
+            top=False,
+        )
+        ax.axes.xaxis.set_ticks([])
+        ax.axes.yaxis.set_ticks([])
+        ax.spines[&#34;left&#34;].set_visible(False)
+        ax.spines[&#34;bottom&#34;].set_visible(False)
+        ax.spines[&#34;right&#34;].set_visible(False)
+        ax.spines[&#34;top&#34;].set_visible(False)
+        ax.set_aspect(&#34;equal&#34;)
+
+        if &#34;show_axis_label&#34; in kwargs and kwargs[&#34;show_axis_label&#34;]:
+            ax.set_xlabel(&#34;x&#34;)
+            ax.set_ylabel(&#34;y&#34;)
+
+        ratio_margin = 0.1
+        specimen_size = np.max(coords, axis=1)
+
+        if &#34;xlim&#34; in kwargs:
+            ax.set_xlim(kwargs[&#34;xlim&#34;][0], kwargs[&#34;xlim&#34;][1])
+        else:
+            ax.set_xlim(
+                np.min(coords[0]) - specimen_size[0] * ratio_margin,
+                np.max(coords[0]) + specimen_size[0] * ratio_margin,
+            )
+        if &#34;ylim&#34; in kwargs:
+            ax.set_ylim(kwargs[&#34;ylim&#34;][0], kwargs[&#34;ylim&#34;][1])
+        else:
+            ax.set_ylim(
+                np.min(coords[1]) - specimen_size[1] * ratio_margin,
+                np.max(coords[1]) + specimen_size[1] * ratio_margin,
+            )
+
+        return ax
+
+    def _set_bc_info(self, ax, mesh):
+        &#34;&#34;&#34;
+        Plot boundary conditions
+
+        Parameters
+        ----------
+        mesh :
+            Mesh class (See mesh.py)
+
+        Returns
+        -------
+        ax :
+            Axis
+        &#34;&#34;&#34;
+
+        rr = 0.2
+        eps_crit = 1.0e-10
+        eps_min = 1.0e-30
+
+        disp_pts, disp_dof = np.divmod(mesh.bc[&#34;idx_disp&#34;], mesh.n_dof)
+        idx_disp_x = np.where(disp_dof == 0)
+        idx_disp_y = np.where(disp_dof == 1)
+        fix_pts, fix_dof = np.divmod(mesh.bc[&#34;idx_fix&#34;], mesh.n_dof)
+        fix_x = fix_pts[fix_dof == 0]
+        fix_y = fix_pts[fix_dof == 1]
+        fix_x = np.setdiff1d(fix_x, disp_pts[idx_disp_x])
+        fix_y = np.setdiff1d(fix_y, disp_pts[idx_disp_y])
+        fix_xy = np.intersect1d(fix_x, fix_y)
+        fix_x = np.setdiff1d(fix_x, fix_xy)
+        fix_y = np.setdiff1d(fix_y, fix_xy)
+
+        ll = max(np.max(mesh.coords[: mesh.n_dof], axis=1)) * rr
+
+        # Fix points
+        ax.scatter(
+            mesh.coords[0, fix_xy],
+            mesh.coords[1, fix_xy],
+            color=&#34;r&#34;,
+            label=&#34;Completely fixed&#34;,
+        )
+
+        if len(fix_x) &gt; 0:
+            ax.scatter(
+                mesh.coords[0, fix_x],
+                mesh.coords[1, fix_x],
+                color=&#34;b&#34;,
+                label=&#34;Fixed in x direction&#34;,
+            )
+
+        if len(fix_y) &gt; 0:
+            ax.scatter(
+                mesh.coords[0, fix_y],
+                mesh.coords[1, fix_y],
+                color=&#34;g&#34;,
+                label=&#34;Fixed in y direction&#34;,
+            )
+
+        # Prescribed displacement
+        ratio_disp = (
+            ll / abs(np.max(mesh.bc[&#34;displacement&#34;])) * rr
+            if len(mesh.bc[&#34;idx_disp&#34;]) &gt; 0
+            else None
+        )
+
+        if len(idx_disp_x[0]) &gt; 0:
+            ax.quiver(
+                mesh.coords[0, disp_pts[idx_disp_x]],
+                mesh.coords[1, disp_pts[idx_disp_x]],
+                mesh.bc[&#34;displacement&#34;][idx_disp_x] * ratio_disp,
+                0.0,
+                color=&#34;r&#34;,
+                label=&#34;Prescribed displacement&#34;,
+            )
+
+        if len(idx_disp_y[0]) &gt; 0:
+            label_disp_y = None if len(idx_disp_x[0]) &gt; 0 else &#34;Prescribed displacement&#34;
+            ax.quiver(
+                mesh.coords[0, disp_pts[idx_disp_y]],
+                mesh.coords[1, disp_pts[idx_disp_y]],
+                0.0,
+                mesh.bc[&#34;displacement&#34;][idx_disp_y] * ratio_disp,
+                color=&#34;r&#34;,
+                label=label_disp_y,
+            )
+
+        # Traction
+        if &#34;traction&#34; in mesh.bc:
+            Traction = mesh.bc[&#34;traction&#34;]
+            max_trc = np.max(np.abs(Traction))
+            if max_trc &gt; eps_min:
+                trc_crit = max_trc * eps_crit
+                pnt_trc, dof_trc = np.where(np.abs(Traction) &gt; trc_crit)
+                idx_trc_x = np.where(dof_trc == 0)
+                idx_trc_y = np.where(dof_trc == 1)
+                ratio_trc = ll / max_trc * rr
+
+                if len(idx_trc_x[0]) &gt; 0:
+                    ax.quiver(
+                        mesh.coords[0, pnt_trc[idx_trc_x]],
+                        mesh.coords[1, pnt_trc[idx_trc_x]],
+                        Traction[pnt_trc[idx_trc_x], 0] * ratio_trc,
+                        0.0,
+                        color=&#34;g&#34;,
+                        label=&#34;Traction&#34;,
+                    )
+
+                if len(idx_trc_y[0]) &gt; 0:
+                    label_trc_y = None if len(idx_trc_x[0]) &gt; 0 else &#34;Traction&#34;
+                    ax.quiver(
+                        mesh.coords[0, pnt_trc[idx_trc_y]],
+                        mesh.coords[1, pnt_trc[idx_trc_y]],
+                        0.0,
+                        Traction[pnt_trc[idx_trc_y], 1] * ratio_trc,
+                        color=&#34;g&#34;,
+                        label=label_trc_y,
+                    )
+
+        # Applied force
+        if &#34;applied_force&#34; in mesh.bc:
+            ApplForce = mesh.bc[&#34;applied_force&#34;]
+            max_af = np.max(np.abs(ApplForce))
+            if max_af &gt; eps_min:
+                af_crit = max_af * eps_crit
+                pnt_af, dof_af = np.where(np.abs(ApplForce) &gt; af_crit)
+                idx_af_x = np.where(dof_af == 0)
+                idx_af_y = np.where(dof_af == 1)
+                ratio_af = ll / max_af * rr
+
+                if len(idx_af_x[0]) &gt; 0:
+                    ax.quiver(
+                        mesh.coords[0, pnt_af[idx_af_x]],
+                        mesh.coords[1, pnt_af[idx_af_x]],
+                        ApplForce[pnt_af[idx_af_x], 0] * ratio_af,
+                        0.0,
+                        color=&#34;b&#34;,
+                        label=&#34;Applied force&#34;,
+                    )
+
+                if len(idx_af_y[0]) &gt; 0:
+                    label_trc_y = None if len(idx_af_y[0]) &gt; 0 else &#34;Applied force&#34;
+                    ax.quiver(
+                        mesh.coords[0, pnt_af[idx_af_y]],
+                        mesh.coords[1, pnt_af[idx_af_y]],
+                        0.0,
+                        ApplForce[pnt_af[idx_af_y], 1] * ratio_af,
+                        color=&#34;b&#34;,
+                        label=label_trc_y,
+                    )
+
+        ax.legend()
+
+        return ax
+
+    def _ax_plot(self, *, ax, mesh, val: np.ndarray = None, **kwargs):
+        &#34;&#34;&#34;
+        Set coordinates, connectivity and values to plot
+
+        Parameters
+        ----------
+        mesh :
+            Mesh class
+        val : ndarray
+            Value to plot in each element [n_element] (1D array)
+        xlim : array-like
+            Range of x-axis
+        ylim : array-like
+            Range of y-axis
+        cmap : str
+            Color map
+        edgecolor : str
+            Edge color
+        lw : int
+            Line width
+
+        Returns
+        -------
+        ax :
+            Axis
+        pcm :
+            PolyCollection
+        &#34;&#34;&#34;
+
+        ax = self._set_window(ax, mesh.coords, **kwargs)
+
+        vertices = mesh.coords[:2, :].T[np.asarray(mesh.connectivity)]
+
+        if &#34;edgecolor&#34; not in kwargs:
+            kwargs[&#34;edgecolor&#34;] = &#34;k&#34;
+        if &#34;lw&#34; not in kwargs:
+            kwargs[&#34;lw&#34;] = 1
+        if &#34;cmap&#34; not in kwargs:
+            kwargs[&#34;cmap&#34;] = &#34;rainbow&#34;
+        self._delete_plt_unnecessary_keys(kwargs)
+
+        if val is None:
+            pcm = PolyCollection(vertices, facecolor=&#34;None&#34;, **kwargs)
+        else:
+            pcm = PolyCollection(vertices, **kwargs)
+            value = np.array(val)
+            if value.shape[0] != mesh.n_element:
+                logger = getLogger(&#34;viewer2d&#34;)
+                logger.error(
+                    &#34;Value arrray has invalid size. Size of values: {}, Number of elements: {}&#34;.format(
+                        value.shape[0], mesh.n_element
+                    )
+                )
+                sys.exit(1)
+            pcm.set_array(value)
+        ax.add_collection(pcm)
+
+        return ax, pcm
+
+    def _ax_contour(self, *, ax, mesh, val: np.ndarray, **kwargs):
+        &#34;&#34;&#34;
+        Contour plot
+
+        Parameters
+        ----------
+        mesh :
+            Mesh class
+        val : ndarray
+            Value to plot in each nodes [n_point] (1D array)
+        xlim : array-like
+            Range of x-axis
+        ylim : array-like
+            Range of y-axis
+        cmap : str
+            Color map
+        edgecolor : str
+            Edge color
+        lw : int
+            Line width
+
+        Returns
+        -------
+        ax :
+            Axis
+        pcm :
+            PolyCollection
+        &#34;&#34;&#34;
+
+        ax = self._set_window(ax, mesh.coords, **kwargs)
+
+        self._delete_plt_unnecessary_keys(kwargs)
+
+        logger = getLogger(&#34;viewer2d&#34;)
+
+        value = np.array(val)
+        if value.shape[0] != mesh.n_point:
+            logger.error(
+                &#34;Value arrray has invalid size. Size of values: {}, Number of total nodes: {}&#34;.format(
+                    value.shape[0], mesh.n_point
+                )
+            )
+            sys.exit(1)
+
+        # TRI6, QUAD -&gt; TRI3
+        connectivity_tri3 = []
+        for ielm, lnod in enumerate(mesh.connectivity):
+            element_shape = mesh.element_shape[ielm]
+            if element_shape == &#34;TRI&#34;:
+                connectivity_tri3.append([lnod[0], lnod[1], lnod[2]])
+            elif element_shape == &#34;QUAD&#34;:
+                connectivity_tri3.append([lnod[0], lnod[1], lnod[2]])
+                connectivity_tri3.append([lnod[0], lnod[2], lnod[3]])
+
+        triang = mtri.Triangulation(
+            mesh.coords[0, :], mesh.coords[1, :], connectivity_tri3
+        )
+        pcm = ax.tricontourf(triang, value, **kwargs)
+
+        return ax, pcm
+
+    def _ax_scatter(self, *, ax, mesh, val: np.ndarray, **kwargs):
+        &#34;&#34;&#34;
+        Contour plot
+
+        Parameters
+        ----------
+        mesh :
+            Mesh class
+        val : ndarray
+            Value to plot in each nodes [n_point] (1D array)
+        xlim : array-like
+            Range of x-axis
+        ylim : array-like
+            Range of y-axis
+        cmap : str
+            Color map
+        edgecolor : str
+            Edge color
+        lw : int
+            Line width
+
+        Returns
+        -------
+        ax :
+            Axis
+        pcm :
+            PolyCollection
+        &#34;&#34;&#34;
+
+        ax = self._set_window(ax, mesh.coords, **kwargs)
+
+        self._delete_plt_unnecessary_keys(kwargs)
+
+        ax.scatter(mesh.coords[0, :], mesh.coords[1, :], c=val, **kwargs)
+
+        pcm = ax.get_children()[0]
+
+        return ax, pcm
+
+    def plot(self, *, mesh, val: np.ndarray = None, **kwargs) -&gt; None:
+        &#34;&#34;&#34;
+        Set coordinates, connectivity and values to plot
+
+        Parameters
+        ----------
+        mesh :
+            Mesh class
+        val : ndarray
+            Value to plot in each element [n_element] (1D array)
+        xlim : array-like
+            Range of x-axis
+        ylim : array-like
+            Range of y-axis
+        cmap : str
+            Color map
+        edgecolor : str
+            Edge color
+        lw : int
+            Line width
+        &#34;&#34;&#34;
+
+        kwargs[&#34;projection&#34;] = None
+
+        super().plot(mesh=mesh, val=val, **kwargs)
+
+    def contour(self, *, mesh, val: np.ndarray, **kwargs) -&gt; None:
+        &#34;&#34;&#34;
+        Contour plot
+
+        Parameters
+        ----------
+        mesh :
+            Mesh class
+        val : ndarray
+            Value to plot in each nodes [n_point] (1D array)
+        xlim : array-like
+            Range of x-axis
+        ylim : array-like
+            Range of y-axis
+        cmap : str
+            Color map
+        edgecolor : str
+            Edge color
+        lw : int
+            Line width
+        &#34;&#34;&#34;
+
+        kwargs[&#34;projection&#34;] = None
+
+        super().contour(mesh=mesh, val=val, **kwargs)
+
+    def scatter(self, *, mesh, val: np.ndarray, **kwargs) -&gt; None:
+        &#34;&#34;&#34;
+        Scatter plot
+
+        Parameters
+        ----------
+        mesh :
+            Mesh class
+        val : ndarray
+            Value to plot in each nodes [n_point] (1D array)
+        xlim : array-like
+            Range of x-axis
+        ylim : array-like
+            Range of y-axis
+        cmap : str
+            Color map
+        edgecolor : str
+            Edge color
+        lw : int
+            Line width
+        &#34;&#34;&#34;
+
+        kwargs[&#34;projection&#34;] = None
+
+        super().scatter(mesh=mesh, val=val, **kwargs)
+
+    def multi_plot(self, mesh, vlist, **kwargs) -&gt; None:
+        &#34;&#34;&#34;
+        Plot multiple figures
+
+        Parameters
+        ----------
+        mesh :
+            Mesh class
+        vlist: list
+            List of configurations.
+            &#39;val&#39;: Value to plot
+            &#39;plot&#39;: Plot mode (&#39;fill&#39; or &#39;scatter&#39;)
+            &#39;figname&#39;: Figure name
+        &#34;&#34;&#34;
+
+        kwargs[&#34;projection&#34;] = None
+
+        super().multi_plot(mesh, vlist, **kwargs)</code></pre>
+</details>
+<h3>Ancestors</h3>
+<ul class="hlist">
+<li><a title="nlfepy.viewer.viewer_base.ViewerBase" href="viewer_base.html#nlfepy.viewer.viewer_base.ViewerBase">ViewerBase</a></li>
+</ul>
+<h3>Methods</h3>
+<dl>
+<dt id="nlfepy.viewer.Viewer2d.contour"><code class="name flex">
+<span>def <span class="ident">contour</span></span>(<span>self, *, mesh, val: numpy.ndarray, **kwargs) ‑> NoneType</span>
+</code></dt>
+<dd>
+<div class="desc"><p>Contour plot</p>
+<h2 id="parameters">Parameters</h2>
+<dl>
+<dt>mesh :</dt>
+<dt>Mesh class</dt>
+<dt><strong><code>val</code></strong> :&ensp;<code>ndarray</code></dt>
+<dd>Value to plot in each nodes [n_point] (1D array)</dd>
+<dt><strong><code>xlim</code></strong> :&ensp;<code>array-like</code></dt>
+<dd>Range of x-axis</dd>
+<dt><strong><code>ylim</code></strong> :&ensp;<code>array-like</code></dt>
+<dd>Range of y-axis</dd>
+<dt><strong><code>cmap</code></strong> :&ensp;<code>str</code></dt>
+<dd>Color map</dd>
+<dt><strong><code>edgecolor</code></strong> :&ensp;<code>str</code></dt>
+<dd>Edge color</dd>
+<dt><strong><code>lw</code></strong> :&ensp;<code>int</code></dt>
+<dd>Line width</dd>
+</dl></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def contour(self, *, mesh, val: np.ndarray, **kwargs) -&gt; None:
+    &#34;&#34;&#34;
+    Contour plot
+
+    Parameters
+    ----------
+    mesh :
+        Mesh class
+    val : ndarray
+        Value to plot in each nodes [n_point] (1D array)
+    xlim : array-like
+        Range of x-axis
+    ylim : array-like
+        Range of y-axis
+    cmap : str
+        Color map
+    edgecolor : str
+        Edge color
+    lw : int
+        Line width
+    &#34;&#34;&#34;
+
+    kwargs[&#34;projection&#34;] = None
+
+    super().contour(mesh=mesh, val=val, **kwargs)</code></pre>
+</details>
+</dd>
+<dt id="nlfepy.viewer.Viewer2d.multi_plot"><code class="name flex">
+<span>def <span class="ident">multi_plot</span></span>(<span>self, mesh, vlist, **kwargs) ‑> NoneType</span>
+</code></dt>
+<dd>
+<div class="desc"><p>Plot multiple figures</p>
+<h2 id="parameters">Parameters</h2>
+<dl>
+<dt>mesh :</dt>
+<dt>Mesh class</dt>
+<dt><strong><code>vlist</code></strong> :&ensp;<code>list</code></dt>
+<dd>List of configurations.
+'val': Value to plot
+'plot': Plot mode ('fill' or 'scatter')
+'figname': Figure name</dd>
+</dl></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def multi_plot(self, mesh, vlist, **kwargs) -&gt; None:
+    &#34;&#34;&#34;
+    Plot multiple figures
+
+    Parameters
+    ----------
+    mesh :
+        Mesh class
+    vlist: list
+        List of configurations.
+        &#39;val&#39;: Value to plot
+        &#39;plot&#39;: Plot mode (&#39;fill&#39; or &#39;scatter&#39;)
+        &#39;figname&#39;: Figure name
+    &#34;&#34;&#34;
+
+    kwargs[&#34;projection&#34;] = None
+
+    super().multi_plot(mesh, vlist, **kwargs)</code></pre>
+</details>
+</dd>
+<dt id="nlfepy.viewer.Viewer2d.plot"><code class="name flex">
+<span>def <span class="ident">plot</span></span>(<span>self, *, mesh, val: numpy.ndarray = None, **kwargs) ‑> NoneType</span>
+</code></dt>
+<dd>
+<div class="desc"><p>Set coordinates, connectivity and values to plot</p>
+<h2 id="parameters">Parameters</h2>
+<dl>
+<dt>mesh :</dt>
+<dt>Mesh class</dt>
+<dt><strong><code>val</code></strong> :&ensp;<code>ndarray</code></dt>
+<dd>Value to plot in each element [n_element] (1D array)</dd>
+<dt><strong><code>xlim</code></strong> :&ensp;<code>array-like</code></dt>
+<dd>Range of x-axis</dd>
+<dt><strong><code>ylim</code></strong> :&ensp;<code>array-like</code></dt>
+<dd>Range of y-axis</dd>
+<dt><strong><code>cmap</code></strong> :&ensp;<code>str</code></dt>
+<dd>Color map</dd>
+<dt><strong><code>edgecolor</code></strong> :&ensp;<code>str</code></dt>
+<dd>Edge color</dd>
+<dt><strong><code>lw</code></strong> :&ensp;<code>int</code></dt>
+<dd>Line width</dd>
+</dl></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def plot(self, *, mesh, val: np.ndarray = None, **kwargs) -&gt; None:
+    &#34;&#34;&#34;
+    Set coordinates, connectivity and values to plot
+
+    Parameters
+    ----------
+    mesh :
+        Mesh class
+    val : ndarray
+        Value to plot in each element [n_element] (1D array)
+    xlim : array-like
+        Range of x-axis
+    ylim : array-like
+        Range of y-axis
+    cmap : str
+        Color map
+    edgecolor : str
+        Edge color
+    lw : int
+        Line width
+    &#34;&#34;&#34;
+
+    kwargs[&#34;projection&#34;] = None
+
+    super().plot(mesh=mesh, val=val, **kwargs)</code></pre>
+</details>
+</dd>
+<dt id="nlfepy.viewer.Viewer2d.scatter"><code class="name flex">
+<span>def <span class="ident">scatter</span></span>(<span>self, *, mesh, val: numpy.ndarray, **kwargs) ‑> NoneType</span>
+</code></dt>
+<dd>
+<div class="desc"><p>Scatter plot</p>
+<h2 id="parameters">Parameters</h2>
+<dl>
+<dt>mesh :</dt>
+<dt>Mesh class</dt>
+<dt><strong><code>val</code></strong> :&ensp;<code>ndarray</code></dt>
+<dd>Value to plot in each nodes [n_point] (1D array)</dd>
+<dt><strong><code>xlim</code></strong> :&ensp;<code>array-like</code></dt>
+<dd>Range of x-axis</dd>
+<dt><strong><code>ylim</code></strong> :&ensp;<code>array-like</code></dt>
+<dd>Range of y-axis</dd>
+<dt><strong><code>cmap</code></strong> :&ensp;<code>str</code></dt>
+<dd>Color map</dd>
+<dt><strong><code>edgecolor</code></strong> :&ensp;<code>str</code></dt>
+<dd>Edge color</dd>
+<dt><strong><code>lw</code></strong> :&ensp;<code>int</code></dt>
+<dd>Line width</dd>
+</dl></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def scatter(self, *, mesh, val: np.ndarray, **kwargs) -&gt; None:
+    &#34;&#34;&#34;
+    Scatter plot
+
+    Parameters
+    ----------
+    mesh :
+        Mesh class
+    val : ndarray
+        Value to plot in each nodes [n_point] (1D array)
+    xlim : array-like
+        Range of x-axis
+    ylim : array-like
+        Range of y-axis
+    cmap : str
+        Color map
+    edgecolor : str
+        Edge color
+    lw : int
+        Line width
+    &#34;&#34;&#34;
+
+    kwargs[&#34;projection&#34;] = None
+
+    super().scatter(mesh=mesh, val=val, **kwargs)</code></pre>
+</details>
+</dd>
+</dl>
+<h3>Inherited members</h3>
+<ul class="hlist">
+<li><code><b><a title="nlfepy.viewer.viewer_base.ViewerBase" href="viewer_base.html#nlfepy.viewer.viewer_base.ViewerBase">ViewerBase</a></b></code>:
+<ul class="hlist">
+<li><code><a title="nlfepy.viewer.viewer_base.ViewerBase.get_fig_array" href="viewer_base.html#nlfepy.viewer.viewer_base.ViewerBase.get_fig_array">get_fig_array</a></code></li>
+<li><code><a title="nlfepy.viewer.viewer_base.ViewerBase.plot_bc" href="viewer_base.html#nlfepy.viewer.viewer_base.ViewerBase.plot_bc">plot_bc</a></code></li>
+</ul>
+</li>
+</ul>
+</dd>
+<dt id="nlfepy.viewer.Viewer3d"><code class="flex name class">
+<span>class <span class="ident">Viewer3d</span></span>
+</code></dt>
+<dd>
+<div class="desc"><p>Viewer class for 3D stuructures inheriting class: ViewerBase</p></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">class Viewer3d(ViewerBase):
+    &#34;&#34;&#34;
+    Viewer class for 3D stuructures inheriting class: ViewerBase
+    &#34;&#34;&#34;
+
+    def __init__(self) -&gt; None:
+        super().__init__()
+
+    def _set_window(self, ax, coords: np.ndarray, **kwargs):
+        &#34;&#34;&#34;
+        Set window
+
+        Parameters
+        ----------
+        coords : ndarray
+            Coordinates [n_dof, n_point]
+        xlim : array-like
+            Range of x-axis
+        ylim : array-like
+            Range of y-axis
+        zlim : array-like
+            Range of z-axis
+
+        Returns
+        -------
+        ax :
+            Axis
+        &#34;&#34;&#34;
+
+        # ax.axis(&#39;off&#39;)
+        ax.w_xaxis.set_pane_color((1.0, 1.0, 1.0, 0.0))
+        ax.w_yaxis.set_pane_color((1.0, 1.0, 1.0, 0.0))
+        ax.w_zaxis.set_pane_color((1.0, 1.0, 1.0, 0.0))
+        ax.w_xaxis.line.set_color((1.0, 1.0, 1.0, 0.0))
+        ax.w_yaxis.line.set_color((1.0, 1.0, 1.0, 0.0))
+        ax.w_zaxis.line.set_color((1.0, 1.0, 1.0, 0.0))
+
+        ax.axes.xaxis.set_ticks([])
+        ax.axes.yaxis.set_ticks([])
+        ax.axes.zaxis.set_ticks([])
+
+        if &#34;show_axis_label&#34; in kwargs and kwargs[&#34;show_axis_label&#34;]:
+            ax.set_xlabel(&#34;x&#34;)
+            ax.set_ylabel(&#34;y&#34;)
+            ax.set_zlabel(&#34;z&#34;)
+
+        if &#34;xlim&#34; in kwargs:
+            ax.set_xlim(kwargs[&#34;xlim&#34;][0], kwargs[&#34;xlim&#34;][1])
+        else:
+            ax.set_xlim(np.min(coords[0]), np.max(coords[0]))
+        if &#34;ylim&#34; in kwargs:
+            ax.set_ylim(kwargs[&#34;ylim&#34;][0], kwargs[&#34;ylim&#34;][1])
+        else:
+            ax.set_ylim(np.min(coords[1]), np.max(coords[1]))
+        if &#34;zlim&#34; in kwargs:
+            ax.set_zlim(kwargs[&#34;zlim&#34;][0], kwargs[&#34;zlim&#34;][1])
+        else:
+            ax.set_zlim(np.min(coords[2]), np.max(coords[2]))
+
+        return ax
+
+    def _set_bc_info(self, ax, mesh):
+        &#34;&#34;&#34;
+        Plot boundary conditions
+
+        Parameters
+        ----------
+        mesh :
+            Mesh class (See mesh.py)
+
+        Returns
+        -------
+        ax :
+            Axis
+        &#34;&#34;&#34;
+
+        rr = 0.2
+        eps_crit = 1.0e-10
+        eps_min = 1.0e-30
+
+        disp_pts, disp_dof = np.divmod(mesh.bc[&#34;idx_disp&#34;], mesh.n_dof)
+        idx_disp_x = np.where(disp_dof == 0)
+        idx_disp_y = np.where(disp_dof == 1)
+        idx_disp_z = np.where(disp_dof == 2)
+        fix_pts, fix_dof = np.divmod(mesh.bc[&#34;idx_fix&#34;], mesh.n_dof)
+        fix_x = fix_pts[fix_dof == 0]
+        fix_y = fix_pts[fix_dof == 1]
+        fix_z = fix_pts[fix_dof == 2]
+        fix_x = np.setdiff1d(fix_x, disp_pts[idx_disp_x])
+        fix_y = np.setdiff1d(fix_y, disp_pts[idx_disp_y])
+        fix_z = np.setdiff1d(fix_z, disp_pts[idx_disp_z])
+        fix_xyz = np.intersect1d(fix_x, np.intersect1d(fix_y, fix_z))
+        fix_xy = np.setdiff1d(np.intersect1d(fix_x, fix_y), fix_xyz)
+        fix_yz = np.setdiff1d(np.intersect1d(fix_y, fix_z), fix_xyz)
+        fix_zx = np.setdiff1d(np.intersect1d(fix_z, fix_x), fix_xyz)
+        fix_x = np.setdiff1d(np.setdiff1d(np.setdiff1d(fix_x, fix_xy), fix_zx), fix_xyz)
+        fix_y = np.setdiff1d(np.setdiff1d(np.setdiff1d(fix_y, fix_yz), fix_xy), fix_xyz)
+        fix_z = np.setdiff1d(np.setdiff1d(np.setdiff1d(fix_z, fix_zx), fix_yz), fix_xyz)
+
+        ll = max(np.max(mesh.coords, axis=1)) * rr
+
+        # Fix points
+        ax.scatter3D(
+            mesh.coords[0, fix_xyz],
+            mesh.coords[1, fix_xyz],
+            mesh.coords[2, fix_xyz],
+            color=r&#34;#e41a1c&#34;,
+            label=&#34;Completely fixed&#34;,
+        )
+
+        if len(fix_xy) &gt; 0:
+            ax.scatter3D(
+                mesh.coords[0, fix_xy],
+                mesh.coords[1, fix_xy],
+                mesh.coords[2, fix_xy],
+                color=r&#34;#ff7f00&#34;,
+                label=&#34;Fix x-y&#34;,
+            )
+
+        if len(fix_yz) &gt; 0:
+            ax.scatter3D(
+                mesh.coords[0, fix_yz],
+                mesh.coords[1, fix_yz],
+                mesh.coords[2, fix_yz],
+                color=r&#34;#a65628&#34;,
+                label=&#34;Fix y-z&#34;,
+            )
+
+        if len(fix_zx) &gt; 0:
+            ax.scatter3D(
+                mesh.coords[0, fix_zx],
+                mesh.coords[1, fix_zx],
+                mesh.coords[2, fix_zx],
+                color=r&#34;#f781bf&#34;,
+                label=&#34;Fix z-x&#34;,
+            )
+
+        if len(fix_x) &gt; 0:
+            ax.scatter3D(
+                mesh.coords[0, fix_x],
+                mesh.coords[1, fix_x],
+                mesh.coords[2, fix_x],
+                color=r&#34;#377eb8&#34;,
+                label=&#34;Fix x&#34;,
+            )
+
+        if len(fix_y) &gt; 0:
+            ax.scatter3D(
+                mesh.coords[0, fix_y],
+                mesh.coords[1, fix_y],
+                mesh.coords[2, fix_y],
+                color=r&#34;#4daf4a&#34;,
+                label=&#34;Fix y&#34;,
+            )
+
+        if len(fix_z) &gt; 0:
+            ax.scatter3D(
+                mesh.coords[0, fix_z],
+                mesh.coords[1, fix_z],
+                mesh.coords[2, fix_z],
+                color=r&#34;#984ea3&#34;,
+                label=&#34;Fix z&#34;,
+            )
+
+        # Prescribed displacement
+        is_plot_pd = False
+
+        if len(idx_disp_x[0]) &gt; 0:
+            ax.quiver(
+                mesh.coords[0, disp_pts[idx_disp_x]],
+                mesh.coords[1, disp_pts[idx_disp_x]],
+                mesh.coords[2, disp_pts[idx_disp_x]],
+                np.sign(mesh.bc[&#34;displacement&#34;][idx_disp_x]),
+                0.0,
+                0.0,
+                length=ll,
+                color=&#34;r&#34;,
+                label=&#34;Prescribed displacement&#34;,
+            )
+            is_plot_pd = True
+
+        if len(idx_disp_y[0]) &gt; 0:
+            label_disp_y = None if is_plot_pd else &#34;Prescribed displacement&#34;
+            ax.quiver(
+                mesh.coords[0, disp_pts[idx_disp_y]],
+                mesh.coords[1, disp_pts[idx_disp_y]],
+                mesh.coords[2, disp_pts[idx_disp_y]],
+                0.0,
+                np.sign(mesh.bc[&#34;displacement&#34;][idx_disp_y]),
+                0.0,
+                length=ll,
+                color=&#34;r&#34;,
+                label=label_disp_y,
+            )
+            is_plot_pd = True
+
+        if len(idx_disp_z[0]) &gt; 0:
+            label_disp_z = None if is_plot_pd else &#34;Prescribed displacement&#34;
+            ax.quiver(
+                mesh.coords[0, disp_pts[idx_disp_z]],
+                mesh.coords[1, disp_pts[idx_disp_z]],
+                mesh.coords[2, disp_pts[idx_disp_z]],
+                0.0,
+                0.0,
+                np.sign(mesh.bc[&#34;displacement&#34;][idx_disp_z]),
+                length=ll,
+                color=&#34;r&#34;,
+                label=label_disp_z,
+            )
+
+        # Traction
+        if &#34;traction&#34; in mesh.bc:
+            Traction = mesh.bc[&#34;traction&#34;]
+            max_trc = np.max(np.abs(Traction))
+            if max_trc &gt; eps_min:
+                trc_crit = max_trc * eps_crit
+                pnt_trc, dof_trc = np.where(np.abs(Traction) &gt; trc_crit)
+                idx_trc_x = np.where(dof_trc == 0)
+                idx_trc_y = np.where(dof_trc == 1)
+                idx_trc_z = np.where(dof_trc == 2)
+
+                is_plot_trc = False
+
+                if len(idx_trc_x[0]) &gt; 0:
+                    ax.quiver(
+                        mesh.coords[0, pnt_trc[idx_trc_x]],
+                        mesh.coords[1, pnt_trc[idx_trc_x]],
+                        mesh.coords[2, pnt_trc[idx_trc_x]],
+                        np.sign(Traction[pnt_trc[idx_trc_x], 0]),
+                        0.0,
+                        0.0,
+                        length=ll,
+                        color=&#34;g&#34;,
+                        label=&#34;Tractopm&#34;,
+                    )
+                    is_plot_trc = True
+
+                if len(idx_trc_y[0]) &gt; 0:
+                    label_trc_y = None if is_plot_trc else &#34;Traction&#34;
+                    ax.quiver(
+                        mesh.coords[0, pnt_trc[idx_trc_y]],
+                        mesh.coords[1, pnt_trc[idx_trc_y]],
+                        mesh.coords[2, pnt_trc[idx_trc_y]],
+                        0.0,
+                        np.sign(Traction[pnt_trc[idx_trc_y], 1]),
+                        0.0,
+                        length=ll,
+                        color=&#34;g&#34;,
+                        label=label_trc_y,
+                    )
+                    is_plot_trc = True
+
+                if len(idx_trc_z[0]) &gt; 0:
+                    label_trc_z = None if is_plot_trc else &#34;Traction&#34;
+                    ax.quiver(
+                        mesh.coords[0, pnt_trc[idx_trc_z]],
+                        mesh.coords[1, pnt_trc[idx_trc_z]],
+                        mesh.coords[2, pnt_trc[idx_trc_z]],
+                        0.0,
+                        0.0,
+                        np.sign(Traction[pnt_trc[idx_trc_z], 2]),
+                        length=ll,
+                        color=&#34;g&#34;,
+                        label=label_trc_z,
+                    )
+                    is_plot_trc = True
+
+        # Applied force
+        if &#34;applied_force&#34; in mesh.bc:
+            ApplForce = mesh.bc[&#34;applied_force&#34;]
+            max_af = np.max(np.abs(ApplForce))
+            if max_af &gt; eps_min:
+                af_crit = max_af * eps_crit
+                pnt_af, dof_af = np.where(np.abs(ApplForce) &gt; af_crit)
+                idx_af_x = np.where(dof_af == 0)
+                idx_af_y = np.where(dof_af == 1)
+                idx_af_z = np.where(dof_af == 2)
+
+                is_plot_af = False
+
+                if len(idx_af_x[0]) &gt; 0:
+                    ax.quiver(
+                        mesh.coords[0, pnt_af[idx_af_x]],
+                        mesh.coords[1, pnt_af[idx_af_x]],
+                        mesh.coords[2, pnt_af[idx_af_x]],
+                        np.sign(ApplForce[pnt_af[idx_af_x], 0]),
+                        0.0,
+                        0.0,
+                        length=ll,
+                        color=&#34;b&#34;,
+                        label=&#34;Applied force&#34;,
+                    )
+                    is_plot_af = True
+
+                if len(idx_af_y[0]) &gt; 0:
+                    label_af_y = None if is_plot_af else &#34;Applied force&#34;
+                    ax.quiver(
+                        mesh.coords[0, pnt_af[idx_af_y]],
+                        mesh.coords[1, pnt_af[idx_af_y]],
+                        mesh.coords[2, pnt_af[idx_af_y]],
+                        0.0,
+                        np.sign(ApplForce[pnt_af[idx_af_y], 1]),
+                        0.0,
+                        length=ll,
+                        color=&#34;b&#34;,
+                        label=label_af_y,
+                    )
+                    is_plot_af = True
+
+                if len(idx_af_z[0]) &gt; 0:
+                    label_af_z = None if is_plot_af else &#34;Applied force&#34;
+                    ax.quiver(
+                        mesh.coords[0, pnt_af[idx_af_z]],
+                        mesh.coords[1, pnt_af[idx_af_z]],
+                        mesh.coords[2, pnt_af[idx_af_z]],
+                        0.0,
+                        0.0,
+                        np.sign(ApplForce[pnt_af[idx_af_z], 2]),
+                        length=ll,
+                        color=&#34;b&#34;,
+                        label=label_af_z,
+                    )
+                    is_plot_af = True
+
+        ax.legend(loc=&#34;lower right&#34;)
+
+        return ax
+
+    def _ax_plot(self, *, ax, mesh, val: np.ndarray = None, **kwargs):
+        &#34;&#34;&#34;
+        Set coordinates, connectivity and values to plot
+
+        Parameters
+        ----------
+        mesh :
+            Mesh class
+        val : ndarray
+            Value to plot in each element [n_element] (1D array)
+        xlim : array-like
+            Range of x-axis
+        ylim : array-like
+            Range of y-axis
+        zlim : array-like
+            Range of z-axis
+        cmap : str
+            Color map
+        edgecolor : str
+            Edge color
+        lw : int
+            Line width
+        alpha : float
+            Transparency
+
+        Returns
+        -------
+        ax :
+            Axis
+        pcm :
+            PolyCollection
+        &#34;&#34;&#34;
+
+        ax = self._set_window(ax, mesh.coords, **kwargs)
+
+        verts = []
+        vals = []
+        if val is not None:
+            val = np.array(val)
+            if val.shape[0] != mesh.n_element:
+                logger = getLogger(&#34;viewer3d&#34;)
+                logger.error(
+                    &#34;Value arrray has invalid size. Size of values: {}, Number of elements: {}&#34;.format(
+                        val.shape[0], mesh.n_element
+                    )
+                )
+                sys.exit(1)
+
+        for ielm in range(mesh.n_element):
+            for idx_nd in mesh.idx_face(&#34;vol&#34;, elm=ielm):
+                cod = mesh.coords[:, np.array(mesh.connectivity[ielm])[idx_nd]].T
+                verts.append(cod)
+                if val is not None:
+                    vals.append(val[ielm])
+
+        if &#34;edgecolor&#34; not in kwargs:
+            kwargs[&#34;edgecolor&#34;] = &#34;k&#34;
+        if &#34;lw&#34; not in kwargs:
+            kwargs[&#34;lw&#34;] = 1
+        if &#34;cmap&#34; not in kwargs:
+            kwargs[&#34;cmap&#34;] = &#34;rainbow&#34;
+        if &#34;facecolors&#34; not in kwargs:
+            kwargs[&#34;facecolors&#34;] = &#34;orange&#34;
+        if &#34;alpha&#34; not in kwargs:
+            kwargs[&#34;alpha&#34;] = 0.25
+        if &#34;facecolor&#34; not in kwargs:
+            kwargs[&#34;facecolor&#34;] = &#34;orange&#34;
+        self._delete_plt_unnecessary_keys(kwargs)
+
+        pcm = Poly3DCollection(verts, **kwargs)
+
+        if len(vals) &gt; 0:
+            pcm.set_array(np.array(vals))
+
+        ax.add_collection3d(pcm)
+
+        return ax, pcm
+
+    def _ax_contour(self, *, ax, mesh, val: np.ndarray, **kwargs):
+        &#34;&#34;&#34;
+        Contour plot
+
+        Parameters
+        ----------
+        mesh :
+            Mesh class
+        val : ndarray
+            Value to plot in each element [n_element] (1D array)
+        xlim : array-like
+            Range of x-axis
+        ylim : array-like
+            Range of y-axis
+        zlim : array-like
+            Range of z-axis
+        cmap : str
+            Color map
+        edgecolor : str
+            Edge color
+        lw : int
+            Line width
+        alpha : float
+            Transparency
+
+        Returns
+        -------
+        ax :
+            Axis
+        pcm :
+            PolyCollection
+        &#34;&#34;&#34;
+
+        ax = self._set_window(ax, mesh.coords, **kwargs)
+
+        val = np.array(val)
+        if val.shape[0] != mesh.n_point:
+            logger = getLogger(&#34;viewer3d&#34;)
+            logger.error(
+                &#34;Value arrray has invalid size. Size of values: {}, Number of elements: {}&#34;.format(
+                    val.shape[0], mesh.n_point
+                )
+            )
+            sys.exit(1)
+
+        # Not implemented
+        raise NotImplementedError()
+
+    def _ax_scatter(self, *, ax, mesh, val: np.ndarray, **kwargs):
+        &#34;&#34;&#34;
+        Contour plot
+
+        Parameters
+        ----------
+        mesh :
+            Mesh class
+        val : ndarray
+            Value to plot in each nodes [n_point] (1D array)
+        xlim : array-like
+            Range of x-axis
+        ylim : array-like
+            Range of y-axis
+        cmap : str
+            Color map
+        edgecolor : str
+            Edge color
+        lw : int
+            Line width
+
+        Returns
+        -------
+        ax :
+            Axis
+        pcm :
+            PolyCollection
+        &#34;&#34;&#34;
+
+        ax = self._set_window(ax, mesh.coords, **kwargs)
+
+        ax.scatter3D(
+            mesh.coords[0, :], mesh.coords[1, :], mesh.coords[2, :], c=val, **kwargs
+        )
+
+        pcm = ax.get_children()[0]
+
+        return ax, pcm
+
+    def plot(self, *, mesh, val: np.ndarray = None, **kwargs) -&gt; None:
+        &#34;&#34;&#34;
+        Set coordinates, connectivity and values to plot
+
+        Parameters
+        ----------
+        mesh :
+            Mesh class
+        val : ndarray
+            Value to plot in each element [n_element] (1D array)
+        xlim : array-like
+            Range of x-axis
+        ylim : array-like
+            Range of y-axis
+        zlim : array-like
+            Range of z-axis
+        cmap : str
+            Color map
+        edgecolor : str
+            Edge color
+        lw : int
+            Line width
+        alpha : float
+            Transparency
+        &#34;&#34;&#34;
+
+        kwargs[&#34;projection&#34;] = &#34;3d&#34;
+
+        super().plot(mesh=mesh, val=val, **kwargs)
+
+    def contour(self, *, mesh, val: np.ndarray, **kwargs) -&gt; None:
+        &#34;&#34;&#34;
+        Contour plot
+
+        Parameters
+        ----------
+        mesh :
+            Mesh class
+        val : ndarray
+            Value to plot in each element [n_element] (1D array)
+        xlim : array-like
+            Range of x-axis
+        ylim : array-like
+            Range of y-axis
+        zlim : array-like
+            Range of z-axis
+        cmap : str
+            Color map
+        edgecolor : str
+            Edge color
+        lw : int
+            Line width
+        alpha : float
+            Transparency
+        &#34;&#34;&#34;
+
+        kwargs[&#34;projection&#34;] = &#34;3d&#34;
+
+        super().contour(mesh=mesh, val=val, **kwargs)
+
+    def scatter(self, *, mesh, val: np.ndarray, **kwargs) -&gt; None:
+        &#34;&#34;&#34;
+        Scatter plot
+
+        Parameters
+        ----------
+        mesh :
+            Mesh class
+        val : ndarray
+            Value to plot in each nodes [n_point] (1D array)
+        xlim : array-like
+            Range of x-axis
+        ylim : array-like
+            Range of y-axis
+        cmap : str
+            Color map
+        edgecolor : str
+            Edge color
+        lw : int
+            Line width
+        &#34;&#34;&#34;
+
+        kwargs[&#34;projection&#34;] = &#34;3d&#34;
+
+        super().scatter(mesh=mesh, val=val, **kwargs)
+
+    def multi_plot(self, mesh, vlist, **kwargs) -&gt; None:
+        &#34;&#34;&#34;
+        Plot multiple figures
+
+        Parameters
+        ----------
+        mesh :
+            Mesh class
+        vlist: list
+            List of configurations.
+            &#39;val&#39;: Value to plot
+            &#39;plot&#39;: Plot mode (&#39;fill&#39; or &#39;scatter&#39;)
+            &#39;figname&#39;: Figure name
+        &#34;&#34;&#34;
+
+        kwargs[&#34;projection&#34;] = &#34;3d&#34;
+
+        super().multi_plot(mesh, vlist, **kwargs)</code></pre>
+</details>
+<h3>Ancestors</h3>
+<ul class="hlist">
+<li><a title="nlfepy.viewer.viewer_base.ViewerBase" href="viewer_base.html#nlfepy.viewer.viewer_base.ViewerBase">ViewerBase</a></li>
+</ul>
+<h3>Methods</h3>
+<dl>
+<dt id="nlfepy.viewer.Viewer3d.multi_plot"><code class="name flex">
+<span>def <span class="ident">multi_plot</span></span>(<span>self, mesh, vlist, **kwargs) ‑> NoneType</span>
+</code></dt>
+<dd>
+<div class="desc"><p>Plot multiple figures</p>
+<h2 id="parameters">Parameters</h2>
+<dl>
+<dt>mesh :</dt>
+<dt>Mesh class</dt>
+<dt><strong><code>vlist</code></strong> :&ensp;<code>list</code></dt>
+<dd>List of configurations.
+'val': Value to plot
+'plot': Plot mode ('fill' or 'scatter')
+'figname': Figure name</dd>
+</dl></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def multi_plot(self, mesh, vlist, **kwargs) -&gt; None:
+    &#34;&#34;&#34;
+    Plot multiple figures
+
+    Parameters
+    ----------
+    mesh :
+        Mesh class
+    vlist: list
+        List of configurations.
+        &#39;val&#39;: Value to plot
+        &#39;plot&#39;: Plot mode (&#39;fill&#39; or &#39;scatter&#39;)
+        &#39;figname&#39;: Figure name
+    &#34;&#34;&#34;
+
+    kwargs[&#34;projection&#34;] = &#34;3d&#34;
+
+    super().multi_plot(mesh, vlist, **kwargs)</code></pre>
+</details>
+</dd>
+<dt id="nlfepy.viewer.Viewer3d.scatter"><code class="name flex">
+<span>def <span class="ident">scatter</span></span>(<span>self, *, mesh, val: numpy.ndarray, **kwargs) ‑> NoneType</span>
+</code></dt>
+<dd>
+<div class="desc"><p>Scatter plot</p>
+<h2 id="parameters">Parameters</h2>
+<dl>
+<dt>mesh :</dt>
+<dt>Mesh class</dt>
+<dt><strong><code>val</code></strong> :&ensp;<code>ndarray</code></dt>
+<dd>Value to plot in each nodes [n_point] (1D array)</dd>
+<dt><strong><code>xlim</code></strong> :&ensp;<code>array-like</code></dt>
+<dd>Range of x-axis</dd>
+<dt><strong><code>ylim</code></strong> :&ensp;<code>array-like</code></dt>
+<dd>Range of y-axis</dd>
+<dt><strong><code>cmap</code></strong> :&ensp;<code>str</code></dt>
+<dd>Color map</dd>
+<dt><strong><code>edgecolor</code></strong> :&ensp;<code>str</code></dt>
+<dd>Edge color</dd>
+<dt><strong><code>lw</code></strong> :&ensp;<code>int</code></dt>
+<dd>Line width</dd>
+</dl></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def scatter(self, *, mesh, val: np.ndarray, **kwargs) -&gt; None:
+    &#34;&#34;&#34;
+    Scatter plot
+
+    Parameters
+    ----------
+    mesh :
+        Mesh class
+    val : ndarray
+        Value to plot in each nodes [n_point] (1D array)
+    xlim : array-like
+        Range of x-axis
+    ylim : array-like
+        Range of y-axis
+    cmap : str
+        Color map
+    edgecolor : str
+        Edge color
+    lw : int
+        Line width
+    &#34;&#34;&#34;
+
+    kwargs[&#34;projection&#34;] = &#34;3d&#34;
+
+    super().scatter(mesh=mesh, val=val, **kwargs)</code></pre>
+</details>
+</dd>
+</dl>
+<h3>Inherited members</h3>
+<ul class="hlist">
+<li><code><b><a title="nlfepy.viewer.viewer_base.ViewerBase" href="viewer_base.html#nlfepy.viewer.viewer_base.ViewerBase">ViewerBase</a></b></code>:
+<ul class="hlist">
+<li><code><a title="nlfepy.viewer.viewer_base.ViewerBase.contour" href="viewer_base.html#nlfepy.viewer.viewer_base.ViewerBase.contour">contour</a></code></li>
+<li><code><a title="nlfepy.viewer.viewer_base.ViewerBase.get_fig_array" href="viewer_base.html#nlfepy.viewer.viewer_base.ViewerBase.get_fig_array">get_fig_array</a></code></li>
+<li><code><a title="nlfepy.viewer.viewer_base.ViewerBase.plot" href="viewer_base.html#nlfepy.viewer.viewer_base.ViewerBase.plot">plot</a></code></li>
+<li><code><a title="nlfepy.viewer.viewer_base.ViewerBase.plot_bc" href="viewer_base.html#nlfepy.viewer.viewer_base.ViewerBase.plot_bc">plot_bc</a></code></li>
+</ul>
+</li>
+</ul>
+</dd>
+</dl>
+</section>
+</article>
+<nav id="sidebar">
+<h1>Index</h1>
+<div class="toc">
+<ul></ul>
+</div>
+<ul id="index">
+<li><h3>Super-module</h3>
+<ul>
+<li><code><a title="nlfepy" href="../index.html">nlfepy</a></code></li>
+</ul>
+</li>
+<li><h3><a href="#header-submodules">Sub-modules</a></h3>
+<ul>
+<li><code><a title="nlfepy.viewer.viewer" href="viewer.html">nlfepy.viewer.viewer</a></code></li>
+<li><code><a title="nlfepy.viewer.viewer2d" href="viewer2d.html">nlfepy.viewer.viewer2d</a></code></li>
+<li><code><a title="nlfepy.viewer.viewer3d" href="viewer3d.html">nlfepy.viewer.viewer3d</a></code></li>
+<li><code><a title="nlfepy.viewer.viewer_base" href="viewer_base.html">nlfepy.viewer.viewer_base</a></code></li>
+</ul>
+</li>
+<li><h3><a href="#header-classes">Classes</a></h3>
+<ul>
+<li>
+<h4><code><a title="nlfepy.viewer.Viewer" href="#nlfepy.viewer.Viewer">Viewer</a></code></h4>
+<ul class="two-column">
+<li><code><a title="nlfepy.viewer.Viewer.contour" href="#nlfepy.viewer.Viewer.contour">contour</a></code></li>
+<li><code><a title="nlfepy.viewer.Viewer.get_frame_imgs" href="#nlfepy.viewer.Viewer.get_frame_imgs">get_frame_imgs</a></code></li>
+<li><code><a title="nlfepy.viewer.Viewer.multi_plot" href="#nlfepy.viewer.Viewer.multi_plot">multi_plot</a></code></li>
+<li><code><a title="nlfepy.viewer.Viewer.plot" href="#nlfepy.viewer.Viewer.plot">plot</a></code></li>
+<li><code><a title="nlfepy.viewer.Viewer.plot_bc" href="#nlfepy.viewer.Viewer.plot_bc">plot_bc</a></code></li>
+<li><code><a title="nlfepy.viewer.Viewer.save" href="#nlfepy.viewer.Viewer.save">save</a></code></li>
+<li><code><a title="nlfepy.viewer.Viewer.save_figs" href="#nlfepy.viewer.Viewer.save_figs">save_figs</a></code></li>
+<li><code><a title="nlfepy.viewer.Viewer.scatter" href="#nlfepy.viewer.Viewer.scatter">scatter</a></code></li>
+<li><code><a title="nlfepy.viewer.Viewer.show" href="#nlfepy.viewer.Viewer.show">show</a></code></li>
+</ul>
+</li>
+<li>
+<h4><code><a title="nlfepy.viewer.Viewer2d" href="#nlfepy.viewer.Viewer2d">Viewer2d</a></code></h4>
+<ul class="">
+<li><code><a title="nlfepy.viewer.Viewer2d.contour" href="#nlfepy.viewer.Viewer2d.contour">contour</a></code></li>
+<li><code><a title="nlfepy.viewer.Viewer2d.multi_plot" href="#nlfepy.viewer.Viewer2d.multi_plot">multi_plot</a></code></li>
+<li><code><a title="nlfepy.viewer.Viewer2d.plot" href="#nlfepy.viewer.Viewer2d.plot">plot</a></code></li>
+<li><code><a title="nlfepy.viewer.Viewer2d.scatter" href="#nlfepy.viewer.Viewer2d.scatter">scatter</a></code></li>
+</ul>
+</li>
+<li>
+<h4><code><a title="nlfepy.viewer.Viewer3d" href="#nlfepy.viewer.Viewer3d">Viewer3d</a></code></h4>
+<ul class="">
+<li><code><a title="nlfepy.viewer.Viewer3d.multi_plot" href="#nlfepy.viewer.Viewer3d.multi_plot">multi_plot</a></code></li>
+<li><code><a title="nlfepy.viewer.Viewer3d.scatter" href="#nlfepy.viewer.Viewer3d.scatter">scatter</a></code></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+</nav>
+</main>
+<footer id="footer">
+<p>Generated by <a href="https://pdoc3.github.io/pdoc"><cite>pdoc</cite> 0.9.2</a>.</p>
+</footer>
+</body>
+</html>
